@@ -1,4 +1,4 @@
-# Alpha-ABS
+# Alpha ABS
 Active battle system "Alpha" for RPG Maker MV.
 
 >State: **Beta**  
@@ -6,6 +6,7 @@ Active battle system "Alpha" for RPG Maker MV.
 >Last build: 94  
 
 ###Downloading:
+*Как скачать:*  
 ![image](https://github.com/KageDesu/TestRepo/blob/master/Download.png)
 
 ###Documentation:
