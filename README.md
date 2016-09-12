@@ -5,7 +5,13 @@ Active battle system "Alpha" for RPG Maker MV.
 >Version: 1  
 >Last build: 94  
 
-###Downloading:
+###Demo:
+[GoogleDrive](https://drive.google.com/open?id=0B2Op9L9O4mLla2dVX2dWcE92SUU)  
+[DropBox](https://dl.dropboxusercontent.com/u/88841876/Alpha%20ABS%20Demo.7z)  
+[YandexDisk](https://yadi.sk/d/ke3BUdAPv5Mzx)  
+*Don't use the plugin file from Demo*  
+
+###Downloading plugin:
 ![image](https://github.com/KageDesu/TestRepo/blob/master/Download.png)
 
 ###Documentation:
