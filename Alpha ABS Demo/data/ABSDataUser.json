@@ -1,0 +1,20 @@
+[
+	{"id":"particle_dark",
+	 "pData":"DarknessParticle",
+	 "pMinSize":4,
+	 "pMaxSize":16,
+	 "pPower":4,
+	 "pLife":64,
+	 "pAlpha":0.5,
+	 "pCount":200
+	},
+	{"id":"particle_fire",
+	 "pData":"FireParticle",
+	 "pMinSize":8,
+	 "pMaxSize":24,
+	 "pPower":3,
+	 "pLife":64,
+	 "pAlpha":1.0,
+	 "pCount":200
+	}
+]
