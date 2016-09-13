@@ -19,6 +19,8 @@ Copy contents  of the [Plugin folder](https://github.com/KageDesu/Alpha-ABS/tree
 
 **Alpha ABS required only one plugin file: Alpha_ABS.js**, don't use other plugins from Demo game in your project, it may cause errors.
 
+Video guide on [YouTube](https://www.youtube.com/watch?v=1wXL39bwx0g)
+
 ###Plugin only:
 >If need update, not include images   
 >Если надо обновить только .js файл плагина
