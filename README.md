@@ -17,7 +17,7 @@ See in the [Manual folder](https://github.com/KageDesu/Alpha-ABS/tree/master/Alp
 Copy contents  of the [Plugin folder](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Plugin) in your project.  
 Чтобы установить плагин, скопируйте содержимое [папки Plugin](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Plugin) в свой проект.
 
-**ABS Alpha requred only one plugin file: Alpha_ABS.js**, don't use other plugins from Demo game in your project, it may cause errors.
+**Alpha ABS required only one plugin file: Alpha_ABS.js**, don't use other plugins from Demo game in your project, it may cause errors.
 
 ###Plugin only:
 >If need update, not include images   
