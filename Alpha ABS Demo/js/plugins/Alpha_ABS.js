@@ -10,7 +10,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 1;
-AlphaABS.build = 94; //10.09.2016
+AlphaABS.build = 100; //13.09.2016
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -4926,13 +4926,15 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		case 'wait':
 			if(this._absParams.waitType == 'escape') {
 				this._escapeFromTarget();
+				return;
 			} 
 			if(this._absParams.waitTimer && this._absParams.waitTimer.isReady()){
 				this._changeActionState(this._absParams.oldActionState);
+				return;
 			}
-			if(!this._checkVision($gamePlayer)) {
-				this._changeState('free');
-			}
+			//if(!this._checkVision($gamePlayer)) {
+			this._changeActionState('approach');
+			//}
 		break;
 		}
 	}
