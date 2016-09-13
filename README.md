@@ -15,6 +15,8 @@ See in the [Manual folder](https://github.com/KageDesu/Alpha-ABS/tree/master/Alp
 Документация: [Папка Manual](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Manual) 
 
 ###How install:
+>You need RPG Maker MV 1.3.1 or above.  
+
 Copy contents  of the [Plugin folder](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Plugin) in your project.  
 Чтобы установить плагин, скопируйте содержимое [папки Plugin](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Plugin) в свой проект.
 
