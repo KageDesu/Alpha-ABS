@@ -3,7 +3,7 @@ Active battle system "Alpha" for RPG Maker MV.
 
 >State: **Beta**  
 >Version: 1  
->Last build: 94  
+>Last build: 100 (13.09.2013)
 
 ###Downloading:
 *Как скачать:*  
