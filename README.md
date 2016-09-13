@@ -3,7 +3,8 @@ Active battle system "Alpha" for RPG Maker MV.
 
 >State: **Beta**  
 >Version: 1  
->Last build: 100 (13.09.2013)
+>Last build: 100 (13.09.2013)  
+>[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Changelog.md)  
 
 ###Downloading:
 *Как скачать:*  
@@ -36,6 +37,7 @@ Video guide on [YouTube](https://www.youtube.com/watch?v=1wXL39bwx0g)
 See in the documentation file [AlphaABS.pdf](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Manual/Alpha%20ABS.pdf)
 
 ###If you like it
-You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6), but it not necessary, because i am interesting in this project and do my best, earn money is not purpose. Your donation is your gratitude for my work.
+You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6), but it not necessary. 
+Your donation is your gratitude for my work.
 
 
