@@ -21,7 +21,9 @@ Copy contents  of the [Plugin folder](https://github.com/KageDesu/Alpha-ABS/tree
 >If need update, not include images   
 >Если надо обновить только .js файл плагина
 
-[Plugin folder](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Plugin/js/plugins)
+[Plugin file](https://raw.githubusercontent.com/KageDesu/Alpha-ABS/master/Alpha%20ABS%20plugin/Plugin/js/plugins/Alpha_ABS.js)  
+>Save file as `Alpha_ABS.js`  
+>Сохраните файл как `Alpha_ABS.js`  
 
 ###Reporting Bugs / Issues:
 [rpgmakerweb.com](http://forums.rpgmakerweb.com/index.php?/topic/66713-abs-alpha-preview/)
