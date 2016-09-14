@@ -1437,6 +1437,8 @@ AlphaABS.SYSTEM = {};
  	["ABS: Support only RPG Maker MV 1.3.1 and above",'ABS: Обновите версию RPG Maker MV до 1.3.1 или выше'];
  	$.STRING_ERROR_SKILLNAN =
  	["You need config you project for ABS first!",'Необходимо настроить проект под ABS!'];
+ 	$.STRING_ERROR_OLDDATA = 
+ 	["Your project use old RPG Maker MV core (js/), update files to 1.3.1","Необходимо обновить основные файлы проекта (папка js/) до версии 1.3.1"];
 
  	$.EXTENSIONS = {};
 
@@ -3857,12 +3859,13 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				noFight: false, //Не будет сражаться вообще
 				reviveTime: 0, //Через сколько возродится (секунды)
 				regen: true, //Регенерация
-				slow: false  //Медленный в бою
+				slow: false,  //Медленный в бою
+				agressive: true //Агрессивный (всегда догоняет)
 			} //END Zero template
 		]
 	);
 
-	SDK.setConstant(Game_AIBehavior, 'PARAMS', ['viewRadius', 'returnRadius', 'escapeOnBattle', 'canSearch', 'noFight','reviveTime','regen','slow']);
+	SDK.setConstant(Game_AIBehavior, 'PARAMS', ['viewRadius', 'returnRadius', 'escapeOnBattle', 'canSearch', 'noFight','reviveTime','regen','slow','agressive']);
 
 	//END Game_AIBehavior
 //------------------------------------------------------------------------------
@@ -4296,6 +4299,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    this._absParams.reviveTime = b.reviveTime; //Время возрождения (минуты)
 	    this._absParams.regenOnFree = b.regen;
 	    this._absParams.slow = b.slow; //Медленный враг
+	    this._absParams.agressive = b.agressive; //Агрессивный враг (будет догонять)
 		this.setRevive(this._absParams.reviveTime);
 
 		this._absParams.useAStar = true;
@@ -4926,15 +4930,21 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		case 'wait':
 			if(this._absParams.waitType == 'escape') {
 				this._escapeFromTarget();
-				return;
+				if(this._absParams.agressive) return;
 			} 
 			if(this._absParams.waitTimer && this._absParams.waitTimer.isReady()){
 				this._changeActionState(this._absParams.oldActionState);
-				return;
+				if(this._absParams.agressive) return;
 			}
-			//if(!this._checkVision($gamePlayer)) {
-			this._changeActionState('approach');
-			//}
+
+			if(this._absParams.agressive) 
+				this._changeActionState('approach');
+			else {
+				if(!this._checkVision($gamePlayer)) {
+					this._resetTarget();
+					this._changeState('free');
+				}
+			}
 		break;
 		}
 	}
@@ -8915,6 +8925,9 @@ DataManager.isDatabaseLoaded = function() {
 		if(!$dataSkills[1].meta.ABS) {
 			throw new Error(Consts.STRING_ERROR_SKILLNAN[SDK.isRU()]);				
 		} 
+		if(!Utils.RPGMAKER_VERSION) {
+			throw new Error(Consts.STRING_ERROR_OLDDATA[SDK.isRU()]);	
+		}
 		var v = Utils.RPGMAKER_VERSION.split('.');
 		if(v[0] < 1) {
 			throw new Error(Consts.STRING_ERROR_VERSION[SDK.isRU()]);
