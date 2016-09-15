@@ -10,7 +10,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 1;
-AlphaABS.build = 142; //14.09.2016
+AlphaABS.build = 208; //16.09.2016
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -3455,6 +3455,28 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			this.reloadSound = {name:this.reloadSound,pan:0,pitch:100,volume:100};
 		}
 
+		if(this.reloadParam != null) {
+			//If i can use 'with' keyword in strict mode, this is not happened :(
+			if(!this.reloadParam.contains('this')) {
+				if(this.reloadParam.trim() == 'attackSpeed') { //for performance
+					this.reloadParam = this.reloadParam.replace(/attackSpeed/i, 'this.attackSpeed()');
+				} else {
+					this.reloadParam = this.reloadParam.replace(/attackSpeed/i, 'this.attackSpeed()');
+					this.reloadParam = this.reloadParam.replace(/hp/i, 'this.hp');
+					this.reloadParam = this.reloadParam.replace(/mp/i, 'this.mp');
+					this.reloadParam = this.reloadParam.replace(/tp/i, 'this.tp');
+					this.reloadParam = this.reloadParam.replace(/mhp/i, 'this.mhp');
+					this.reloadParam = this.reloadParam.replace(/mmp/i, 'this.mmp');
+					this.reloadParam = this.reloadParam.replace(/atk/i, 'this.atk');
+					this.reloadParam = this.reloadParam.replace(/def/i, 'this.def');
+					this.reloadParam = this.reloadParam.replace(/mat/i, 'this.mat');
+					this.reloadParam = this.reloadParam.replace(/mdf/i, 'this.mdf');
+					this.reloadParam = this.reloadParam.replace(/agi/i, 'this.agi');
+					this.reloadParam = this.reloadParam.replace(/luk/i, 'this.luk');
+				}
+			}
+		}
+
 		this.reloadTimeA = this.reloadTime;
 	}
 
@@ -5741,6 +5763,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	//NEW
+	Game_Map.prototype.stopABS = function() {
+		this._isABSMap = false;
+	}
+
+	//NEW
 	Game_Map.prototype.characterABS = function(battler) {
 		//TODO Возвращает Game_AIBot по battler
 	}
@@ -7371,10 +7398,14 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		var action = this.action(0);
 		var skill = this.skillABS_byAction(action);
 		if(skill.isNeedReloadParam()) {
-			if(typeof this[skill.reloadParam] == "function")
-				skill.preUse(this[skill.reloadParam]());
-			else
-				skill.preUse(this[skill.reloadParam]);
+			//LOG.p("ReloadParam " + skill.reloadParam);
+			var reloadVar = 60;
+			try {
+				reloadVar = Math.round(parseInt(eval(skill.reloadParam)));
+			} catch(err) {
+				LOGW.p("Can't calculate" + skill.name() + " <reloadParam> " + err);
+			}
+			skill.preUse(reloadVar);
 		}
 		this.useItem(action.item());
 		skill.onUse();
@@ -8706,6 +8737,26 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//END Scene_Menu
 //------------------------------------------------------------------------------
 
+//Scene_Gameover
+//------------------------------------------------------------------------------
+	var _Scene_Gameover_create = Scene_Gameover.prototype.create
+	Scene_Gameover.prototype.create = function() {
+		$gameMap.stopABS();
+		_Scene_Gameover_create.call(this);
+	}
+	//END Scene_Gameover
+//------------------------------------------------------------------------------
+
+//Scene_Title
+//------------------------------------------------------------------------------
+	var _Scene_Title_create = Scene_Title.prototype.create
+	Scene_Title.prototype.create = function() {
+		$gameMap.stopABS();
+		_Scene_Title_create.call(this);
+	}
+	//END Scene_Title
+//------------------------------------------------------------------------------
+
 
 //Scene_Boot
 //------------------------------------------------------------------------------
@@ -8744,6 +8795,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	Window_Options.prototype._addUIOptions = function() {
 		if($gameMap.isABS()) {
+			LOG.p("CONFIG!");
 			var p = AlphaABS.SYSTEM.PARAMS;
 			if(p.ALLOW_UI_VIS == true) this.addCommand(AlphaABS.SYSTEM.STRING_MENU_UIVIS[SDK.isRU()], 'absUI');
 			if(p.ALLOW_UI_POS == true) this.addCommand(AlphaABS.SYSTEM.STRING_MENU_UIPOS[SDK.isRU()], 'absEditUI');
@@ -8840,7 +8892,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	//NEW
 	Window_SkillList.prototype.checkABSItem = function(item) {
-		return (item.occasion == 1 && item.meta.ABS);
+		return (item && item.occasion == 1 && item.meta.ABS);
 	}
 
     var _Window_SkillList_drawSkillCost = Window_SkillList.prototype.drawSkillCost;
@@ -8878,7 +8930,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
     Window_ItemList.prototype._absItemToPanel = function() {
         for(var i = 1; i<9; i++) {
             if(Input.isTriggered("" + i)) {
-            	if(this.item().occasion == 1 && this.item().meta.ABS) {
+            	if(this.item() && this.item().occasion == 1 && this.item().meta.ABS) {
 	            	LOG.p("Item " + this.item().name + " set to slot " + i);
 	            	$gameParty.leader().setItemOnPanel(this.item().id,i-1);
 	            	SoundManager.playEquip();
@@ -11195,7 +11247,7 @@ DataManager.isDatabaseLoaded = function() {
             if(TouchInput.isTriggered()) {
 	        	var tI = this._absPanel.checkTouch();
 	            if(tI != null) {
-	            	if(this.item().occasion == 1 && this.item().meta.ABS) {
+	            	if(this.item() && this.item().occasion == 1 && this.item().meta.ABS) {
 		            	this._absPanel.touchSkillAt(tI);
 		            	LOG.p("Item " + this.item().name + " set to slot " + tI);
 		                $gameParty.leader().setItemOnPanel(this.item().id,tI-1);
