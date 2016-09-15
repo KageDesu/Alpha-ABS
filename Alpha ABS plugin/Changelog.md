@@ -3,7 +3,7 @@
 **208** - (16.09.2016)  
 > fixed bug: crush when open 'Options' menu on Title screen  
 > fixed bug: crush when add empty skill or item to the skills panel  
-> new: <reloadParam> now supports calculation (hp, mp, tp, mhp, mmp, atk, def, mat, mdf, agi, luk, attackSpeed)  
+> new: `reloadParam` now supports calculation (hp, mp, tp, mhp, mmp, atk, def, mat, mdf, agi, luk, attackSpeed)  
 
 **142** - (14.09.2016)  
 > fixed bug: crush when you put non ABS item to the skills panel by mouse  
