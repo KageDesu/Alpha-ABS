@@ -10,7 +10,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 1;
-AlphaABS.build = 100; //13.09.2016
+AlphaABS.build = 142; //14.09.2016
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -1438,7 +1438,7 @@ AlphaABS.SYSTEM = {};
  	$.STRING_ERROR_SKILLNAN =
  	["You need config you project for ABS first!",'Необходимо настроить проект под ABS!'];
  	$.STRING_ERROR_OLDDATA = 
- 	["Your project use old RPG Maker MV core (js/), update files to 1.3.1","Необходимо обновить основные файлы проекта (папка js/) до версии 1.3.1"];
+ 	["Your project use old RPG Maker MV core (js/), update files to 1.3.1 or above","Необходимо обновить основные файлы проекта (папка js/) до версии 1.3.1 или выше"];
 
  	$.EXTENSIONS = {};
 
@@ -8820,9 +8820,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
             	if(this.checkABSItem(this.item())) {
                 	LOG.p("Skill " + this.item().name + " set to slot " + i);
                 	this._actor.setSkillOnPanel(this.item().id,i-1);
+                	SoundManager.playEquip();
                 	this.refresh();
                 } else {
                 	LOGW.p(Consts.STRING_WARNING_SKILLOC[SDK.isRU()]);
+                	SoundManager.playBuzzer();
                 }
             }
         }
@@ -8879,9 +8881,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
             	if(this.item().occasion == 1 && this.item().meta.ABS) {
 	            	LOG.p("Item " + this.item().name + " set to slot " + i);
 	            	$gameParty.leader().setItemOnPanel(this.item().id,i-1);
+	            	SoundManager.playEquip();
 	            	this.refresh();
                 } else {
                 	LOGW.p(Consts.STRING_WARNING_SKILLOC[SDK.isRU()]);
+                	SoundManager.playBuzzer();
                 }
             }
         }
@@ -8969,6 +8973,9 @@ DataManager.isDatabaseLoaded = function() {
 	var CONST_UI_UPLEFT_SIZE = 300;
 	var CONST_UI_UPRIGHT_SIZE = 180;
 	var CONST_UI_LEFTPAN_SIZE = 200;
+
+	var Consts = AlphaABS.SYSTEM;
+	var LOGW = Consts.LOGW;
 
 	Game_Variables.prototype.setUIPosition = function(id, x, y) {
 		if(!this._uiPositions)
@@ -11149,8 +11156,10 @@ DataManager.isDatabaseLoaded = function() {
 		            	this._absPanel.touchSkillAt(tI);
 		            	LOG.p("Skill " + this.item().name + " set to slot " + tI);
 		                this._actor.setSkillOnPanel(this.item().id,tI-1);
+		                SoundManager.playEquip();
 		                this.refresh();
 		            } else {
+		            	SoundManager.playBuzzer();
 		            	LOGW.p(Consts.STRING_WARNING_SKILLOC[SDK.isRU()]);
 		            }
 	            }
@@ -11190,9 +11199,11 @@ DataManager.isDatabaseLoaded = function() {
 		            	this._absPanel.touchSkillAt(tI);
 		            	LOG.p("Item " + this.item().name + " set to slot " + tI);
 		                $gameParty.leader().setItemOnPanel(this.item().id,tI-1);
+		                SoundManager.playEquip();
 		                this.refresh();
 		            } else {
 		            	LOGW.p(Consts.STRING_WARNING_SKILLOC[SDK.isRU()]);
+		            	SoundManager.playBuzzer();
 		            }
 	            }
 	        }
