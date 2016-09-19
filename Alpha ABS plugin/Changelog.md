@@ -1,5 +1,17 @@
 #Version 1
 ##Builds:  
+**300** - (19.09.2016)
+> - minor improvements and fixes  
+> - add ammo count indicator for weapons and skills    
+> - new plugin parameter: `Gold icon index`  
+> - new ABS params for skills: `<cEonStart:X>`, `<cEonUse:X>`  
+> - new ABS params for enemies: `<cEonStart:X>`, `<cEonEnd:X>`, `<cEonDeath:X>`,`<noMove:Z>`, `<noEmote:Z>`  
+> - *test* support `YEP_ClassChangeCore` plugin  
+> - *test* support `YEP_EnhancedTP` plugin
+
+**test support* - mean that plugin work, but not full tested out.  
+Check [Build 300 features](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Build%20300%20features.md) file for more info about new notetags.  
+
 **208** - (16.09.2016)  
 > fixed bug: crush when open 'Options' menu on Title screen  
 > fixed bug: crush when add empty skill or item to the skills panel  
