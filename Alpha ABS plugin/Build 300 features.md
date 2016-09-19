@@ -2,7 +2,7 @@
 **New plugin parameter** : `Gold icon index` - allow you change icon index for gold when
 you looting enemies.
 
-![image](https://dl.dropboxusercontent.com/u/88841876/2016-09-19_22-52-03.png)
+![image](https://github.com/KageDesu/TestRepo/blob/master/build300_goldIcon.png)
 
 **New ABS params (*notetags*) for skills**:
 - `<cEonStart:X>` - call CommonEvent with id X when trigger the skill.
