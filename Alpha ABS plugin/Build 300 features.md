@@ -15,14 +15,3 @@ you looting enemies.
 - `<noMove:Z>` - if 1 - the enemy cannot move while in battle. *(default 0)*
 - `<noEmote:Z>` - if 1 - emoticons will not appear over the enemy. *(default 0)*
 
-**300** - (19.09.2016)
-> - minor improvements and fixes  
-> - add ammo count indicator for weapons and skills    
-> - new plugin parameter: `Gold icon index`  
-> - new ABS params for skills: `<cEonStart:X>`, `<cEonUse:X>`  
-> - new ABS params for enemies: `<cEonStart:X>`, `<cEonEnd:X>`, `<cEonDeath:X>`,`<noMove:Z>`, `<noEmote:Z>`  
-> - *test* support `YEP_ClassChangeCore` plugin  
-> - *test* support `YEP_EnhancedTP` plugin
-
-**test support* - mean that plugin work, but not full tested out.  
-Check [Build 300 features]() file for more info about new notetags.
