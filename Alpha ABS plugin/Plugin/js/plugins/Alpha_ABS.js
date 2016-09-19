@@ -10,7 +10,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 1;
-AlphaABS.build = 208; //16.09.2016
+AlphaABS.build = 300; //19.09.2016
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -52,6 +52,10 @@ AlphaABS.build = 208; //16.09.2016
  * @param UI position control
  * @desc Allow user change UI elements positions from Options menu in game
  * @default true
+ *
+ * @param Gold icon index
+ * @desc Icon index for Gold alert (when you pick up gold from enemies)
+ * @default 314
  *
  * @param Force English
  * @desc Use english language (if not work automatically)
@@ -229,6 +233,10 @@ AlphaABS.build = 208; //16.09.2016
  * @param UI position control
  * @desc Может ли игрок менять положение элементов интерфейса во время игры? (true - да, false - нет) 
  * @default true
+ *
+ * @param Gold icon index
+ * @desc Номер иконки для строки с золотом (когда вы подбираете золото у врагов)
+ * @default 314
  *
  * @param Force English
  * @desc Использовать английский язык? (true - да, false - нет) 
@@ -977,413 +985,30 @@ if(!PLATFORM.Version) {
 
 }
 
+var SDK = PLATFORM.SDK;
+var Color = PLATFORM.Color;
+var IKey = PLATFORM.IKey;
+
 //==========================================================================================================================================================
-// JSLibrary
+// ABS Library 
 //==========================================================================================================================================================
-if(!PLATFORM.LIB) {
-	PLATFORM.LIB = PLATFORM.LIB || {}; //Подключаем библиотеку к платформе
-	PLATFORM.Versions['LIB'] = 130; //Устанавливаем версию библиотеки
-
-	(function($) {
-
-		//SHORT VERSION (many classes been cutted)
-
-		PLATFORM.extendMe(self);
-		//------------------------------------------------------------------------------
-		//PKD_Object_Bar
-	 	class PKD_Object_Bar
-	 	{
-	 		constructor(bitmap)
-	 		{
-	 			this._bitmap = bitmap;
-	 			this._rect = undefined;
-	 			this._bColor = Color.BLACK;
-	 			this._color = Color.WHITE;
-	 			this._isGradient = true;
-	 			this._mValue = 0;
-	 			this._text_l = null;
-	 			this._text_r = null;
-	 			this._text_c = null;
-	 			this._lValue = -1; //Last value
-	 			this._value = 0;
-
-	 			this._calculate_gradient();
-	 		}
-
-	 		setPosition(x, y, w, h)
-	 		{
-	 			this._rect = new Rectangle(x,y,w,h);
-	 		}
-
-	 		setValue(value)
-	 		{
-	 			if(value <= 0)
-	 				value = 0;
-	 			if(value > this._mValue)
-	 				value = this._mValue;
-	 			this._value = value;
-	 		}
-
-	 		getValue()
-	 		{
-	 			return this._value;
-	 		}
-
-	        refresh() // 1.1
-	        {
-	            if(this._rect === undefined)
-	                return;
-	            this._draw_back_bar();
-	            if(this._mValue != 0)
-	                this._draw_main_bar();
-	        }
-
-	 		//PARAMS
-	 		//color , bColor, maxValue, value
-	 		config(params)
-	 		{
-	 			this._color = params.color || Color.WHITE;
-	 			this._bColor = params.bColor || Color.BLACK;
-	 			this._mValue = params.maxValue || 0;
-	 			this.setValue(params.value || 0);
-	 		}
-
-	 		setText(text, position)
-	 		{
-	 			switch(position)
-	 			{
-	 				case 'center':
-	 					this._text_c = text;
-	 					break;
-	 				case 'left':
-	 					this._text_l = text;
-	 					break;
-	 				case 'right':
-	 					this._text_r = text;
-	 					break;
-	 			}
-	 		}
-
-	 		allowGradient(isAllowed)
-	 		{
-	 			isAllowed = SDK.check(isAllowed, true);
-	 			this._isGradient = isAllowed;
-	 			if(this._isGradient)
-	 				this._calculate_gradient();
-	 		}
-
-	 		update()
-	 		{
-	 			if(this._lValue == this._value)
-	 				return; //No drawing if not changes
-	 			this.refresh() ;
-	 			this._lValue = this._value;
-	 		}
-
-
-	 		//PRIVATE
-	 		_draw_back_bar()
-	 		{
-	 			this._bitmap.fillRect(this._rect.x, this._rect.y, this._rect.width, this._rect.height, this._bColor.CSS);
-	 		}
-
-	 		_draw_main_bar()
-	 		{
-	 			let width = Math.floor((100 * this._value / this._mValue) * (this._rect.width - 2)/100);
-
-	 			if(this._isGradient) {
-	 				this._bitmap.gradientFillRect(this._rect.x + 1, this._rect.y + 1, width, this._rect.height - 2,
-	 												 this._color.CSS, this._gColor.CSS, false);
-	 			}
-	 			else {
-	 				this._bitmap.fillRect(this._rect.x + 1, this._rect.y + 1, width, this._rect.height - 2, this._color.CSS);
-	 			}
-
-	 			let size = this._bitmap.fontSize;
-	 			this._bitmap.fontSize = this._rect.height - 4;
-
-	 			if(this._text_c != null)
-	 				this._bitmap.drawText(this._text_c, this._rect.x + 2, this._rect.y, this._rect.width - 4, this._rect.height,'center');
-	 			if(this._text_l != null)
-	 				this._bitmap.drawText(this._text_l, this._rect.x + 4, this._rect.y, this._rect.width - 8, this._rect.height,'left');
-	 			if(this._text_r != null)
-	 				this._bitmap.drawText(this._text_r, this._rect.x + 2, this._rect.y, this._rect.width - 6, this._rect.height,'right');
-	 			this._bitmap.fontSize = size;
-	 		}
-
-	 		_calculate_gradient()
-	 		{
-	 			this._gColor = this._color.getLightestColor(230);
-	 		}
-	 	}	 	
-		//END PKD_Object_Bar
-		//------------------------------------------------------------------------------
-
-		//------------------------------------------------------------------------------
-	    //NotifyMachine
-	    class NotifyMachine extends Sprite {
-	        constructor(x,y, w, h, lines) {
-	            super();
-	            this.x = x;
-	            this.y = y;
-	            this._maxItems = lines;
-	            this._items = [];
-	            this._timers = [];
-	            this._lineH = h + 4;
-	            this._newItem = null;
-	            //this.setFrame(w,this._lineH * lines);
-	            this._setupMode();
-	            this._initItems();
-	            this._newItemTimer = new Game_TimerABS();
-	            this.bitmap = new Bitmap(w,this._lineH*lines);
-	            //this.bitmap.fillRect(0,0,w,this._lineH*lines,Color.RED.CSS);
-	        }
-
-	        maxHeight() {
-	            return this._lineH * this._maxItems;
-	        }
-
-	        update() {
-	            this._update_new_item();
-	            this._update_items_fade();
-	            this._update_timers();
-	        }
-
-	        refresh() {
-	            this._setupMode();
-	        }
-
-	        push(item) {
-	            var lastItem = this._items.shift();
-	            if(lastItem != null) 
-	                this.removeChild(lastItem);
-
-	            this._items.push(item);
-	            if(this._newItem) {
-	                this._newItem.opacity = 255;
-	                this._newItem.x = 0;
-	            }
-	            this._newItem = item;
-	            this._newItemTimer.start(NotifyMachine.TIME + 60);
-	            this._configNewItem();
-	            this._timers.shift();
-	            this._timers.push(new Game_TimerABS());
-	            this.addChild(this._newItem);
-	            this._step();
-	        }
-
-	        clear() {
-	            this._items.forEach(function(item){
-	                if(item) this.removeChild(item);
-	            });
-	            this._timers = [];
-	            this._items = [];
-	            this._newItem = null;
-	            this._initItems();
-	        }
-
-	        //PRIVATE
-	        _setupMode() {
-	            this._mode = 'right'; //Apper from right of Screen
-	            if(SDK.toGlobalCoord(this, 'x') < Graphics.width / 2) {
-	                this._mode = 'left'; //Apper from left of Screen
-	            }
-	        }
-
-	        _update_new_item() {
-	            if(this._newItem == null) return;
-	            this._fadeOut(this._newItem);
-	            if(this._mode == 'right') {
-	                if(this._newItem.x > 2)
-	                    this._newItem.x -= 4;
-	            } else {
-	                if(this._newItem.x < 0)
-	                    this._newItem.x += 4;
-	            }
-	        }
-
-	        _update_items_fade() {
-	            for(var i = 0; i<this._items.length; i++) {
-	                if(!this._timers[i]) continue;
-	                if(this._timers[i].isReady()) {
-	                    if(this._items[i] != this._newItem)
-	                        this._fadeIn(this._items[i]);
-	                }
-	            }
-	        }
-
-	        _update_timers() {
-	            this._timers.forEach(function(timer) {
-	                if(timer) {
-	                    timer.update();
-	                }
-	            });
-
-	            this._newItemTimer.update();
-	            if(this._newItemTimer.isReady() && this._newItem) {
-	                this._timers[this._maxItems - 1].start(1);
-	                this._newItem = null;
-	            }
-	        }
-
-	        _step() {
-	            SDK.times(this._items.length, function(i) {
-	                var index = (this._items.length - 1) - i; //Reverse 
-	                var item = this._items[index];
-	                if(item == null) return;
-	                var newY = this.height - (this._lineH * (i + 1));
-	                if(index != (this._items.length - 1)) { //New Item
-	                    item.x = 0;
-	                    if(this._timers[index].isReady())
-	                        this._timers[index].start(NotifyMachine.TIME);
-	                }
-	                item.y = newY;
-
-	            }.bind(this));
-	        }
-
-	        _initItems() {
-	            SDK.times(this._maxItems, function() { 
-	                this._items.push(null);
-	                this._timers.push(null);
-	            }.bind(this));
-	        }
-
-	        _configNewItem() {
-	            this._newItem.opacity = 0;
-	            if(this._mode == 'right') {
-	                this._newItem.x += (this.width + 2);
-	            } else 
-	                this._newItem.x -= (this.width + 2);
-	        }
-
-	        _fadeIn(item) {
-	            if(item.opacity > 2) {
-	                item.opacity -= 2;
-	            }
-	        }
-
-	        _fadeOut(item) {
-	            if(item.opacity < (251)) {
-	                item.opacity += 4;
-	            }
-	        }
-
-	    }
-
-	    SDK.setConstant(NotifyMachine, 'TIME', 240);
-
-	    //END NotifyMachine
-	    //------------------------------------------------------------------------------
-
-
-	    //------------------------------------------------------------------------------
-	    //ItemLineSprite
-	    class ItemLineSprite extends Sprite {
-	        constructor(text, iconSymbol, textColor) {
-	            super();
-	            this.setFrame(this.width(),this.height());
-	            this._text = text || '';
-	            this._textColor = textColor || Color.WHITE;
-	            this._iconSymbol = iconSymbol || null;
-	            this._create();  
-	            this._draw();
-	        }
-
-	        width() {
-	            return 120;
-	        }
-
-	        height() {
-	            return 24;
-	        }
-
-	        static Item(name, iconIndex) {
-	            return new ItemLineSprite(name, iconIndex);
-	        }
-
-	        static Gold(count) {   
-	            return new ItemLineSprite(count, 314, ItemLineSprite.COLOR_GOLD);
-	        }
-
-	        static Exp(count) {
-	            return new ItemLineSprite(TextManager.exp + ' '+ count, null, ItemLineSprite.COLOR_EXP);
-	        }
-
-	        //PRIVATE
-
-	        _create() {
-	            var w = this.width();
-	            var h = this.height();
-	            this._backSurface = new Sprite();
-	            this._backSurface.bitmap = new Bitmap(w,h);
-	            var color1 = Color.BLACK.CSS;
-	            var color2 = Color.BLACK.getLightestColor(128).CSS;
-	            this._backSurface.bitmap.gradientFillRect(0,0,w,h, color1, color2, false);
-	            this._backSurface.opacity = 180;
-	            this.addChild(this._backSurface);
-	        }
-
-	        _draw() {
-	            this._drawSurface = new Sprite();
-	            this._drawSurface.bitmap = new Bitmap(this.width(),this.height());
-	            this.addChild(this._drawSurface);
-	            if(this._iconSymbol != null) 
-	                this._drawIcon();
-	            if(this._text != '') 
-	                this._drawText();
-	        }
-
-	        _drawText() {
-	            var startX = this._iconSymbol != null ? 26 : 0;
-	            this._drawSurface.bitmap.textColor = this._textColor.CSS;
-	            this._drawSurface.bitmap.fontSize = 18;
-	            this._drawSurface.bitmap.outlineWidth = 2;
-	            this._drawSurface.bitmap.drawText(this._text, startX + 2, this.height()/2, this.width() - startX, 1, 'left');
-	        }
-
-	        _drawIcon() {
-	            SDK.drawIcon(0,0,this._iconSymbol,this._drawSurface.bitmap);
-	        }
-
-	    }
-
-	    SDK.setConstant(ItemLineSprite, 'COLOR_GOLD', Color.YELLOW);
-	    SDK.setConstant(ItemLineSprite, 'COLOR_EXP', Color.MAGENTA.getLightestColor(128));
-	    //END ItemLineSprite
-	    //------------------------------------------------------------------------------
-
-		//Расширение 
-	    $.extendMe = function(obj) { 
-	        obj.Bar = PKD_Object_Bar;
-	        obj.NotifyMachine = NotifyMachine;
-        	obj.ItemLineSprite = ItemLineSprite;
-	    }
-	    $.extendMe($);
-
-	})(PLATFORM.LIB);
-
-	(function() {
-
-		var x = new PLATFORM.DevLog("PLATFORM");
-		var Color = PLATFORM.Color;
-		x.setColors(Color.RED.hex(), Color.BLACK.hex());
-		x.p("LIBRARY was load localy " + PLATFORM.Versions['LIB']);
-
-	})();
-
-	Object.freeze(PLATFORM.LIB);
-	Object.defineProperty(PLATFORM, 'LIB', {writable: false});
-}
+(function() {
+	AlphaABS.LIB = {}; //Подключаем библиотеку
+	//Object.freeze(AlphaABS.LIB);
+	//Object.defineProperty(AlphaABS, 'LIB', {writable: false});
+})();
 
 //==========================================================================================================================================================
 // Alpha ABS Main
 //==========================================================================================================================================================
 AlphaABS.SYSTEM = {};
+var LOGW = new PLATFORM.DevLog("Alpha ABS");
+
 (function($) {
 	var SDK = PLATFORM.SDK;
+	var Color = PLATFORM.Color;
 
-	$.LOGW = new PLATFORM.DevLog("Alpha ABS");
+	$.LOGW = LOGW;
 	$.LOGW.on(); 
 	$.LOGW.setColors(Color.ORANGE.hex(), Color.BLACK.getLightestColor(100).hex());
 
@@ -1524,6 +1149,7 @@ AlphaABS.SYSTEM = {};
 			SDK._isRu = 0;
 		}
 
+		$.GOLD_ICON = parseInt(parameters['Gold icon index']) || 314;
 
 	})(PARAMS);
 
@@ -2391,7 +2017,7 @@ Object.defineProperty(AlphaABS, 'UTILS', {writable: false});
  	}
 
  	PopInfoManagerABS.makeBuffPopUp = function(user, paramId, isPositive) {
- 		if(!BattleManagerRTBS.isBattle()) return;
+ 		//if(!BattleManagerRTBS.isBattle()) return;
  		if(!user.isAlive()) return;
  		let paramName = user.isEnemy() ? "" : TextManager.param(paramId);
  		var temp = isPositive ? 1 : -1;
@@ -2403,7 +2029,7 @@ Object.defineProperty(AlphaABS, 'UTILS', {writable: false});
  	}
 
  	PopInfoManagerABS.makeSkillRechargePopUp = function(user, skillId) {
- 		if(!BattleManagerRTBS.isBattle()) return;
+ 		//if(!BattleManagerRTBS.isBattle()) return;
  		if(!user.isAlive()) return;
  		if(user.isEnemy()) return; //This is for ActorEnemy, in version 1 not develop yet
  		let skill = $dataSkills[skillId];
@@ -2962,7 +2588,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	BattleManagerABS.nextPlayerTarget = function() {
-		var t = ABSUtils.inRadius($gamePlayer, 12, $gameTroop.members());
+		var t = ABSUtils.inRadius($gamePlayer, 12, $gameTroop.membersABS());
 		if(t.count() == 0) {
 			return null;
 		}
@@ -3265,6 +2891,10 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	Game_SkillABS.prototype.onUse = function() {
+		if(this.cEonUse != 0) {
+			LOG.p("Skill ABS: Common Event on USE " + this.cEonUse);
+			$gameTemp.reserveCommonEvent(this.cEonUse);
+		}
 		if(this.isStackType()) {
 			this._onUseStackType();
 		} else
@@ -3396,7 +3026,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				}
 				if(this.range == 0) this.range = Game_SkillABS.TEMPLATES[1].range;
 				if(this.radius > 0) {
-					this.needTarget = false
+					this.needTarget = false;
+					if(this.radius > 5) {
+						this.radius = 5;
+						LOGW.p(this.skill().name + " spell radius must be <= 5. Changed to 5!");
+					}
 				} else {
 					this.needTarget = Game_SkillABS.TEMPLATES[1].needTarget;
 				}
@@ -3543,7 +3177,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		]
 	);
 
-	SDK.setConstant(Game_SkillABS, 'PARAMS', ['reloadParam','pType', 'img','light','startSound','reloadSound', 'vSpeed', 'range','reloadTime','castTime', 'needTarget', 'radius', 'castAnim', 'lightSize','stack','stackTime','directionFix','ammo']);
+	SDK.setConstant(Game_SkillABS, 'PARAMS', ['reloadParam','pType', 'img','light','startSound','reloadSound', 'vSpeed', 'range','reloadTime','castTime', 'needTarget', 'radius', 'castAnim', 'lightSize','stack','stackTime','directionFix','ammo','cEonUse','cEonStart']);
 	SDK.setConstant(Game_SkillABS, 'PARAMS2', ['pData','pMinSize','pMaxSize','pPower','pLife', 'pAlpha','pCount']); //PARTICLES params
 
 	//END Game_SkillABS
@@ -3882,12 +3516,19 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				reviveTime: 0, //Через сколько возродится (секунды)
 				regen: true, //Регенерация
 				slow: false,  //Медленный в бою
-				agressive: true //Агрессивный (всегда догоняет)
+				agressive: true, //Агрессивный (всегда догоняет)
+				noMove: false, //Не может двигаться в бою
+				noEmote: false, //Не показывает эмоции
+				cEonStart: 0, //Common Event ID when start battle (see player)
+				cEonEnd: 0, //Common Event ID when stop battle (after start)
+				cEonDeath: 0 //Common Event ID when Death
 			} //END Zero template
 		]
 	);
 
-	SDK.setConstant(Game_AIBehavior, 'PARAMS', ['viewRadius', 'returnRadius', 'escapeOnBattle', 'canSearch', 'noFight','reviveTime','regen','slow','agressive']);
+	SDK.setConstant(Game_AIBehavior, 'PARAMS', ['viewRadius', 'returnRadius', 'escapeOnBattle', 
+		'canSearch', 'noFight','reviveTime','regen','slow','agressive',
+		'noMove','noEmote','cEonStart','cEonDeath','cEonEnd']);
 
 	//END Game_AIBehavior
 //------------------------------------------------------------------------------
@@ -4010,7 +3651,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				this._centerPoint = zone.center;
 				var candidates = [];
 				if(subject == $gamePlayer) {
-					candidates = $gameTroop.members();
+					candidates = $gameTroop.membersABS();
 				} else {
 					candidates = [$gamePlayer];
 				}
@@ -4025,7 +3666,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			} else
 				if(this._skill.isRadiusType() || this._skill.isVectorTypeR()) {
 					if(subject == $gamePlayer) {
-						targets = ABSUtils.inRadius(this._centerPoint, this._skill.radius, $gameTroop.members());
+						targets = ABSUtils.inRadius(this._centerPoint, this._skill.radius, $gameTroop.membersABS());
 					} else {
 						targets = ABSUtils.inRadius(this._centerPoint, this._skill.radius, [$gamePlayer]);
 					}
@@ -4312,6 +3953,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	    //Behavior
 	    var b = new Game_AIBehavior(this);
+	    this._absParams.behavior = b;
 	    //I know, this is terrible, but this is still BETA
 	    this._absParams.viewRadius = b.viewRadius;
 	    this._absParams.returnRadius = b.returnRadius;
@@ -4427,6 +4069,10 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			$gameParty.gainExp(t);
 			if(Consts.PARAMS.AUTO_LOOT)
 				this.loot();
+			if(this._absParams.behavior.cEonDeath > 0) {
+				LOG.p("AI : Common Event (on Death): " + this._absParams.behavior.cEonDeath);
+				$gameTemp.reserveCommonEvent(this._absParams.behavior.cEonDeath);
+			}
 			//$gamePlayer.requestExpPopup(t); //ABUNAI, honto ni 'who' ga 'Player' ka
 		}
 	}
@@ -4736,7 +4382,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			case 'search':
 				this._restoreMoveData();
 				LOG.p("AI : Curious! I'am searching...");
-				this.requestBalloon(2);
+				if(!this._absParams.behavior.noEmote) this.requestBalloon(2);
 			break;
 			case 'dead' :
 				this._moveType = 0;
@@ -4753,7 +4399,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				this._moveType = 0; //Stop
 				this._moveFrequency = this._absParams.moveData.moveFrequency;
 				LOG.p("AI : I'am stunned!");
-				this.requestBalloon(10);
+				if(!this._absParams.behavior.noEmote) this.requestBalloon(10);
 			break;
 		}
 	}
@@ -4763,8 +4409,13 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		this._absParams.actionState = newActionState;
 		switch(newActionState) {
 			case 'approach' : 
-				this._applyAproachSpeed(); 
-				this._moveType = 2; 
+				if(this._absParams.behavior.noMove == true) {
+					this._moveType = 0; //Stay
+					this.turnTowardPlayer();
+				} else {
+					this._applyAproachSpeed(); 
+					this._moveType = 2; 
+				}
 				break; 
 			case 'prepareAction' :
 				break;
@@ -4886,12 +4537,20 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 		case 'prepareAction': 
 			var t = this._absParams.currentAction;
+			if(t.cEonStart != 0) {
+				LOG.p("AI : Common Event " + t.cEonStart);
+				$gameTemp.reserveCommonEvent(t.cEonStart);
+			}
 			if(BattleManagerABS.canUseSkillByTimer(t)) {
 				if(BattleManagerABS.canUseSkillByRange(this, this.target(), t)) {
 					this._changeActionState('action');
 				} else {
 					LOG.p("AI : Player to away!");
-					this._changeActionState('approach');
+					if(!this._absParams.behavior.noMove)
+						this._changeActionState('approach');
+					else {
+						this.turnTowardPlayer();
+					}
 				}
 			} else {
 				LOG.p("AI : Wait my attack");
@@ -5003,7 +4662,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 					this._changeState('battle');
 				}
 			} else {
-				if(!this.isMoving()) {
+				if(!this.isMoving() && !this._absParams.behavior.noMove) {
 					//this.moveTowardCharacter(this._absParams.allyToSearch);
 					this.moveToPoint(this._absParams.allyToSearch);
 				}
@@ -5026,7 +4685,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	Game_AIBot.prototype._checkVisionAlly = function() {
-		var ally = ABSUtils.inRadius(this, this._absParams.viewRadius, $gameTroop.members());
+		var ally = ABSUtils.inRadius(this, this._absParams.viewRadius, $gameTroop.membersABS());
 		this._absParams.allyToSearch = null;
 		if(ally.length > 0) {
 			ally.forEach(function(t) {
@@ -5062,17 +4721,25 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	Game_AIBot.prototype._onBattleStart = function() {
-		this.requestBalloon(1);
+		if(!this._absParams.behavior.noEmote) this.requestBalloon(1);
 		this.battler().onBattleStart();
 		this._absParams.inBattle = true;
 		this._absParams.myHomePosition = new Point(this.x, this.y);
 		LOG.p("AI : Store home position: " + this._absParams.myHomePosition.toString());
+		if(this._absParams.behavior.cEonStart > 0) {
+			LOG.p("AI : Common Event (on Battle Start): " + this._absParams.behavior.cEonStart);
+			$gameTemp.reserveCommonEvent(this._absParams.behavior.cEonStart);
+		}
 	}
 
 	Game_AIBot.prototype._onBattleEnd = function() {
 		this._absParams.inBattle = false;
 		this._absParams.allyToSearch = null;
 		this.battler().onBattleEnd();
+		if(this._absParams.behavior.cEonEnd > 0) {
+			LOG.p("AI : Common Event (on Battle End): " + this._absParams.behavior.cEonEnd);
+			$gameTemp.reserveCommonEvent(this._absParams.behavior.cEonEnd);
+		}
 		this._changeState('free');
 	}
 
@@ -6810,6 +6477,10 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		var t = this._absParams.currentAction;		
 		if(t) {
 			LOG.p("PL : Prepare action " + t.skill().name);
+			if(t.cEonStart != 0) {
+				LOG.p("PL : Common Event " + t.cEonStart);
+				$gameTemp.reserveCommonEvent(t.cEonStart);
+			}
 			if(this.battler().canUse(t.skill())) {
 				if(BattleManagerABS.canUseSkillByAmmo(t)) {
 					if(t.isRadiusType()) {
@@ -6964,7 +6635,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	Game_Player.prototype._checkInBattleStatus = function() {
-		var t = BattleManagerABS.whoTargetOnMe(this, $gameTroop.members());
+		var t = BattleManagerABS.whoTargetOnMe(this, $gameTroop.membersABS());
 		if(t) { //Если игрок чья-то цель (врага)
 			return true;
 		} 
@@ -7062,44 +6733,49 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	Game_Troop.prototype.setup = function(troopId) {
 		this.clear();
 		this._enemies = [];
+		this._enemiesABS = [];
 
 		$gameMap.events().forEach(function(e) {
 			if(e instanceof Game_AIBot) {
-				this._enemies.push(e);
+				this._enemiesABS.push(e);
 			}
 		}.bind(this));
+	}
+
+	Game_Troop.prototype.membersABS = function() {
+		return this._enemiesABS;
 	}
 
 	//OVER
 	Game_Troop.prototype.initABS = function() {
 		this.setup();
-		this.members().forEach(function(member) {
+		this.membersABS().forEach(function(member) {
 	        member.initABS();
-	    });
+	        this._enemies.push(member.battler());
+	    }.bind(this));
 	    this._inBattle = true;
 	}
 
 	//NEW
 	Game_Troop.prototype.onTurnEnd = function() {
-		this._enemies.forEach(function(e){e.onTurnEnd();});
+		this._enemiesABS.forEach(function(e){e.onTurnEnd();});
 	}
 
-	Game_Troop.prototype.aliveMembers = function() {
-	    return this.members().filter(function(member) {
+	Game_Troop.prototype.aliveMembersABS = function() {
+	    return this.membersABS().filter(function(member) {
 	        return member.battler().isAlive();
 	    });
 	};
 
-	Game_Troop.prototype.deadMembers = function() {
-	    return this.members().filter(function(member) {
+	Game_Troop.prototype.deadMembersABS = function() {
+	    return this.membersABS().filter(function(member) {
 	        return member.battler().isDead();
 	    });
 	};
 
-
 	//NEW
 	Game_Troop.prototype.selectOnMap = function(who) {
-		this.members().forEach(function(e) { e.selectOnMap(false); });
+		this.membersABS().forEach(function(e) { e.selectOnMap(false); });
 		if(who) who.selectOnMap(true);
 	}
 	//END Game_Troop
@@ -7494,8 +7170,9 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			LOGW.p("Skill " + skill.name + " not learned, not ABS type");
 			return; //Not allow learn not ABS skills
 		}
+		var isLearning = this.isLearnedSkill(skillId);
 		pkd_GameActor_learnSkill.call(this, skillId);
-		if(skill.occasion == 1) {
+		if(skill.occasion == 1 && !isLearning) {
 			this._absParams.battleSkillsABS.push(skillId, false);
 			this.setSkillOnPanel(skillId, undefined);
 		}
@@ -9013,13 +8690,8 @@ DataManager.isDatabaseLoaded = function() {
 	var Color = PLATFORM.Color;
 	var ABSUtils = AlphaABS.UTILS;
 	var Point = ABSUtils.Point;
-	var Bar = PLATFORM.LIB.Bar;
 	var ABSObject_PopUpMachine = AlphaABS.ABSObject_PopUpMachine;
 	var PopInfoManagerABS = AlphaABS.PopInfoManagerABS;
-	//TODO Sprite_Ext class TO LIBRARY
-
-	var NotifyMachine = PLATFORM.LIB.NotifyMachine;
-	var ItemLineSprite = PLATFORM.LIB.ItemLineSprite;
 
 	var CONST_UI_DOWN_SIZE = 80;
 	var CONST_UI_UPLEFT_SIZE = 300;
@@ -9029,38 +8701,41 @@ DataManager.isDatabaseLoaded = function() {
 	var Consts = AlphaABS.SYSTEM;
 	var LOGW = Consts.LOGW;
 
-	Game_Variables.prototype.setUIPosition = function(id, x, y) {
-		if(!this._uiPositions)
-			this._uiPositions = {};
-		this._uiPositions[id] = [x,y];
-	}
+//=============================================================================================
+		Game_Variables.prototype.setUIPosition = function(id, x, y) {
+			if(!this._uiPositions)
+				this._uiPositions = {};
+			this._uiPositions[id] = [x,y];
+		}
 
-	Game_Variables.prototype.getUIPosition = function(id) {
-		if(this._uiPositions) {
-			var p = this._uiPositions[id];
-			if(p) {
-				return {x:p[0], y:p[1]};
+		Game_Variables.prototype.getUIPosition = function(id) {
+			if(this._uiPositions) {
+				var p = this._uiPositions[id];
+				if(p) {
+					return {x:p[0], y:p[1]};
+				}
+			} 
+			return null;
+		}
+
+		Game_Variables.prototype.setUIParam = function(param, value) {
+			if(!this._uiParams) {
+				this._uiParams = {};
 			}
-		} 
-		return null;
-	}
-
-	Game_Variables.prototype.setUIParam = function(param, value) {
-		if(!this._uiParams) {
-			this._uiParams = {};
+			this._uiParams[param] = value;
 		}
-		this._uiParams[param] = value;
-	}
 
-	Game_Variables.prototype.getUIParam = function(param) {
-		if(this._uiParams) {
-			return this._uiParams[param];
+		Game_Variables.prototype.getUIParam = function(param) {
+			if(this._uiParams) {
+				return this._uiParams[param];
+			}
+			return null;
 		}
-		return null;
-	}
 
-	//=============================================================================================
+//=============================================================================================
 
+//Sprite_Ext
+//------------------------------------------------------------------------------
     function Sprite_Ext() {
         this.initialize.apply(this, arguments);
     }
@@ -9129,11 +8804,11 @@ DataManager.isDatabaseLoaded = function() {
 
     Sprite_Ext.prototype._updateTouch = function() {
         if(TouchInput.isTriggered()) {
-            LOG.p("Mouse isTriggered");
+            //LOG.p("Mouse isTriggered");
             if(this._touched) {
                 this._endMove();
             } else {
-                LOG.p("Mouse at " + new ABSUtils.Point(TouchInput.x,TouchInput.y));
+                //LOG.p("Mouse at " + new ABSUtils.Point(TouchInput.x,TouchInput.y));
                 if(ABSUtils.SMath.inRect(new ABSUtils.Point(TouchInput.x,TouchInput.y), this._myRectangle())) {
                     this._startMove();
                 }
@@ -9185,6 +8860,7 @@ DataManager.isDatabaseLoaded = function() {
     }
 
     Sprite_Ext.prototype._startMove = function() {
+    	LOG.p("Start moving");
         this._touched = true;
         this.onStartMove();
         if(!ABSUtils.SMouse.isTracked())
@@ -9194,11 +8870,385 @@ DataManager.isDatabaseLoaded = function() {
 
     Sprite_Ext.prototype._endMove = function() {
         //LOG.p("Touched OFF!");
+        LOG.p("End moving");
         this._touched = false;
         this.onEndMove();
         //ABSUtils.SMouse.setTrack(false);
     }
+    AlphaABS.LIB.Sprite_Ext = Sprite_Ext;
+	//END Sprite_Ext
+//------------------------------------------------------------------------------
 
+//PKD_Object_Bar
+//------------------------------------------------------------------------------
+ 	class PKD_Object_Bar
+ 	{
+ 		constructor(bitmap)
+ 		{
+ 			this._bitmap = bitmap;
+ 			this._rect = undefined;
+ 			this._bColor = Color.BLACK;
+ 			this._color = Color.WHITE;
+ 			this._isGradient = true;
+ 			this._mValue = 0;
+ 			this._text_l = null;
+ 			this._text_r = null;
+ 			this._text_c = null;
+ 			this._lValue = -1; //Last value
+ 			this._value = 0;
+
+ 			this._calculate_gradient();
+ 		}
+
+ 		setPosition(x, y, w, h)
+ 		{
+ 			this._rect = new Rectangle(x,y,w,h);
+ 		}
+
+ 		setValue(value)
+ 		{
+ 			if(value <= 0)
+ 				value = 0;
+ 			if(value > this._mValue)
+ 				value = this._mValue;
+ 			this._value = value;
+ 		}
+
+ 		getValue()
+ 		{
+ 			return this._value;
+ 		}
+
+        refresh() // 1.1
+        {
+            if(this._rect === undefined)
+                return;
+            this._draw_back_bar();
+            if(this._mValue != 0)
+                this._draw_main_bar();
+        }
+
+ 		//PARAMS
+ 		//color , bColor, maxValue, value
+ 		config(params)
+ 		{
+ 			this._color = params.color || Color.WHITE;
+ 			this._bColor = params.bColor || Color.BLACK;
+ 			this._mValue = params.maxValue || 0;
+ 			this.setValue(params.value || 0);
+ 		}
+
+ 		setText(text, position)
+ 		{
+ 			switch(position)
+ 			{
+ 				case 'center':
+ 					this._text_c = text;
+ 					break;
+ 				case 'left':
+ 					this._text_l = text;
+ 					break;
+ 				case 'right':
+ 					this._text_r = text;
+ 					break;
+ 			}
+ 		}
+
+ 		allowGradient(isAllowed)
+ 		{
+ 			isAllowed = SDK.check(isAllowed, true);
+ 			this._isGradient = isAllowed;
+ 			if(this._isGradient)
+ 				this._calculate_gradient();
+ 		}
+
+ 		update()
+ 		{
+ 			if(this._lValue == this._value)
+ 				return; //No drawing if not changes
+ 			this.refresh() ;
+ 			this._lValue = this._value;
+ 		}
+
+
+ 		//PRIVATE
+ 		_draw_back_bar()
+ 		{
+ 			this._bitmap.fillRect(this._rect.x, this._rect.y, this._rect.width, this._rect.height, this._bColor.CSS);
+ 		}
+
+ 		_draw_main_bar()
+ 		{
+ 			let width = Math.floor((100 * this._value / this._mValue) * (this._rect.width - 2)/100);
+
+ 			if(this._isGradient) {
+ 				this._bitmap.gradientFillRect(this._rect.x + 1, this._rect.y + 1, width, this._rect.height - 2,
+ 												 this._color.CSS, this._gColor.CSS, false);
+ 			}
+ 			else {
+ 				this._bitmap.fillRect(this._rect.x + 1, this._rect.y + 1, width, this._rect.height - 2, this._color.CSS);
+ 			}
+
+ 			let size = this._bitmap.fontSize;
+ 			this._bitmap.fontFace = AlphaABS.SYSTEM.FONT;
+ 			this._bitmap.fontSize = this._rect.height - 4;
+
+ 			if(this._text_c != null)
+ 				this._bitmap.drawText(this._text_c, this._rect.x + 2, this._rect.y, this._rect.width - 4, this._rect.height,'center');
+ 			if(this._text_l != null)
+ 				this._bitmap.drawText(this._text_l, this._rect.x + 4, this._rect.y, this._rect.width - 8, this._rect.height,'left');
+ 			if(this._text_r != null)
+ 				this._bitmap.drawText(this._text_r, this._rect.x + 2, this._rect.y, this._rect.width - 6, this._rect.height,'right');
+ 			this._bitmap.fontSize = size;
+ 		}
+
+ 		_calculate_gradient()
+ 		{
+ 			this._gColor = this._color.getLightestColor(230);
+ 		}
+ 	}	 
+ 	AlphaABS.LIB.Bar = PKD_Object_Bar;
+	//END PKD_Object_Bar
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//NotifyMachine
+    class NotifyMachine extends Sprite {
+        constructor(x,y, w, h, lines) {
+            super();
+            this.x = x;
+            this.y = y;
+            this._maxItems = lines;
+            this._items = [];
+            this._timers = [];
+            this._lineH = h + 4;
+            this._newItem = null;
+            //this.setFrame(w,this._lineH * lines);
+            this._setupMode();
+            this._initItems();
+            this._newItemTimer = new Game_TimerABS();
+            this.bitmap = new Bitmap(w,this._lineH*lines);
+            //this.bitmap.fillRect(0,0,w,this._lineH*lines,Color.RED.CSS);
+        }
+
+        maxHeight() {
+            return this._lineH * this._maxItems;
+        }
+
+        update() {
+            this._update_new_item();
+            this._update_items_fade();
+            this._update_timers();
+        }
+
+        refresh() {
+            this._setupMode();
+        }
+
+        push(item) {
+            var lastItem = this._items.shift();
+            if(lastItem != null) 
+                this.removeChild(lastItem);
+
+            this._items.push(item);
+            if(this._newItem) {
+                this._newItem.opacity = 255;
+                this._newItem.x = 0;
+            }
+            this._newItem = item;
+            this._newItemTimer.start(NotifyMachine.TIME + 60);
+            this._configNewItem();
+            this._timers.shift();
+            this._timers.push(new Game_TimerABS());
+            this.addChild(this._newItem);
+            this._step();
+        }
+
+        clear() {
+            this._items.forEach(function(item){
+                if(item) this.removeChild(item);
+            });
+            this._timers = [];
+            this._items = [];
+            this._newItem = null;
+            this._initItems();
+        }
+
+        //PRIVATE
+        _setupMode() {
+            this._mode = 'right'; //Apper from right of Screen
+            if(SDK.toGlobalCoord(this, 'x') < Graphics.width / 2) {
+                this._mode = 'left'; //Apper from left of Screen
+            }
+        }
+
+        _update_new_item() {
+            if(this._newItem == null) return;
+            this._fadeOut(this._newItem);
+            if(this._mode == 'right') {
+                if(this._newItem.x > 2)
+                    this._newItem.x -= 4;
+            } else {
+                if(this._newItem.x < 0)
+                    this._newItem.x += 4;
+            }
+        }
+
+        _update_items_fade() {
+            for(var i = 0; i<this._items.length; i++) {
+                if(!this._timers[i]) continue;
+                if(this._timers[i].isReady()) {
+                    if(this._items[i] != this._newItem)
+                        this._fadeIn(this._items[i]);
+                }
+            }
+        }
+
+        _update_timers() {
+            this._timers.forEach(function(timer) {
+                if(timer) {
+                    timer.update();
+                }
+            });
+
+            this._newItemTimer.update();
+            if(this._newItemTimer.isReady() && this._newItem) {
+                this._timers[this._maxItems - 1].start(1);
+                this._newItem = null;
+            }
+        }
+
+        _step() {
+            SDK.times(this._items.length, function(i) {
+                var index = (this._items.length - 1) - i; //Reverse 
+                var item = this._items[index];
+                if(item == null) return;
+                var newY = this.height - (this._lineH * (i + 1));
+                if(index != (this._items.length - 1)) { //New Item
+                    item.x = 0;
+                    if(this._timers[index].isReady())
+                        this._timers[index].start(NotifyMachine.TIME);
+                }
+                item.y = newY;
+
+            }.bind(this));
+        }
+
+        _initItems() {
+            SDK.times(this._maxItems, function() { 
+                this._items.push(null);
+                this._timers.push(null);
+            }.bind(this));
+        }
+
+        _configNewItem() {
+            this._newItem.opacity = 0;
+            if(this._mode == 'right') {
+                this._newItem.x += (this.width + 2);
+            } else 
+                this._newItem.x -= (this.width + 2);
+        }
+
+        _fadeIn(item) {
+            if(item.opacity > 2) {
+                item.opacity -= 2;
+            }
+        }
+
+        _fadeOut(item) {
+            if(item.opacity < (251)) {
+                item.opacity += 4;
+            }
+        }
+
+    }
+
+    SDK.setConstant(NotifyMachine, 'TIME', 240);
+    AlphaABS.LIB.NotifyMachine = NotifyMachine;
+    //END NotifyMachine
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+//ItemLineSprite
+    class ItemLineSprite extends Sprite {
+        constructor(text, iconSymbol, textColor) {
+            super();
+            this.setFrame(this.width(),this.height());
+            this._text = text || '';
+            this._textColor = textColor || Color.WHITE;
+            this._iconSymbol = iconSymbol || null;
+            this._create();  
+            this._draw();
+        }
+
+        width() {
+            return 120;
+        }
+
+        height() {
+            return 24;
+        }
+
+        static Item(name, iconIndex) {
+            return new ItemLineSprite(name, iconIndex);
+        }
+
+        static Gold(count) {   
+            return new ItemLineSprite(count, AlphaABS.SYSTEM.PARAMS.GOLD_ICON, ItemLineSprite.COLOR_GOLD);
+        }
+
+        static Exp(count) {
+            return new ItemLineSprite(TextManager.exp + ' '+ count, null, ItemLineSprite.COLOR_EXP);
+        }
+
+        //PRIVATE
+
+        _create() {
+            var w = this.width();
+            var h = this.height();
+            this._backSurface = new Sprite();
+            this._backSurface.bitmap = new Bitmap(w,h);
+            var color1 = Color.BLACK.CSS;
+            var color2 = Color.BLACK.getLightestColor(128).CSS;
+            this._backSurface.bitmap.gradientFillRect(0,0,w,h, color1, color2, false);
+            this._backSurface.opacity = 180;
+            this.addChild(this._backSurface);
+        }
+
+        _draw() {
+            this._drawSurface = new Sprite();
+            this._drawSurface.bitmap = new Bitmap(this.width(),this.height());
+            this.addChild(this._drawSurface);
+            if(this._iconSymbol != null) 
+                this._drawIcon();
+            if(this._text != '') 
+                this._drawText();
+        }
+
+        _drawText() {
+            var startX = this._iconSymbol != null ? 26 : 0;
+            this._drawSurface.bitmap.textColor = this._textColor.CSS;
+            this._drawSurface.bitmap.fontSize = 18;
+            this._drawSurface.bitmap.outlineWidth = 2;
+            this._drawSurface.bitmap.drawText(this._text, startX + 2, this.height()/2, this.width() - startX, 1, 'left');
+        }
+
+        _drawIcon() {
+            SDK.drawIcon(0,0,this._iconSymbol,this._drawSurface.bitmap);
+        }
+
+    }
+
+    SDK.setConstant(ItemLineSprite, 'COLOR_GOLD', Color.YELLOW);
+    SDK.setConstant(ItemLineSprite, 'COLOR_EXP', Color.MAGENTA.getLightestColor(128));
+
+    AlphaABS.LIB.ItemLineSprite = ItemLineSprite;
+    //END ItemLineSprite
+//------------------------------------------------------------------------------
+
+//Spriteset_InterfaceABS
+//------------------------------------------------------------------------------
 	class Spriteset_InterfaceABS extends Sprite {
 		constructor() {
 			super();
@@ -9597,6 +9647,11 @@ DataManager.isDatabaseLoaded = function() {
 		}
 	}
 
+	AlphaABS.LIB.Spriteset_InterfaceABS = Spriteset_InterfaceABS;
+
+	//END Spriteset_InterfaceABS
+//------------------------------------------------------------------------------
+
 	class UIContainer extends Sprite_Ext {
 		constructor(x,y,w,h) {
 			super();
@@ -9646,6 +9701,8 @@ DataManager.isDatabaseLoaded = function() {
 			}
 		}
 	}
+
+	AlphaABS.LIB.UIContainer = UIContainer;
 
 	class Sprite_UserUI extends Sprite
 	{
@@ -9952,6 +10009,22 @@ DataManager.isDatabaseLoaded = function() {
 					this.bitmap.textColor = c;
 					this.bitmap.fontSize = c2;
 				}
+
+				if(this.item.isNeedAmmo()) {
+					var count = $gameParty.numItems($dataItems[this.item.ammo]);
+					var c = this.bitmap.textColor;
+					if(count > 0) {
+						this.bitmap.textColor = Color.WHITE.CSS;
+					} else 
+						this.bitmap.textColor = Color.RED.CSS;
+
+					var c2 = this.bitmap.fontSize;
+					this.bitmap.fontSize = 14;
+					this.bitmap.drawText(count, 8,2, 32, 24, 'left');
+
+					this.bitmap.textColor = c;
+					this.bitmap.fontSize = c2;
+				}
 			} 
 			this._spriteMask.update();
 		}
@@ -10116,6 +10189,7 @@ DataManager.isDatabaseLoaded = function() {
 			this._createOverlay();
 
 			this._symbol = null;
+			this._absSkill = null;
 
 			this._thread = setInterval(function() { this._updateABS(); }.bind(this), 10);
 		}
@@ -10128,6 +10202,16 @@ DataManager.isDatabaseLoaded = function() {
 		setKey(symbol) {
 			this._symbol = symbol;
 			this._drawSymbol();
+		}
+
+		setSkill(absSkill) {
+			this._absSkill = absSkill;
+			if(!this.spriteAmmoCount) {
+				this.spriteAmmoCount = new Sprite(new Bitmap(this.bitmap.width, this.bitmap.height));
+				this.addChild(this.spriteAmmoCount);
+			} else {
+				if(this._absSkill == null) this.spriteAmmoCount.bitmap.clear();
+			}
 		}
 
 		pulse() {
@@ -10170,6 +10254,7 @@ DataManager.isDatabaseLoaded = function() {
 
 		_updateABS() {
 			this._spriteMask.update();
+			this._drawAmmoCount();
 		}
 
 		_drawSymbol() {
@@ -10181,6 +10266,29 @@ DataManager.isDatabaseLoaded = function() {
 			this.spriteText.bitmap.clear();
 			if(this._symbol != null) {
 				this.spriteText.bitmap.drawText(this._symbol, 0, 0, this.spriteText.bitmap.width - 6, 24, 'right');
+			}
+
+			
+		}
+
+		_drawAmmoCount() {
+			if(this._absSkill == null) return;
+			this.spriteAmmoCount.bitmap.clear();
+			if(this._absSkill.isNeedAmmo()) {
+				var b = this.spriteAmmoCount.bitmap;
+				var count = $gameParty.numItems($dataItems[this._absSkill.ammo]);
+				var c = b.textColor;
+				if(count > 0) {
+					b.textColor = Color.WHITE.CSS;
+				} else 
+					b.textColor = Color.RED.CSS;
+
+				var c2 = b.fontSize;
+				b.fontSize = 14;
+				b.drawText(count, 8,2, 32, 24, 'left');
+
+				b.textColor = c;
+				b.fontSize = c2;
 			}
 		}
 
@@ -10275,6 +10383,7 @@ DataManager.isDatabaseLoaded = function() {
 			} else {
 				this.setIconAt(index, 'noWeapon');
 			}
+			this.items[index].setSkill($gamePlayer.battler().skillABS_attack());
 		}
 
 		getLastItemIndex() {
@@ -10307,6 +10416,7 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 	}
+	AlphaABS.LIB.UIObject_ControlPanel = UIObject_ControlPanel;
 
 	class Sprite_EnemyUI extends Sprite {
 		constructor() {
@@ -10533,7 +10643,7 @@ DataManager.isDatabaseLoaded = function() {
 		constructor(width, height) {
 			super(new Bitmap(width, height));
 			this._timer = null;
-			this._bar = new Bar(this.bitmap);
+			this._bar = new PKD_Object_Bar(this.bitmap);
 			this._bar.setPosition(0,0,width,height);
 			this._needText = false;
 			//this._thread = setInterval(function() { this._update_bar(); }.bind(this), 10);
@@ -11000,9 +11110,9 @@ DataManager.isDatabaseLoaded = function() {
 					this.visible = true;
 					var t = $gamePlayer.battler().weapons().first();
 					if(t && t.iconIndex > 0) {
-						SDK.drawIcon(0,0,t.iconIndex,this.bitmap, 24);
+						ImageManager.drawIconABS(0,0,t.iconIndex,this.bitmap, 24);
 					} else {
-						SDK.drawIcon(0,0,'noWeapon',this.bitmap, 24);
+						ImageManager.drawIconABS(0,0,'noWeapon',this.bitmap, 24);
 						//this.bitmap.clear();
 					}
 					this._timer = skill.timer;
@@ -11059,7 +11169,7 @@ DataManager.isDatabaseLoaded = function() {
 		}
 	}
 
-	class UIObject_BarHP extends Bar
+	class UIObject_BarHP extends PKD_Object_Bar
  	{
  		constructor(bitmap, battler)
  		{
@@ -11082,11 +11192,11 @@ DataManager.isDatabaseLoaded = function() {
  			}
  			this._value = this._battler.hp;
  			this._text_r = this._value;
- 			Bar.prototype.update.call(this); 			
+ 			PKD_Object_Bar.prototype.update.call(this); 			
  		}
  	}
 
-	class UIObject_BarMP extends Bar {
+	class UIObject_BarMP extends PKD_Object_Bar {
 		constructor(bitmap, battler)
  		{
  			super(bitmap);
@@ -11108,11 +11218,11 @@ DataManager.isDatabaseLoaded = function() {
  			}
  			this._value = this._battler.mp;
  			this._text_r = this._value;
- 			Bar.prototype.update.call(this); 		
+ 			PKD_Object_Bar.prototype.update.call(this); 		
  		}
 	} 	
 
-	class UIObject_BarTP extends Bar {
+	class UIObject_BarTP extends PKD_Object_Bar {
 		constructor(bitmap, battler)
  		{
  			super(bitmap);
@@ -11129,11 +11239,11 @@ DataManager.isDatabaseLoaded = function() {
  		{
  			this._value = this._battler.tp;
  			this._text_r = this._value;
- 			Bar.prototype.update.call(this); 	 					
+ 			PKD_Object_Bar.prototype.update.call(this); 	 					
  		}
 	}
 
- 	class UIObject_BarHPE extends Bar {
+ 	class UIObject_BarHPE extends PKD_Object_Bar {
  		constructor(bitmap, battler)
  		{
  			super(bitmap);
@@ -11156,7 +11266,7 @@ DataManager.isDatabaseLoaded = function() {
  			{
  				this._text_c = this._get_value();
  			}
- 			Bar.prototype.update.call(this); 			
+ 			PKD_Object_Bar.prototype.update.call(this); 			
  		}
 
  		//PRIVATE
@@ -11179,6 +11289,8 @@ DataManager.isDatabaseLoaded = function() {
 	    }
 	};
 
+//Window_SkillList
+//------------------------------------------------------------------------------
 	var _Window_SkillList_initialize = Window_SkillList.prototype.initialize;
 	Window_SkillList.prototype.initialize = function(x, y, width, height) {
 		_Window_SkillList_initialize.call(this, x, y, width, height);
@@ -11219,6 +11331,11 @@ DataManager.isDatabaseLoaded = function() {
         }
     }
 
+	//END Window_SkillList
+//------------------------------------------------------------------------------
+    
+//Window_ItemList
+//------------------------------------------------------------------------------
     var _Window_ItemList_initialize = Window_ItemList.prototype.initialize;
 	Window_ItemList.prototype.initialize = function(x, y, width, height) {
 		_Window_ItemList_initialize.call(this, x, y, width, height);
@@ -11261,6 +11378,10 @@ DataManager.isDatabaseLoaded = function() {
 	        }
         }
     }
+
+   //END Window_ItemList
+//------------------------------------------------------------------------------
+
 })();
 
 //==========================================================================================================================================================
@@ -11621,3 +11742,4 @@ DataManager.isDatabaseLoaded = function() {
 	    }
 	}
 })();	
+
