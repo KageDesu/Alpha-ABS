@@ -2,17 +2,19 @@
 Active battle system "Alpha" for RPG Maker MV.
 
 >State: **Beta**  
->Version: 1  
->Last build: 300 (19.09.2013)  
+>Version: 1.1
+>Last build: 458 (21.10.2016)  
 >[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Changelog.md)  
 
-###Downloading:
+> **If you update from 1.0 to 1.1 you must complete [full plugin installation](https://www.youtube.com/watch?v=1wXL39bwx0g), because version 1.1 has some new graphic files.**
+
+###Downloading:  
 *Как скачать:*  
 ![image](https://github.com/KageDesu/TestRepo/blob/master/Download.png)
 
 ###Documentation:
 See in the [Manual folder](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Manual)  
-Документация: [Папка Manual](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Manual) 
+Документация: [Папка Manual](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Manual)
 
 ###How install:
 >You need RPG Maker MV 1.3.1 or above.  
@@ -39,7 +41,4 @@ Video guide on [YouTube](https://www.youtube.com/watch?v=1wXL39bwx0g)
 See in the documentation file [AlphaABS.pdf](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Manual/Alpha%20ABS.pdf)
 
 ###If you like it
-You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6), but it not necessary. 
-Your donation is your gratitude for my work.
-
-
+You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6).

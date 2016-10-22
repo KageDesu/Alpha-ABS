@@ -1,7 +1,7 @@
 //=============================================================================
 // Alpha_ABS.js
 //=============================================================================
-//Version 1. (6.09.2016)
+//Version 1.1 (21.10.2016) 
 
 "use strict";
 
@@ -9,8 +9,8 @@ var Imported = Imported || {};
 Imported.AlphaABS = true;
 
 var AlphaABS = {};
-AlphaABS.version = 1;
-AlphaABS.build = 300; //19.09.2016
+AlphaABS.version = 110; 
+AlphaABS.build = 458; 
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -57,13 +57,17 @@ AlphaABS.build = 300; //19.09.2016
  * @desc Icon index for Gold alert (when you pick up gold from enemies)
  * @default 314
  *
+ * @param Key binding
+ * @desc Allow user change control keys from Option menu
+ * @default true
+ *
  * @param Force English
  * @desc Use english language (if not work automatically)
  * @default false
  *
  * @help 
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
- * User manual see in file 'Alpha ABS.pdf' / 'Alpha ABS.docx'
+ * User manual see in file 'Alpha ABS.pdf'
  *
  * Plugin Commands:
  *  ABS loot       # Looting enemy (if enemy is dead and 'Auto loot enemies' 
@@ -107,6 +111,17 @@ AlphaABS.build = 300; //19.09.2016
  * 
  *  	
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+ *   Enemy Notetags: (by defult) 
+ *	<viewRadius: X> - how long (map cells) enemy will see you (5) 
+ *	<returnRadius : X> - how many cells maximum enemy can escape from the last position where he fought  (12) 
+ *	<escapeOnBattle: Z> - whether to escape from player during a battle when there is no available actions or waiting for attack cool down (0) 
+ *	<canSearch: Z> - can enemy hear everything happening around him (the reaction to the battle near (in the area of viewRadius param)) (1) 
+ *	<noFight: Z> - no fight at all (0) (like dummy in demo game) 
+ *	<reviveTime: X> - time (in seconds) to reborn after death (0) (0 – not reborn after death) 
+ *	<regen: Z> - health regeneration (not in battle mode) (1) 
+ *	<slow: Z>  - not accelerating in pursuit (0) 
+ *  	
+ * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  *   Skill Notetags:
  *    <ABS:0> “Instant” – performed on target.
  *      Scope: The User or One Enemy. 
@@ -147,6 +162,8 @@ AlphaABS.build = 300; //19.09.2016
  *    <startSound:w> Sound when used.
  *    <castAnim:x> Animation when casting. (ID# of animation from in database)
  *    <ammo:X> - X is # of item that is the ammo.
+ *	  <cEonStart:X> - call CommonEvent with id X when trigger the skill.
+ *	  <cEonUse:X> - call CommonEvent with id X when using the skill.
  *     
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  *  Weapon Notetags:
@@ -162,7 +179,7 @@ AlphaABS.build = 300; //19.09.2016
  *   
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  *  State Notetags:
- *    <speed:X> - increase or decrease the speed. (<speed:1> or <speed:-1>)
+ *    <speed:X> - change current movement speed (if X < 0, value will be substracted)
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  * 
  *
@@ -181,12 +198,21 @@ AlphaABS.build = 300; //19.09.2016
  * @requiredAssets img/ABS/EnemyUIMask
  * @requiredAssets img/ABS/ControlPanelItem
  * @requiredAssets img/ABS/RadiusSelect
+ * @requiredAssets img/ABS/levelBar
+ * @requiredAssets img/ABS/CircleSegment_small
+ * @requiredAssets img/ABS/CircleSegment_small_down
+ * @requiredAssets img/ABS/CircleSegment_small_L
+ * @requiredAssets img/ABS/CircleSegment_small_R
  * @requiredAssets img/ABS/icon_follow
  * @requiredAssets img/ABS/icon_gold
  * @requiredAssets img/ABS/icon_jump
  * @requiredAssets img/ABS/icon_noWeapon
  * @requiredAssets img/ABS/icon_toMouse
  * @requiredAssets img/ABS/icon_toTarget
+ * @requiredAssets img/ABS/icon_eyeOn
+ * @requiredAssets img/ABS/icon_eyeOff
+ * @requiredAssets img/ABS/icon_transfer
+ * @requiredAssets img/ABS/icon_switchWeapon
  * @requiredAssets audio/se/Equip2
  * @requiredAssets audio/se/Coin
  * @requiredAssets audio/se/Magic3
@@ -238,6 +264,10 @@ AlphaABS.build = 300; //19.09.2016
  * @desc Номер иконки для строки с золотом (когда вы подбираете золото у врагов)
  * @default 314
  *
+ * @param Key binding
+ * @desc Можно ли менять настройки управления (назначение клавишь) 
+ * @default true
+ *
  * @param Force English
  * @desc Использовать английский язык? (true - да, false - нет) 
  * @default false
@@ -270,12 +300,21 @@ AlphaABS.build = 300; //19.09.2016
  * @requiredAssets img/ABS/EnemyUIMask
  * @requiredAssets img/ABS/ControlPanelItem
  * @requiredAssets img/ABS/RadiusSelect
+ * @requiredAssets img/ABS/levelBar
+ * @requiredAssets img/ABS/CircleSegment_small
+ * @requiredAssets img/ABS/CircleSegment_small_down
+ * @requiredAssets img/ABS/CircleSegment_small_L
+ * @requiredAssets img/ABS/CircleSegment_small_R
  * @requiredAssets img/ABS/icon_follow
  * @requiredAssets img/ABS/icon_gold
  * @requiredAssets img/ABS/icon_jump
  * @requiredAssets img/ABS/icon_noWeapon
  * @requiredAssets img/ABS/icon_toMouse
  * @requiredAssets img/ABS/icon_toTarget
+ * @requiredAssets img/ABS/icon_eyeOn
+ * @requiredAssets img/ABS/icon_eyeOff
+ * @requiredAssets img/ABS/icon_transfer
+ * @requiredAssets img/ABS/icon_switchWeapon
  * @requiredAssets audio/se/Equip2
  * @requiredAssets audio/se/Coin
  * @requiredAssets audio/se/Magic3
@@ -285,289 +324,282 @@ AlphaABS.build = 300; //19.09.2016
 //==========================================================================================================================================================
 // JSPlatform
 //==========================================================================================================================================================
-var PLATFORM = PLATFORM || {};
-if(!PLATFORM.Version) {
-(function($) {
-	$.Version = 130;
+
+//------------------------------------------------------------------------------
+	var PLATFORM = PLATFORM || {};
+	if(!PLATFORM.Version) {
+	(function($) {
+	$.Version = 140;
 	
 	//==============================================================================
 	//Расширение стандартных классов JS
 	//==============================================================================
-	Array.prototype.delete = function() {
-	    var what, a = arguments, L = a.length, ax;
-	    while (L && this.length) {
-	        what = a[--L];
-	        while ((ax = this.indexOf(what)) !== -1) {
-	            this.splice(ax, 1);
-	        }
-	    }
-	    return this;
-	};
 
-	Array.prototype.include = function(value) {
-		return (this.indexOf(value) != -1);
-	}
+	//Array
+	//------------------------------------------------------------------------------
+		Array.prototype.delete = function() {
+		    var what, a = arguments, L = a.length, ax;
+		    while (L && this.length) {
+		        what = a[--L];
+		        while ((ax = this.indexOf(what)) !== -1) {
+		            this.splice(ax, 1);
+		        }
+		    }
+		    return this;
+		};
 
-	Array.prototype.max = function() {
-	  return Math.max.apply(null, this);
-	};
-
-	Array.prototype.min = function() {
-	  return Math.min.apply(null, this);
-	};
-
-	//1.1
-	Array.prototype.sample = function() {
-		if(this.length == 0) {
-			return null;
-		} else {
-			return this[SDK.rand(0,this.length-1)];
+		Array.prototype.include = function(value) {
+			return (this.indexOf(value) != -1);
 		}
-	}
 
-	Array.prototype.first = function() {
-		return this[0];
-	}
+		Array.prototype.max = function() {
+		  return Math.max.apply(null, this);
+		};
 
-	Array.prototype.last = function() {
-		return this[this.length - 1];
-	}
+		Array.prototype.min = function() {
+		  return Math.min.apply(null, this);
+		};
 
-	Array.prototype.shuffle = function() {
-		var n = this.length;
-		while(n > 1) {
-			n--;
-			var k = SDK.rand(0,n+1);
-			var v = this[k];
-			this[k] = this[n];
-			this[n] = v;
+		//1.1
+		Array.prototype.sample = function() {
+			if(this.length == 0) {
+				return null;
+			} else {
+				return this[SDK.rand(0,this.length-1)];
+			}
 		}
-	}
 
-	//1.2
-	Array.prototype.count = function() {
-		return this.length;
-	}
+		Array.prototype.first = function() {
+			return this[0];
+		}
 
-	Array.prototype.diff = function(a) {
-    	return this.filter(function(i) {return a.indexOf(i) < 0;});
-	};
+		Array.prototype.last = function() {
+			return this[this.length - 1];
+		}
+
+		Array.prototype.shuffle = function() {
+			var n = this.length;
+			while(n > 1) {
+				n--;
+				var k = SDK.rand(0,n+1);
+				var v = this[k];
+				this[k] = this[n];
+				this[n] = v;
+			}
+		}
+
+
+		Array.prototype.count = function() {
+			return this.length;
+		}
+
+		Array.prototype.diff = function(a) {
+	    	return this.filter(function(i) {return a.indexOf(i) < 0;});
+		};
+		//END Array
+	//------------------------------------------------------------------------------
+
 	//==============================================================================
 	//Расширение стандартных классов MV
 	//==============================================================================
+
 	//Rectangle
-	Rectangle.prototype.toArr = function() {
-		return [this.x, this.y, this.width, this.height];
-	}
+	//------------------------------------------------------------------------------
+		Rectangle.prototype.toArr = function() {
+			return [this.x, this.y, this.width, this.height];
+		}
+		//END Rectangle
+	//------------------------------------------------------------------------------
 
 	//Bitmap
-	// + Используем новый класс Color в стандартной платформе RPG MakerMV
- 	var pkd_Bitmap_fillRect_034232 = Bitmap.prototype.fillRect;
-	Bitmap.prototype.fillRect = function(x, y, width, height, color) {
-	    if(color instanceof PLATFORM.Color) {
-	    	var context = this._context;		
-	    	context.save(); 
-	    	this.paintOpacity = color.A;
-	    	context.fillStyle = color.CSS;	
-	    	context.fillRect(x, y, width, height);
-	   		context.restore();
-	    	this._setDirty();
-	    } else {
-	    	pkd_Bitmap_fillRect_034232.call(this, x, y, width, height, color);
+	//------------------------------------------------------------------------------
+		Object.defineProperty(Bitmap.prototype, 'paintOpacity', {
+		    get: function() {
+		        return this._paintOpacity;
+		    },
+		    set: function(value) {
+		      this._paintOpacity = value;
+		      this._context.globalAlpha = this._paintOpacity / 255;
+		    },
+		    configurable: true
+		});
+
+		Bitmap.prototype.fillAll = function(color) {
+	    	this.fillRect(0,0,this.width,this.height, color);
 	    }
-	};
-
-	Object.defineProperty(Bitmap.prototype, 'paintOpacity', {
-	    get: function() {
-	        return this._paintOpacity;
-	    },
-	    set: function(value) {
-	      this._paintOpacity = value;
-	      this._context.globalAlpha = this._paintOpacity / 255;
-	    },
-	    configurable: true
-	});
-
-	//--------------------------------------------------------------------------------
+		//END Bitmap
+	//------------------------------------------------------------------------------
 
 	//Sprite
-	var pkd_Sprite_setBlendColor_98978 = Sprite.prototype.setBlendColor;
-	Sprite.prototype.setBlendColor = function(color) {
-		if(color instanceof PLATFORM.Color) {
-			pkd_Sprite_setBlendColor_98978.call(this, color.ARR);
-		}
-		else  {
-			pkd_Sprite_setBlendColor_98978.call(this, color);
-		}
-	};
+	//------------------------------------------------------------------------------
+		var pkd_Sprite_setBlendColor_98978 = Sprite.prototype.setBlendColor;
+		Sprite.prototype.setBlendColor = function(color) {
+			if(color instanceof PLATFORM.Color) {
+				pkd_Sprite_setBlendColor_98978.call(this, color.ARR);
+			}
+			else  {
+				pkd_Sprite_setBlendColor_98978.call(this, color);
+			}
+		};
 
-	//--------------------------------------------------------------------------------
+		Sprite.prototype.setStaticAnchor = function(valueX, valueY) {
+		    this.x -= Math.round(this.width * valueX);
+		    this.y -= Math.round(this.height * valueY);
+		}
+		//END Sprite
+	//------------------------------------------------------------------------------
+
+	//Sprite_Button
+	//------------------------------------------------------------------------------
+		//NEW
+		Sprite_Button.prototype.isHoverByMouse = function() {
+	        var x = this.canvasToLocalX(TouchInput.mX);
+	        var y = this.canvasToLocalY(TouchInput.mY);
+	        return x >= 0 && y >= 0 && x < this.width && y < this.height;
+	    };
+		//END Sprite_Button
+	//------------------------------------------------------------------------------
+
+	//TouchInput
+	//------------------------------------------------------------------------------
+		var _JSPlatform_3442_TouchInput_onMouseMove = TouchInput._onMouseMove;
+	    TouchInput._onMouseMove = function(event) {
+	        _JSPlatform_3442_TouchInput_onMouseMove.call(this, event);
+	        if (!this._mousePressed) {
+	        	this.mX = Graphics.pageToCanvasX(event.pageX);
+	        	this.mY = Graphics.pageToCanvasY(event.pageY);
+	        } else {
+	        	this.mX = this._x;
+	        	this.mY = this._y;
+	        }
+	    };
+		//END TouchInput
+	//------------------------------------------------------------------------------
 
 	//Input
-	// + Поддержка дополнительных клавиш на клавиатуре
-	var pkd_Input_onKeyDown_9323 = Input._onKeyDown;
-	Input._onKeyDown = function(event) {
-		pkd_Input_onKeyDown_9323.call(this, event);
-		var bn = this.KeyMapperPKD[event.keyCode];
-		if(bn) {
-			this._currentState[bn] = true;
+	//------------------------------------------------------------------------------
+		var pkd_Input_onKeyDown_9323 = Input._onKeyDown;
+		Input._onKeyDown = function(event) {
+			pkd_Input_onKeyDown_9323.call(this, event);
+			var bn = this.KeyMapperPKD[event.keyCode];
+			if(bn) {
+				this._currentState[bn] = true;
+			}
 		}
-	}
 
-	var pkd_Input_onKeyUp_9090 = Input._onKeyUp;
-	Input._onKeyUp = function(event) {
-		pkd_Input_onKeyUp_9090.call(this, event);
-	    var bn = this.KeyMapperPKD[event.keyCode];
-	    if (bn) {
-	        this._currentState[bn] = false;
+		var pkd_Input_onKeyUp_9090 = Input._onKeyUp;
+		Input._onKeyUp = function(event) {
+			pkd_Input_onKeyUp_9090.call(this, event);
+		    var bn = this.KeyMapperPKD[event.keyCode];
+		    if (bn) {
+		        this._currentState[bn] = false;
+		    }
+		};
+
+		Input._isGamepad = undefined; //Don't use this
+		Input.isGamepad = function()
+		{
+			if(this._isGamepad !== undefined) { return this._isGamepad; }
+
+			this._isGamepad = false;
+			if(navigator.getGamepads) {
+				 var gamepads = navigator.getGamepads();
+				 if(gamepads) {
+				 	for(var i = 0; i<gamepads.length; i++) {
+				 		if(gamepads[i] !== undefined) {
+				 			this._isGamepad = true;
+				 			break;
+				 		}
+				 	}
+				 }
+			}
+			return this._isGamepad;
+		}
+
+		Input.IsCancel = function() {
+			if(Input.isGamepad()) {
+				return Input.isTriggered('pageup'); //GP LB
+			} else {
+				return (Input.isTriggered('cancel') || TouchInput.isCancelled());
+			}
+		}
+
+		//Settings
+	    Input.KeyMapperPKD = {};
+	    Input.KeyMapperPKD[9] = 'tab';
+	    Input.KeyMapperPKD[32] = 'space';
+	    for(var i = 48; i<127; i++) {
+	        Input.KeyMapperPKD[i] = String.fromCharCode(i).toLowerCase();
 	    }
-	};
+		//END Input
+	//------------------------------------------------------------------------------
+		
+	//ImageManager		
+	//------------------------------------------------------------------------------
+		ImageManager.ICON_PATH = 'img/icons/';
+		ImageManager._iconCache = {};
 
-	Input._isGamepad = undefined; //Don't use this
-	Input.isGamepad = function()
-	{
-		if(this._isGamepad !== undefined) { return this._isGamepad; }
-
-		this._isGamepad = false;
-		if(navigator.getGamepads) {
-			 var gamepads = navigator.getGamepads();
-			 if(gamepads) {
-			 	for(var i = 0; i<gamepads.length; i++) {
-			 		if(gamepads[i] !== undefined) {
-			 			this._isGamepad = true;
-			 			break;
-			 		}
-			 	}
-			 }
+		ImageManager.loadIcon = function(path, filename) {
+		 		return this.loadBitmap(path, filename, 0, false);
 		}
-		return this._isGamepad;
-	}
 
-	Input.IsCancel = function() {
-		if(Input.isGamepad()) {
-			return Input.isTriggered('pageup'); //GP LB
-		} else {
-			return (Input.isTriggered('cancel') || TouchInput.isCancelled());
-		}
-	}
-
-	Input.KeyMapperPKD = {
-		9: 'tab', //GP LB
-		32: 'space', //GP RB
-		49: '1',
-		50: '2',
-		51: '3',
-		52: '4',
-		53: '5',
-		54: '6',
-		55: '7',
-		56: '8',
-		65: 'a', //GP X
-		68: 'd', //GP B
-		83: 's', // GP A
-		87: 'w', //GP Y
-		120: 'x',
-		122: 'z'
-	}
-
-	//--------------------------------------------------------------------------------
-
-	//ImageManager
-	// + Возможность рисовать икноки (отдельные)
-	// + Возможность рисовать кнопки (GamePad + Keyboard)
-	ImageManager.ICON_PATH = 'img/icons/';
-	ImageManager.BUTTON_PATH = 'img/buttons/';
-	ImageManager._iconCache = {};
-
-	ImageManager.loadIcon = function(path, filename) {
-	 		return this.loadBitmap(path, filename, 0, false);
-	}
-
-	//path - (string) папка где хранится иконка (напрмер 'img/icons/')
-	//iconSymbol - (string/int) символ (либо имя файла (строка), либо номер в IconSet (цифра))
-	//size - (int) размер в пикселях (стандартные 24 (ACE) и 32 (MV))
-	//forceCopy - (bool) отдельная копия, даже если такая иконка уже была загружена ранее в буфер _iconCache
-	//	RETURN (Bitmap) Возвращяет Bitmap (если forceCopy == false, то ссылку на Bitmap из буфера _iconCache)
-	ImageManager.getIcon = function(path, iconSymbol, size, forceCopy) {
-		if(iconSymbol == null)
-			iconSymbol = 'null';
-		var key = iconSymbol + ':' + size;
-		if(!this._iconCache[key])
-			{
-			if(typeof iconSymbol == 'string')
-			{
-				var bitmap = this.loadIcon(path, 'icon_' + iconSymbol);
-				var icon_bitmap = new Bitmap(size, size);
-				bitmap.addLoadListener(function() {
-					icon_bitmap.blt(bitmap, 0,0,bitmap.width, bitmap.height,0,0,size,size);
-				});
-				this._iconCache[key] = icon_bitmap;
+		//path - (string) папка где хранится иконка (напрмер 'img/icons/')
+		//iconSymbol - (string/int) символ (либо имя файла (строка), либо номер в IconSet (цифра))
+		//size - (int) размер в пикселях (стандартные 24 (ACE) и 32 (MV))
+		//forceCopy - (bool) отдельная копия, даже если такая иконка уже была загружена ранее в буфер _iconCache
+		//	RETURN (Bitmap) Возвращяет Bitmap (если forceCopy == false, то ссылку на Bitmap из буфера _iconCache)
+		ImageManager.getIcon = function(path, iconSymbol, size, forceCopy) {
+			if(iconSymbol == null)
+				iconSymbol = 'null';
+			var key = iconSymbol + ':' + size;
+			if(!this._iconCache[key])
+				{
+				if(typeof iconSymbol == 'string')
+				{
+					var bitmap = this.loadIcon(path, 'icon_' + iconSymbol);
+					var icon_bitmap = new Bitmap(size, size);
+					bitmap.addLoadListener(function() {
+						icon_bitmap.blt(bitmap, 0,0,bitmap.width, bitmap.height,0,0,size,size);
+					});
+					this._iconCache[key] = icon_bitmap;
+				}
+				else
+				{
+					var bitmap = ImageManager.loadSystem('IconSet');
+				    var pw = Window_Base._iconWidth;
+				    var ph = Window_Base._iconHeight;
+				    var sx = iconSymbol % 16 * pw;
+				    var sy = Math.floor(iconSymbol / 16) * ph;
+				    var icon_bitmap = new Bitmap(size, size);
+				    icon_bitmap.addLoadListener(function() {
+				    	icon_bitmap.blt(bitmap, sx, sy, pw, ph, 0, 0, size, size);
+				    });
+				    if(forceCopy) //Force new bitmap
+				    	return icon_bitmap;
+				    this._iconCache[key] = icon_bitmap;
+				}
 			}
-			else
-			{
-				var bitmap = ImageManager.loadSystem('IconSet');
-			    var pw = Window_Base._iconWidth;
-			    var ph = Window_Base._iconHeight;
-			    var sx = iconSymbol % 16 * pw;
-			    var sy = Math.floor(iconSymbol / 16) * ph;
-			    var icon_bitmap = new Bitmap(size, size);
-			    icon_bitmap.addLoadListener(function() {
-			    	icon_bitmap.blt(bitmap, sx, sy, pw, ph, 0, 0, size, size);
-			    });
-			    if(forceCopy) //Force new bitmap
-			    	return icon_bitmap;
-			    this._iconCache[key] = icon_bitmap;
-			}
+			return this._iconCache[key];
 		}
-		return this._iconCache[key];
-	}
 
-	ImageManager.getIcon24 = function(iconSymbol) {
-		return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, 24, false);
-	}
-
-	ImageManager.getIcon32 = function(iconSymbol) {
-		return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, 32, false);
-	}
-
-	//path - (string) папка где хранится изображение кнопки (напрмер 'img/icons/')
-	//button - (string) имя кнопки (например 'space, A, X, shift, w')
-	//size - (int) размер в пикселях (стандартные 24 и 38)
-	ImageManager.getButton = function(path, button, size) {
-		if(size === undefined)
-			size = 38;
-
-		if(Input.isGamepad()) //GAMEPAD XBOX
-		{
-			var name = IKey.convertToX(button);
-			var btn = Bitmap.load(path + name + '_' + size + '.png');
-			return btn;
+		ImageManager.getIcon24 = function(iconSymbol) {
+			return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, 24, false);
 		}
-		else //KEYBOARD
-		{
-			var btn = Bitmap.load(path + 'Button_' + size + '.png');
-			btn.addLoadListener(function() {
-				btn.drawText(button.toUpperCase(), 0, 0, size + 1, size - 2, 'center');
-			});
-			return btn;
+
+		ImageManager.getIcon32 = function(iconSymbol) {
+			return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, 32, false);
 		}
-	};
-
-	ImageManager.getButton24 = function(button) {
-		return ImageManager.getButton(ImageManager.BUTTON_PATH, button, 24);
-	}
-
-	Object.defineProperty(ImageManager, 'ICON_PATH', {writable: false});
-	Object.defineProperty(ImageManager, 'BUTTON_PATH', {writable: false});
+		//END ImageManager		
+	//------------------------------------------------------------------------------
 
 	//==============================================================================
 	//Новые классы
 	//==============================================================================
 
+	//SDK
 	//------------------------------------------------------------------------------
-	 	//SDK
-	 	function SDK() {
-			 throw new Error('This is a static class, you baka...');
+		function SDK() {
+			throw new Error('This is a static class, you baka...');
 		}
 
 		SDK.times = function(n, method) {
@@ -639,6 +671,12 @@ if(!PLATFORM.Version) {
 	 		return ((sourceWidth / 2) - (width / 2));
 	 	}
 
+	 	SDK.getSpriteRect = function(sprite) { 
+	        var x = SDK.toGlobalCoord(sprite, 'x');
+	        var y = SDK.toGlobalCoord(sprite, 'y');
+	        return new Rectangle(x,y,sprite.width, sprite.height);
+	    }
+
 	 	SDK.toGlobalCoord = function(layer, coordSymbol) {
 			var t = layer[coordSymbol];
 			var node = layer;
@@ -683,6 +721,110 @@ if(!PLATFORM.Version) {
 			return Math.round((n/100) * p);
 		}
 
+	   /**
+	   * Корректировка округления десятичных дробей. 
+	   * (https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/floor)
+	   *
+	   * @param {String}  type  Тип корректировки.
+	   * @param {Number}  value Число.
+	   * @param {Integer} exp   Показатель степени (десятичный логарифм основания корректировки).
+	   * @returns {Number} Скорректированное значение.
+	   */
+		SDK.decimalAdjust = function(type, value, exp) {
+		    // Если степень не определена, либо равна нулю...
+		    if (typeof exp === 'undefined' || +exp === 0) {
+		      return Math[type](value);
+		    }
+		    value = +value;
+		    exp = +exp;
+		    // Если значение не является числом, либо степень не является целым числом...
+		    if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+		      return NaN;
+		    }
+		    // Сдвиг разрядов
+		    value = value.toString().split('e');
+		    value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+		    // Обратный сдвиг
+		    value = value.toString().split('e');
+		    return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+		}
+
+
+		//File work
+		SDK._fs = null;
+		SDK._path = null;
+		SDK._lastPath = null;
+		SDK._filePrepare = function() {
+			if(SDK._fs == null) {
+				SDK._fs = require('fs');
+			}
+			if(SDK._path == null) {
+				SDK._path = require('path');
+			}
+		}
+
+		SDK.isFile = function(filename) { //Существует ли файл?
+			SDK._filePrepare();
+			return SDK._fs.existsSync(SDK.filePath(filename));
+		}
+
+		SDK.readFile = function(filename) { //Прочитать файл
+			if(SDK.isFile(filename)) {
+				return JSON.parse(LZString.decompressFromBase64(SDK._fs.readFileSync(SDK._lastPath, { encoding: 'utf8' })));
+			} else {
+				console.log("SDK file " + filename + " not found!");
+				return null;
+			}
+		}
+
+		SDK.writeFile = function(filename, data) { //Сохранить в файл
+			SDK._filePrepare();
+			var t = LZString.compressToBase64(JsonEx.stringify(data));
+			SDK._fs.writeFileSync(SDK.filePath(filename), t);
+		}
+
+		SDK.filePath = function(filename) { //Создать путь path к файлу
+			SDK._filePrepare();
+			var base = SDK._path.dirname(process.mainModule.filename);
+			var dir = SDK._path.join(base, 'data/');
+			var filePath = dir + filename;
+			SDK._lastPath = filePath;
+			return filePath;
+		}
+
+		SDK.loadDataFileWeb = function(filename, onLoad, onErr) {
+			var xhr = new XMLHttpRequest();
+		    var url = 'data/' + filename;
+		    xhr.open('GET', url);
+		    xhr.overrideMimeType('application/json');
+		    xhr.onload = function() {
+		        if (xhr.status < 400) {
+		            onLoad(JSON.parse(LZString.decompressFromBase64(xhr.responseText)));
+		        }
+		    };
+		    xhr.onerror = function() {
+		        if(onErr)
+		        	onErr();
+		    };
+		    xhr.send();
+		}
+
+		SDK.readFileWeb = function(filename) {
+			var data = localStorage.getItem(filename);
+			var jData = {};
+			try {
+				jData = JSON.parse(LZString.decompressFromBase64(data));
+			} catch(ex) {
+				console.log(ex);
+				jData = {};
+			}
+			return jData;
+		}
+
+		SDK.writeFileWeb = function(filename, data) {
+			localStorage.setItem(filename, LZString.compressToBase64(JsonEx.stringify(data)));
+		}
+
 		//Определить константу у Объекта
 		SDK.setConstant = function(object, name, value) {
 			object[name] = value;
@@ -690,20 +832,19 @@ if(!PLATFORM.Version) {
 				Object.freeze(object[name]); //freeze - замораживает все поля объекта (но не ссылку на объект)
 			Object.defineProperty(object, name, {writable: false}); //ссылка на объект теперь тоже заморожена
 		}
-	 	//END SDK
+		//END SDK
 	//------------------------------------------------------------------------------
 
+	//Color
 	//------------------------------------------------------------------------------
-	 	//Color
-	 	class Color
-	 	{
+		class Color {
 	 		constructor(r, g, b, a) {
 	 			if(r === undefined) r = 255;
 	 			if(g === undefined) g = 255;
 	 			if(b === undefined) b = 255;
 	 			if(a === undefined) a = 255;
 	 			this._color = [r,g,b,a];
-	 			this._css = Utils.rgbToCssColor(r, g, b);
+	 			this._css = "rgba("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+","+(a/255)+")";
 	 		}
 
 	 		getLightestColor(lightLevel) //Получить цвет на оттенок lightLevel светлее из текущего (новый Color объект)
@@ -805,106 +946,23 @@ if(!PLATFORM.Version) {
 	 	});
 
 	 	//Создание стандартной палитры
- 		Color.AssignStaticColor('NONE', new Color(0,0,0,0));
- 		Color.AssignStaticColor('BLACK', new Color(0,0,0,255));
- 		Color.AssignStaticColor('WHITE', new Color(255,255,255,255));
- 		Color.AssignStaticColor('RED', new Color(255,0,0,255));
- 		Color.AssignStaticColor('GREEN', new Color(0,255,0,255));
- 		Color.AssignStaticColor('BLUE', new Color(0,0,255,255));
+		Color.AssignStaticColor('NONE', new Color(0,0,0,0));
+		Color.AssignStaticColor('BLACK', new Color(0,0,0,255));
+		Color.AssignStaticColor('WHITE', new Color(255,255,255,255));
+		Color.AssignStaticColor('RED', new Color(255,0,0,255));
+		Color.AssignStaticColor('GREEN', new Color(0,255,0,255));
+		Color.AssignStaticColor('BLUE', new Color(0,0,255,255));
 
- 		Color.AssignStaticColor('AQUA', new Color(128,255,255,255));
- 		Color.AssignStaticColor('MAGENTA', new Color(128,0,128,255));
- 		Color.AssignStaticColor('YELLOW', new Color(255,255,0,255));
- 		Color.AssignStaticColor('ORANGE', new Color(255,128,0,255));
-	 	//END Color
+		Color.AssignStaticColor('AQUA', new Color(128,255,255,255));
+		Color.AssignStaticColor('MAGENTA', new Color(128,0,128,255));
+		Color.AssignStaticColor('YELLOW', new Color(255,255,0,255));
+		Color.AssignStaticColor('ORANGE', new Color(255,128,0,255));
+		//END Color
 	//------------------------------------------------------------------------------
 
+	//DevLog
 	//------------------------------------------------------------------------------
-	 	//IKey
-	 	function IKey() {
-			throw new Error('This is a static class');
-		}
-
-		IKey.convertToX = function(value)
-		{
-			switch(value)
-			{
-				case 'menu':
-				case 'w':
-					return 'Y';
-				case 'shift':
-				case 'a':
-					return 'X';
-				case 'ok':
-				case 's':
-					return 'A';
-				case 'cancel':
-				case 'd':
-					return 'B';
-				case 'pageup':
-				case 'tab':
-					return 'LB';
-				case 'pagedown':
-				case 'space':
-					return 'RB';
-				default:
-					return '';
-			}
-		}
-
-		IKey.W = function()
-		{
-			if(Input.isGamepad())
-				return 'menu';
-			else
-				return 'w';
-		}
-
-		IKey.A = function()
-		{
-			if(Input.isGamepad())
-				return 'shift';
-			else
-				return 'a';
-		}
-
-		IKey.S = function()
-		{
-			if(Input.isGamepad())
-				return 'ok';
-			else
-				return 's';
-		}
-
-		IKey.D = function()
-		{
-			if(Input.isGamepad())
-				return 'cancel';
-			else
-				return 'd';
-		}
-
-		IKey.TAB = function()
-		{
-			if(Input.isGamepad())
-				return 'pageup';
-			else
-				return 'tab';
-		}
-
-		IKey.SPACE = function()
-		{
-			if(Input.isGamepad())
-				return 'pagedown';
-			else
-				return 'space';
-		}
-	 	//END IKey
-	//------------------------------------------------------------------------------
-
-	//------------------------------------------------------------------------------
-	 	//DevLog
-	 	class DevLog {
+		class DevLog {
 	 		constructor(prefix) {
 	 			this._prefix = prefix;
 	 			this._extended = false;
@@ -963,16 +1021,15 @@ if(!PLATFORM.Version) {
 
 	//Расширение 
 	$.extendMe = function(obj) {
-		obj.Color = Color;  //Подключаем Color
-		obj.SDK = SDK; //Подключаем SDK
-		obj.IKey = IKey; //Подключаем IKey
-		obj.DevLog = DevLog; //Подключаем DevLog
+		obj.Color = Color; 
+		obj.SDK = SDK; 
+		obj.DevLog = DevLog; 
 	}
 
 	$.extendMe($); 
-
-
-})(PLATFORM);
+ 
+	})(PLATFORM);
+//------------------------------------------------------------------------------
 
 (function() {
 
@@ -987,13 +1044,13 @@ if(!PLATFORM.Version) {
 
 var SDK = PLATFORM.SDK;
 var Color = PLATFORM.Color;
-var IKey = PLATFORM.IKey;
 
 //==========================================================================================================================================================
 // ABS Library 
 //==========================================================================================================================================================
 (function() {
 	AlphaABS.LIB = {}; //Подключаем библиотеку
+	AlphaABS.LIB.EXT = {}; //Временные расширения для области видимости 
 	//Object.freeze(AlphaABS.LIB);
 	//Object.defineProperty(AlphaABS, 'LIB', {writable: false});
 })();
@@ -1018,8 +1075,8 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 	$.STRING_ALERT_NEEDTARGET   	= ['Need target','Нужна цель'];
 	$.STRING_ALERT_TOFAR        	= ['Target too far','Цель слишком далеко'];
 	$.STRING_ALERT_INTERRUPT        = ['Action interrupt','Действие прервано'];
-	$.STRING_ALERT_INBATTLE         = ['Battle start','Бой начинается'];
-	$.STRING_ALERT_OUTBATTLE        = ['Battle end','Выход из боя'];
+	$.STRING_ALERT_INBATTLE         = ['Battle start','Бой начинается']; //@Deprecated
+	$.STRING_ALERT_OUTBATTLE        = ['Battle end','Выход из боя']; //@Deprecated
 	$.STRING_ALERT_NOAUTOA			= ["Can't use attack now", 'Нельзя атакавать сейчас'];
 	$.STRING_ALERT_NOUSE			= ["Can't use action now",'Нельзя использовать сейчас'];
 	$.STRING_ALERT_NOCHARGES		= ["Can't use, no charges",'Нельзя использовать, нет зарядов'];
@@ -1036,8 +1093,50 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
  	$.STRING_POPUP_WEAK    = ['Weak', 'Уязвимость'];
  	$.STRING_POPUP_SKILL   = ['Ready!', 'Готов!'];
 
- 	$.STRING_MENU_UIVIS = ['Show UI', 'Показывать UI'];
- 	$.STRING_MENU_UIPOS = ['Edit UI', 'Изменить UI'];
+ 	$.STRING_MENU_UIVIS   = ['Show UI', 'Показывать UI'];
+ 	$.STRING_MENU_UIPOS   = ['Edit UI', 'Изменить UI'];
+ 	$.STRING_MENU_KEYBIND = ['Controls', 'Управление'];
+
+ 	$.STRING_MENU_KB_KEY        = ['Press any key', 'Нажмите кнопку'];
+ 	$.STRING_MENU_KB_TAB        = ['Target select', 'Выбор цели'];
+ 	$.STRING_MENU_KB_SKILLS     = ['Skills panel', 'Панель навыков'];
+ 	$.STRING_MENU_KB_CONTRL     = ['Сontrol panel', 'Панель управления'];
+ 	$.STRING_MENU_KB_WEAPON     = ['Weapon circle', 'Оружие'];
+ 	$.STRING_MENU_KB_DEF    	= ['Reset to default', 'Сбросить'];
+ 	$.STRING_MENU_KB_BACK     	= ['Back', 'Назад'];
+ 	$.STRING_MENU_KB_SLOT     	= ['Item', 'Слот'];
+ 	$.STRING_MENU_KB_ATTACK     = ['Attack', 'Атака'];
+ 	$.STRING_MENU_KB_FOLLOW    	= ['Follow', 'Следовать'];
+ 	$.STRING_MENU_KB_JUMP     	= ['Jump', 'Прыжок'];
+ 	$.STRING_MENU_KB_ROTATE     = ['Rotate', 'Поворот'];
+ 	$.STRING_MENU_KB_LEFT     	= ['Left', 'Левый'];
+ 	$.STRING_MENU_KB_RIGHT     	= ['Right', 'Правый'];
+ 	$.STRING_MENU_KB_BOTTOM     = ['Bottom', 'Нижний'];
+ 	$.STRING_MENU_KB_TOP     	= ['Top', 'Верхний'];
+ 	$.STRING_MENU_KB_WEAP     	= ['Weapons', 'Оружие'];
+
+ 	$.STRING_SKILL_INFO_RADIUS		= ['Radius: ','Радиус: '];
+ 	$.STRING_SKILL_INFO_RANGE		= ['Range: ','Дальность: '];
+ 	$.STRING_SKILL_INFO_RANGE2		= ['Range: ','Дал-сть: '];
+ 	$.STRING_SKILL_INFO_CAST		= ['Cast: ','Подготовка: '];
+ 	$.STRING_SKILL_INFO_COOLDOWN	= ['Cooldown: ','Перезарядка: '];
+ 	$.STRING_SKILL_INFO_DESCRIPTION	= ['Description','Описание'];
+ 	$.STRING_SKILL_INFO_HAS			= ['Has: ','Есть: '];
+ 	$.STRING_SKILL_INFO_USE			= ['Use: ','Исп.: '];
+ 	$.STRING_SKILL_INFO_CHARGES		= ['Charges: ','Заряды: '];
+ 	$.STRING_SKILL_INFO_RELOADCHR	= ['Reload charges: ','Полная перез-ка: '];
+	$.STRING_SKILL_INFO_ONTARGET 	= ['Need target', 'Нужна цель'];
+	$.STRING_SKILL_INFO_ONUSER 		= ['On user', 'На себя'];
+	$.STRING_SKILL_INFO_AREA 		= ['Area select', 'Выбор области'];
+	$.STRING_SKILL_INFO_CIRCLE 		= ['Around user', 'Вокруг себя'];
+	$.STRING_SKILL_INFO_ZONE	 	= ['Zone', 'Зона'];
+	$.STRING_SKILL_INFO_SEC	 		= [' sec.', ' сек.'];
+	$.STRING_SKILL_INFO_TARGET	 	= ['<target>', '<цель>'];
+	$.STRING_SKILL_INFO_DAMAGE	 	= ['Damage ', 'Урон '];
+	$.STRING_SKILL_INFO_RECOVER	 	= ['Recover ', 'Восст. '];
+	$.STRING_SKILL_INFO_DRAIN	 	= ['Drain ', 'Поглщ. '];
+	$.STRING_SKILL_INFO_MELEE	 	= ['Melee ', 'Ближ. бой '];
+
 
  	$.STRING_WARNING_COMMON       = 
  	["This command can't be executed on ABS map",'Нельзя выполнить эту команду события на ABS карте'];
@@ -1088,34 +1187,19 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 
 		var pCastAnimId = parameters['Cast Animation'] || 0;
 		if(pCastAnimId > 0) {
-			//if($dataAnimations[pCastAnimId])
-				$.CAST_ANIMATION_ID = pCastAnimId;
-			//else {
-			//	$.CAST_ANIMATION_ID = 0; //Standart ( 0 - if ABS standart)
-			//	LOGW.p("Cast Animation " + pCastAnimId + " not defined in database!");
-			//}				
+				$.CAST_ANIMATION_ID = pCastAnimId;		
 		} else 
 			$.CAST_ANIMATION_ID = 0; //Standart ( 0 - if ABS standart)
 
 		var pLevelUpAnimId = parameters['Level Up Animation'] || 49;
 		if(pLevelUpAnimId > 0) {
-			//if($dataAnimations[pLevelUpAnimId])
 				$.LEVELUP_ANIMATION_ID = pLevelUpAnimId;
-			//else {
-			//	$.LEVELUP_ANIMATION_ID = 0; //None
-			//	LOGW.p("Level Up Animation " + pLevelUpAnimId + " not defined in database!");
-			//}
 		} else 
 			$.LEVELUP_ANIMATION_ID = 0; //None
 
 		var pReviveAnimId = parameters['Revive Animation'] || 45;
 		if(pReviveAnimId > 0) {
-			//if($dataAnimations[pReviveAnimId])
 				$.REVIVE_ANIMATION_ID = pReviveAnimId;
-			//else {
-			//	$.REVIVE_ANIMATION_ID = 0; //None
-			//	LOGW.p("Revive Animation " + pReviveAnimId + " not defined in database!");
-			//}
 		} else 
 			$.REVIVE_ANIMATION_ID = 0; //None
 
@@ -1150,6 +1234,12 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 		}
 
 		$.GOLD_ICON = parseInt(parameters['Gold icon index']) || 314;
+
+		var pAllowKB = String(parameters['Key binding'] || 'true');
+		if(eval(pAllowKB)) {
+			$.ALLOW_KB = true;
+		} else 
+			$.ALLOW_KB = false;
 
 	})(PARAMS);
 
@@ -1214,26 +1304,62 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 	DataManager.loadDatabase  = function() {
 		_DataManager_loadDatabase_903284.call(this);
 		DataManager.loadDataFile('$ABS_DataObjects','ABSData.json');
-		//TODO FileCheck (filePath) in SDK (PLATFORM)
-		var fs = require('fs');
-		var path = require('path');
-		var base = path.dirname(process.mainModule.filename);
-		var dir = path.join(base, 'data/');
-		var filePath = dir + 'ABSDataUser.json';
-		if(fs.existsSync(filePath)) {
-			DataManager.loadDataFile('$ABS_DataUser','ABSDataUser.json');
+		if(Utils.isNwjs()) {
+			var fs = require('fs');
+			var path = require('path');
+			var base = path.dirname(process.mainModule.filename);
+			var dir = path.join(base, 'data/');
+			var filePath = dir + 'ABSDataUser.json';
+			if(fs.existsSync(filePath)) {
+				DataManager.loadDataFile('$ABS_DataUser','ABSDataUser.json');
+			} else {
+				window['$ABS_DataUser'] = {};
+			}
 		} else {
-			window['$ABS_DataUser'] = {};
+			//Brwser
+			try {
+				DataManager.loadDataFile('$ABS_DataUser','ABSDataUser.json');
+			} catch(ex) {
+				LOGW.p("ABSDataUser.json not found, skipped");
+			}
 		}
 	}
 	//END DataManager
 //------------------------------------------------------------------------------
 
-//ImageManager
+//SceneManager
+//------------------------------------------------------------------------------
+	var _SceneManager_catchException_ABS = SceneManager.catchException;
+	SceneManager.catchException = function(e) {
+		SceneManager._printABSInfo();
+	    _SceneManager_catchException_ABS.call(this, e);
+	};
+
+	var _SceneManager_onError_ABS = SceneManager.onError;
+	SceneManager.onError = function(e) {
+		SceneManager._printABSInfo();
+		_SceneManager_onError_ABS.call(this, e);
+	}
+
+	SceneManager._printABSInfo = function() {
+		console.error("Using AlphaABS [Version: " + AlphaABS.version + " ; Build: " + AlphaABS.build + "]");
+	}
+	//END SceneManager
 //------------------------------------------------------------------------------
 
+//ImageManager
+//------------------------------------------------------------------------------
 	ImageManager.loadPictureABS = function(filename) {
 		return this.loadBitmap('img/ABS/', filename, 0, true);
+	}
+
+	ImageManager.loadIconABS = function(iconSymbol /*, size*/) {
+		if(SDK.isInt(iconSymbol)) {
+			var size = SDK.check(size, 32);
+			return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, size)
+		} else {
+			return ImageManager.getIconABS(iconSymbol);
+		}
 	}
 
 	ImageManager.getIconABS = function(iconName) {
@@ -1241,9 +1367,10 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 		return icon;
 	}
 
-	ImageManager.drawIconABS = function(x,y, iconSymbol, bitmap) {
+	ImageManager.drawIconABS = function(x,y, iconSymbol, bitmap, size) {
 		if(SDK.isInt(iconSymbol)) {
-			SDK.drawIcon(x,y,iconSymbol,bitmap,32);
+			size = SDK.check(size, 32);
+			SDK.drawIcon(x,y,iconSymbol,bitmap, size);
 		} else {
 			var icon = this.getIconABS(iconSymbol);
 			icon.addLoadListener(function() {
@@ -1255,7 +1382,398 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 	//END ImageManager
 //------------------------------------------------------------------------------
 
- 	SDK.setConstant($, 'FONT', 'VL-Gothic-Regular');
+//ABSKey
+//------------------------------------------------------------------------------
+	function ABSKey() {
+        throw new Error('This is a static class');
+    }
+
+    ABSKey.FNAME = 'ABSKeys.rpgsave';
+    ABSKey.symbol = {};
+
+
+    ABSKey.indexSchemeA = {
+        sp1 : 1,
+        sp2 : 2,
+        sp3 : 3,
+        sp4 : 4,
+        sp5 : 5,
+        sp6 : 6,
+        sp7 : 7,
+        sp8 : 8
+    }
+
+    ABSKey.indexSchemeB = {
+        cpA : 0,
+        cpW : 1,
+        cpS : 2,
+        cpD : 3
+    }
+
+    ABSKey.indexSchemeC = {
+        scW: 0,
+        scA: 3,
+        scS: 2,
+        scD: 1
+    }
+
+    ABSKey.checkTabPress = function() {
+        if(Input.isTriggered('tab')) {
+            var event = {charCode:9};
+            ABSKey.onKeyPress(event);
+        }
+    }
+
+    ABSKey.isTriggeredSP = function() {
+        for(var key in ABSKey.indexSchemeA) {
+            if(Input.isTriggered(ABSKey.symbol[key])) {
+                return ABSKey.indexSchemeA[key];
+            }
+        }
+        return null;
+    }
+
+    ABSKey.isTriggeredWS = function() {
+        for(var key in ABSKey.indexSchemeC) {
+            if(Input.isTriggered(ABSKey.symbol[key])) {
+                return ABSKey.indexSchemeC[key];
+            }
+        }
+        return null;
+    }
+
+    ABSKey.setKeyToChange = function(symbol, windw) {
+        this._changeSymbol = symbol;
+        this._changeWindow = windw;
+    }
+
+    ABSKey.onKeyPress = function(event) {
+        if(!ABSKey._changeSymbol) return;
+
+        //LOG.p("Input key code: "  + event.charCode);
+        if(Input.KeyMapperPKD[event.charCode] !== undefined) {
+            ABSKey.symbol[ABSKey._changeSymbol] = Input.KeyMapperPKD[event.charCode];
+            //LOG.p("Key " + Input.KeyMapperPKD[event.charCode]);
+            ABSKey._changeSymbol = null;
+            if(ABSKey._changeWindow) {
+                ABSKey._changeWindow.onKeyOk(true);
+                ABSKey._changeWindow = null;
+            }
+        } else {
+            if(ABSKey._changeWindow)
+                ABSKey._changeWindow.onKeyOk(false);
+        }
+    }
+
+    Input.toDefaultABS = function() {
+        AlphaABS.Key.symbol = {
+            cpW:"w",
+            cpA:"a",
+            cpD:"d",
+            cpS:"s",
+            sp1:"1",
+            sp2:"2",
+            sp3:"3",
+            sp4:"4",
+            sp5:"5",
+            sp6:"6",
+            sp7:"7",
+            sp8:"8",
+            tS:"tab",
+            pC:"q",
+            wC:"e",
+            scW:"w",
+            scS:"s",
+            scD:"d",
+            scA:"a"
+        };
+    }
+
+    AlphaABS.Key = ABSKey;
+	//END ABSKey
+//------------------------------------------------------------------------------
+
+//ABSPathfinding
+//------------------------------------------------------------------------------
+	function ABSPathfinding() {
+		throw new Error('This is a static class');
+	} 
+
+	ABSPathfinding.init = function() {
+		this.worldWidth = 0;
+        this.worldHeight = 0;
+        this.worldSize = 0;
+        this.char = null;
+        this.goalX = 0;
+        this.goalY = 0;
+	}
+
+	ABSPathfinding.setup = function() {
+		this.worldWidth = $gameMap.width();
+        this.worldHeight = $gameMap.height();
+        this.worldSize = this.worldWidth * this.worldHeight;
+	}
+
+	ABSPathfinding.findPath = function(char, goalX, goalY) {
+		this.char = char;
+		this.goalX = goalX;
+		this.goalY = goalY;
+		var path = ABSPathfinding.calculatePath();
+		if(path.length > 0) {
+
+            if(path.length > 1) {
+                var stepX = path[1][0];
+                var stepY = path[1][1];
+
+                var deltaX1 = $gameMap.deltaX(stepX, char.x);
+                var deltaY1 = $gameMap.deltaY(stepY, char.y);
+
+                if (deltaY1 > 0) {
+                    return 2;
+                } else if (deltaX1 < 0) {
+                    return 4;
+                } else if (deltaX1 > 0) {
+                    return 6;
+                } else if (deltaY1 < 0) {
+                    return 8;
+                }
+            } 
+
+        } 
+        
+        return 0;
+	}
+
+	//PRIVATE
+	ABSPathfinding.canWalkHere = function(x,y) {
+		if(x == this.char.x && y == this.char.y) {
+            return true;
+        }
+
+        if (!$gameMap.isValid(x, y)) {
+            return false;
+        }
+
+        if (this.char.isThrough() || this.char.isDebugThrough()) {
+            return true;
+        }
+
+        if(x == this.goalX && y == this.goalY) {
+            return true;
+        }
+
+        if (this.char.isCollidedWithCharacters(x, y)) {
+            return false;
+        }
+
+        if(!this.char.isMapPassable(x,y,1)) {
+           return false;
+        }
+
+        return true;
+	}
+
+	ABSPathfinding.Node = function(Parent, Point) {
+		var newNode = {
+            // pointer to another Node object
+            Parent:Parent,
+            // array index of this Node in the world linear array
+            value:Point.x + (Point.y * this.worldWidth),
+            // the location coordinates of this Node
+            x:Point.x,
+            y:Point.y,
+            // the distanceFunction cost to get
+            // TO this Node from the START
+            f:0,
+            // the distanceFunction cost to get
+            // from this Node to the GOAL
+            g:0
+        };
+
+        return newNode;
+	}
+
+	ABSPathfinding.Neighbours = function(x,y) {
+		var N = y - 1,
+        S = y + 1,
+        E = x + 1,
+        W = x - 1,
+        myN = N > -1 && this.canWalkHere(x, N),
+        myS = S < this.worldHeight && this.canWalkHere(x, S),
+        myE = E < this.worldWidth && this.canWalkHere(E, y),
+        myW = W > -1 && this.canWalkHere(W, y),
+        result = [];
+        if(myN)
+            result.push({x:x, y:N});
+        if(myE)
+            result.push({x:E, y:y});
+        if(myS)
+            result.push({x:x, y:S});
+        if(myW)
+            result.push({x:W, y:y});
+        this.findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
+        return result;
+	}
+
+	ABSPathfinding.findNeighbours = function() {};
+
+	ABSPathfinding.DiagonalNeighbours = function(myN, myS, myE, myW, N, S, E, W, result) {
+		if(myN)
+        {
+            if(myE && this.canWalkHere(E, N))
+                result.push({x:E, y:N});
+            if(myW && this.canWalkHere(W, N))
+                result.push({x:W, y:N});
+        }
+        if(myS)
+        {
+            if(myE && this.canWalkHere(E, S))
+                result.push({x:E, y:S});
+            if(myW && this.canWalkHere(W, S))
+                result.push({x:W, y:S});
+        }
+	}
+
+	ABSPathfinding.DiagonalNeighboursFree = function(myN, myS, myE, myW, N, S, E, W, result)
+	{
+		myN = N > -1;
+        myS = S < worldHeight;
+        myE = E < worldWidth;
+        myW = W > -1;
+        if(myE)
+        {
+            if(myN && this.canWalkHere(E, N))
+                result.push({x:E, y:N});
+            if(myS && this.canWalkHere(E, S))
+                result.push({x:E, y:S});
+        }
+        if(myW)
+        {
+            if(myN && this.canWalkHere(W, N))
+                result.push({x:W, y:N});
+            if(myS && this.canWalkHere(W, S))
+                result.push({x:W, y:S});
+        }
+	}
+
+	ABSPathfinding.ManhattanDistance = function(Point, Goal) {
+		// linear movement - no diagonals - just cardinal directions (NSEW)
+		return Math.abs(Point.x - Goal.x) + Math.abs(Point.y - Goal.y);
+	}
+
+	ABSPathfinding.calculatePath = function() {
+		var distanceFunction = ABSPathfinding.ManhattanDistance;
+		// create Nodes from the Start and End x,y coordinates
+        var mypathStart = this.Node(null, {x:this.char.x, y:this.char.y});
+        var mypathEnd = this.Node(null, {x:this.goalX, y:this.goalY});
+        // create an array that will contain all world cells
+        var AStar = new Array(this.worldSize);
+        // list of currently open Nodes
+        var Open = [mypathStart];
+        // list of closed Nodes
+        var Closed = [];
+        // list of the final output array
+        var result = [];
+        // reference to a Node (that is nearby)
+        var myNeighbours;
+        // reference to a Node (that we are considering now)
+        var myNode;
+        // reference to a Node (that starts a path in question)
+        var myPath;
+        // temp integer variables used in the calculations
+        var length, max, min, i, j;
+        // iterate through the open list until none are left
+        while(length = Open.length)
+        {
+            max = this.worldSize;
+            min = -1;
+            for(i = 0; i < length; i++)
+            {
+                if(Open[i].f < max)
+                {
+                    max = Open[i].f;
+                    min = i;
+                }
+            }
+            // grab the next node and remove it from Open array
+            myNode = Open.splice(min, 1)[0];
+            // is it the destination node?
+            if(myNode.value === mypathEnd.value)
+            {
+                myPath = Closed[Closed.push(myNode) - 1];
+                do
+                {
+                    result.push([myPath.x, myPath.y]);
+                }
+                while (myPath = myPath.Parent);
+                // clear the working arrays
+                AStar = Closed = Open = [];
+                // we want to return start to finish
+                result.reverse();
+            }
+            else // not the destination
+            {
+                // find which nearby nodes are walkable
+                myNeighbours = this.Neighbours(myNode.x, myNode.y);
+                // test each one that hasn't been tried already
+                for(i = 0, j = myNeighbours.length; i < j; i++)
+                {
+                    myPath = this.Node(myNode, myNeighbours[i]);
+                    if (!AStar[myPath.value])
+                    {
+                        // estimated cost of this particular route so far
+                        myPath.g = myNode.g + distanceFunction(myNeighbours[i], myNode);
+                        // estimated cost of entire guessed route to the destination
+                        myPath.f = myPath.g + distanceFunction(myNeighbours[i], mypathEnd);
+                        // remember this new path for testing above
+                        Open.push(myPath);
+                        // mark this node in the world graph as visited
+                        AStar[myPath.value] = true;
+                    }
+                }
+                // remember this route as having no more untested options
+                Closed.push(myNode);
+            }
+        } // keep iterating until the Open list is empty
+        return result;
+	}
+	AlphaABS.ABSPathfinding = ABSPathfinding;
+	//END ABSPathfinding
+//------------------------------------------------------------------------------
+
+//Input
+//------------------------------------------------------------------------------
+	Input.loadSchemeABS = function() {
+        if(Utils.isNwjs()) {
+        	if(SDK.isFile(AlphaABS.Key.FNAME)) {
+            	AlphaABS.Key.symbol = SDK.readFile(AlphaABS.Key.FNAME);
+        	} else {
+        		Input.toDefaultABS();
+        	}
+        } else {
+        	if(localStorage.getItem(AlphaABS.Key.FNAME)) {
+        		AlphaABS.Key.symbol = SDK.readFileWeb(AlphaABS.Key.FNAME);
+        	} else {
+        		SDK.loadDataFileWeb(AlphaABS.Key.FNAME, function(data) {
+        			AlphaABS.Key.symbol = data;
+        		}, function() {
+					Input.toDefaultABS();
+        		});
+        	}
+        }
+    }
+
+    Input.saveSchemeABS = function() {
+    	if(Utils.isNwjs()) {
+        	SDK.writeFile(AlphaABS.Key.FNAME,AlphaABS.Key.symbol);
+        } else {
+        	SDK.writeFileWeb(AlphaABS.Key.FNAME, AlphaABS.Key.symbol);
+        }
+    }
+	//END Input
+//------------------------------------------------------------------------------
+
+SDK.setConstant($, 'FONT', 'VL-Gothic-Regular');
 
 })(AlphaABS.SYSTEM);
 
@@ -1385,6 +1903,31 @@ AlphaABS.UTILS = {};
 		}
 	}
 
+	$.linkSprite = function(sprite1, sprite2) {
+	    var _r = 0; //right (from right)
+        var _u = 0; //up
+
+        if(SDK.toGlobalCoord(sprite1, 'x') < Graphics.width / 2) {
+            _r = 1; //Left (From left)
+        }
+
+        if(SDK.toGlobalCoord(sprite1,'y') < Graphics.height / 2) {
+            _u = 1; //Down
+        }
+
+        if(_r == 1) {
+            sprite2.x = sprite1.x + sprite1.width + 1;
+        } else {
+            sprite2.x = sprite1.x - sprite2.width - 1;
+        }
+
+        if(_u == 1) {
+            sprite2.y = sprite1.y + sprite1.height + 1;
+        } else {
+            sprite2.y = sprite1.y - sprite2.height - 1;
+        }
+	}
+
 //Point
 //------------------------------------------------------------------------------
 	class Point {
@@ -1511,14 +2054,6 @@ AlphaABS.UTILS = {};
 		throw new Error('This is a static class');
 	}
 
-	/*var _Graphics_createCanvas = Graphics._createCanvas;
-	Graphics._createCanvas = function() {
-		_Graphics_createCanvas.call(this);
-		this._canvas.addEventListener('mousemove', function(evt){
-			SMouse.handleMouseMoveCanvas(Graphics._canvas, evt);
-		});
-	}*/
-
 	SMouse.initMouseTrack = function() {
 		document.onmousemove = SMouse.handleMouseMove;
         __SmouseNeedTrack = false;
@@ -1582,8 +2117,6 @@ AlphaABS.UTILS = {};
 	}
 
 	SMath.distance = function(point1, point2) {
-		if(point1 == null)
-			debugger;
 		return Math.sqrt(Math.pow(point1.x - point2.x,2) + Math.pow(point1.y - point2.y,2));
 	}
 
@@ -1644,527 +2177,528 @@ Object.defineProperty(AlphaABS, 'UTILS', {writable: false});
 //==========================================================================================================================================================
 // Alpha ABS PopUp Module (deprecated on release :) ) 
 //==========================================================================================================================================================
-
-(function () {
-	
-	var LOG = new PLATFORM.DevLog("UI POP");
-	var SDK = PLATFORM.SDK;
-	var Color = PLATFORM.Color;
-
-//ABSObject_PopUp
 //------------------------------------------------------------------------------
-	class ABSObject_PopUp {
-		constructor(text, color, iconIndex, fontSettings)
- 		{
- 			this._text = text || null;
- 			this._color = color;
- 			this._iconIndex = iconIndex || null;
- 			this._fontSettings = fontSettings || ABSObject_PopUp.FONT_DEFAULT();
- 			this._effectType = ABSObject_PopUp.EFFECT_DEFAULT;
- 			this._sprite = null;
- 		}
+	(function () {
+		
+		var LOG = new PLATFORM.DevLog("UI POP");
+		var SDK = PLATFORM.SDK;
+		var Color = PLATFORM.Color;
 
- 		clone() {
- 			var tempObj = new ABSObject_PopUp(this._text, this._color, this._iconIndex, this._fontSettings.clone());
- 			tempObj.setEffectSettings(this._effectType);
- 			return tempObj;
- 		}
+	//ABSObject_PopUp
+	//------------------------------------------------------------------------------
+		class ABSObject_PopUp {
+			constructor(text, color, iconIndex, fontSettings)
+	 		{
+	 			this._text = text || null;
+	 			this._color = color;
+	 			this._iconIndex = iconIndex || null;
+	 			this._fontSettings = fontSettings || ABSObject_PopUp.FONT_DEFAULT();
+	 			this._effectType = ABSObject_PopUp.EFFECT_DEFAULT;
+	 			this._sprite = null;
+	 		}
 
- 		getText() {
- 			return this._text;
- 		}
+	 		clone() {
+	 			var tempObj = new ABSObject_PopUp(this._text, this._color, this._iconIndex, this._fontSettings.clone());
+	 			tempObj.setEffectSettings(this._effectType);
+	 			return tempObj;
+	 		}
 
- 		getFontSettings() {
- 			return this._fontSettings;
- 		}
+	 		getText() {
+	 			return this._text;
+	 		}
 
- 		setX(x) {
- 			this.x = x;
- 			this._sprite.x = x;
- 		}
+	 		getFontSettings() {
+	 			return this._fontSettings;
+	 		}
 
- 		setY(y) {
- 			this.y = y;
- 			this._sprite.y = y;
- 		}
+	 		setX(x) {
+	 			this.x = x;
+	 			this._sprite.x = x;
+	 		}
 
- 		setNumered() //This is number value in this PopUp
- 		{
- 			this._numered = true;
- 		}
+	 		setY(y) {
+	 			this.y = y;
+	 			this._sprite.y = y;
+	 		}
 
- 		isNumered()
- 		{
- 			return (this._numered === true);
- 		}
+	 		setNumered() //This is number value in this PopUp
+	 		{
+	 			this._numered = true;
+	 		}
 
- 		hasIcon() {
- 			return (this._iconIndex != null);
- 		}
+	 		isNumered()
+	 		{
+	 			return (this._numered === true);
+	 		}
 
- 		setExtraText(text) {
- 			this._text = (text + " " + this._text);
- 		}
+	 		hasIcon() {
+	 			return (this._iconIndex != null);
+	 		}
 
- 		setEffectSettings(settings) {
- 			this._effectType = settings;
- 		}
+	 		setExtraText(text) {
+	 			this._text = (text + " " + this._text);
+	 		}
 
- 		setup(x, y, width, layer)
- 		{
- 			this._layer = layer;
- 			this._width = width;
- 			this.x = x;
- 			this.y = y;
- 			this._refresh();
- 		}
+	 		setEffectSettings(settings) {
+	 			this._effectType = settings;
+	 		}
 
- 		dispose()
- 		{
- 			if(!this._sprite) return; 
- 			this._sprite.bitmap.clear();
- 			this._layer.removeChild(this._sprite);
- 			this._sprite = null;
- 		}
+	 		setup(x, y, width, layer)
+	 		{
+	 			this._layer = layer;
+	 			this._width = width;
+	 			this.x = x;
+	 			this.y = y;
+	 			this._refresh();
+	 		}
 
- 		update()
- 		{
- 			if(this._sprite != null) {
- 				this._update_zoom();
- 				this._sprite.update();
- 			}
- 		}
+	 		dispose()
+	 		{
+	 			if(!this._sprite) return; 
+	 			this._sprite.bitmap.clear();
+	 			this._layer.removeChild(this._sprite);
+	 			this._sprite = null;
+	 		}
 
- 		static FONT_DEFAULT() {
- 			return ['Skratch Punk',30, false, 3, Color.BLACK]; //FontFace, size, outline widht, outline color
- 		}
-
- 		//PRIVATE
- 		_refresh()
- 		{
- 			let h = 72;
- 			let bitmap = new Bitmap(this._width, h);
- 			bitmap.addLoadListener(function()
- 			{
- 				if(this._fontSettings[0] != null)
- 					bitmap.fontFace = this._fontSettings[0];
- 				bitmap.fontSize = this._fontSettings[1];
- 				bitmap.fontItalic = this._fontSettings[2];
- 				if(this._color) 
- 				{
- 					bitmap.textColor = this._color.CSS;
- 				}
- 				else 
- 					bitmap.textColor = Color.WHITE.CSS;
- 			
-
-	 			var dx = 0;
-	 			var dw = 0;
-	 			var tw = (this._text != null) ?  bitmap.measureTextWidth(this._text) : 0;
-
-	 			while(tw > this._width){
-	 				bitmap.fontSize = bitmap.fontSize - 4;
-	 				tw = bitmap.measureTextWidth(this._text);
+	 		update()
+	 		{
+	 			if(this._sprite != null) {
+	 				this._update_zoom();
+	 				this._sprite.update();
 	 			}
+	 		}
 
-	 			if(this._iconIndex) {
-	 				dx += 24;
-	 				dw += 24;
-	 				SDK.drawIcon((dx + ((this._width - tw)/2) - 36), (h - 24)/2, this._iconIndex, bitmap, 24);
+	 		static FONT_DEFAULT() {
+	 			return ['Skratch Punk',30, false, 3, Color.BLACK]; //FontFace, size, outline widht, outline color
+	 		}
+
+	 		//PRIVATE
+	 		_refresh()
+	 		{
+	 			let h = 72;
+	 			let bitmap = new Bitmap(this._width, h);
+	 			bitmap.addLoadListener(function()
+	 			{
+	 				if(this._fontSettings[0] != null)
+	 					bitmap.fontFace = this._fontSettings[0];
+	 				bitmap.fontSize = this._fontSettings[1];
+	 				bitmap.fontItalic = this._fontSettings[2];
+	 				if(this._color) 
+	 				{
+	 					bitmap.textColor = this._color.CSS;
+	 				}
+	 				else 
+	 					bitmap.textColor = Color.WHITE.CSS;
+	 			
+
+		 			var dx = 0;
+		 			var dw = 0;
+		 			var tw = (this._text != null) ?  bitmap.measureTextWidth(this._text) : 0;
+
+		 			while(tw > this._width){
+		 				bitmap.fontSize = bitmap.fontSize - 4;
+		 				tw = bitmap.measureTextWidth(this._text);
+		 			}
+
+		 			if(this._iconIndex) {
+		 				dx += 24;
+		 				dw += 24;
+		 				SDK.drawIcon((dx + ((this._width - tw)/2) - 36), (h - 24)/2, this._iconIndex, bitmap, 24);
+		 			}
+
+		 			if(this._text) {
+		 				bitmap.outlineWidth = this._fontSettings[3] || 0;
+	 					if(this._fontSettings[4])
+		 					bitmap.outlineColor = this._fontSettings[4].CSS;
+		 				bitmap.outlineColor = Color.BLACK.CSS;
+		 				bitmap.drawText(this._text, dx + 2, 0, this._width - dw, h, 'center');
+		 			}
+	 			}.bind(this));
+
+	 			this._sprite = new Sprite(bitmap);
+	 			this._sprite.x = this.x;
+	 			this._sprite.y = this.y;
+	 			this._sprite.scale.x = this._effectType[0];
+	 			this._sprite.scale.y = this._effectType[0];
+
+	 			this._layer.addChild(this._sprite);
+	 		}
+
+	 		_update_zoom()
+	 		{
+	 			if(this._effectType[1]) {
+	 				this._sprite.scale.x = Math.max(this._sprite.scale.x - 0.075, 1.0);
+	 				this._sprite.scale.y = this._sprite.scale.x;
 	 			}
-
-	 			if(this._text) {
-	 				bitmap.outlineWidth = this._fontSettings[3] || 0;
- 					if(this._fontSettings[4])
-	 					bitmap.outlineColor = this._fontSettings[4].CSS;
-	 				bitmap.outlineColor = Color.BLACK.CSS;
-	 				bitmap.drawText(this._text, dx + 2, 0, this._width - dw, h, 'center');
+	 			this._sprite.opacity = Math.max(this._sprite.opacity - 2, 0);
+	 			if(this._sprite.opacity == 0) {
+	 				this._layer.removeChild(this._sprite);
+	 				this._sprite = null;
 	 			}
- 			}.bind(this));
+	 		}
+		}
 
- 			this._sprite = new Sprite(bitmap);
- 			this._sprite.x = this.x;
- 			this._sprite.y = this.y;
- 			this._sprite.scale.x = this._effectType[0];
- 			this._sprite.scale.y = this._effectType[0];
+		SDK.setConstant(ABSObject_PopUp, 'EFFECT_DEFAULT', [1.5, true, 0]); //zoom, isUpdateZoom, +toTextSize
+		//END ABSObject_PopUp
+	//------------------------------------------------------------------------------
 
- 			this._layer.addChild(this._sprite);
- 		}
 
- 		_update_zoom()
- 		{
- 			if(this._effectType[1]) {
- 				this._sprite.scale.x = Math.max(this._sprite.scale.x - 0.075, 1.0);
- 				this._sprite.scale.y = this._sprite.scale.x;
- 			}
- 			this._sprite.opacity = Math.max(this._sprite.opacity - 2, 0);
- 			if(this._sprite.opacity == 0) {
- 				this._layer.removeChild(this._sprite);
- 				this._sprite = null;
- 			}
- 		}
-	}
+	//ABSObject_PopUpMachine
+	//------------------------------------------------------------------------------
 
-	SDK.setConstant(ABSObject_PopUp, 'EFFECT_DEFAULT', [1.5, true, 0]); //zoom, isUpdateZoom, +toTextSize
-	//END ABSObject_PopUp
+		class ABSObject_PopUpMachine {
+			constructor(x, y, width, stack_size, parent)
+	 		{
+	 			this._x = x;
+	 			this._y = y;
+	 			this._width = width;
+	 			this._stack_size = stack_size;
+	 			this._parent = parent;
+	 			this._effectType = null;
+	 			this._upMode = false;
+
+	 			this._items = [];
+	 			this._timers = [];
+
+	 			this._init_items();
+	 		}
+
+	 		setUpMode() {
+	 			this._upMode = true;
+	 		}
+
+	 		setEffectSettings(effect) {
+	 			this._effectType = effect;
+	 		}
+
+	 		setSingleMode() {
+	 			//this._singleMode = true;
+	 		}
+
+	 		move(x,y) {
+	 			this._x = x;
+	 			this._y = y;
+	 			this._step();
+	 		}
+
+	 		push(popUpItem)
+	 		{
+	 			if(this._effectType != null)
+	 				popUpItem.setEffectSettings(this._effectType);
+
+	 			popUpItem.setup(this._x, this._y, this._width, this._parent);
+
+	 			let item = this._items.shift();
+	 			if(item != null) item.dispose();
+
+	 			this._items.push(popUpItem);
+	 			this._step();
+	 			this._timers.shift();
+	 			this._timers.push(0);
+	 		}
+
+	 		clear()
+	 		{
+	 			this._items.forEach(function(item){
+	 				if(item != null) item.dispose();
+	 			});
+	 			this._items = [];
+	 			this._timers = [];
+	 			this._init_items();
+	 		}
+
+	 		update()
+	 		{
+	 			this._update_timers();
+	 			this._items.forEach(function(item){
+	 				if(item != null) item.update();
+	 			});
+	 		}
+
+	 		//PRIVATE
+	 		_init_items()
+	 		{
+	 			SDK.times(this._stack_size, function() { 
+	 				this._items.push(null);
+	 				this._timers.push(null);
+	 			}.bind(this));
+	 		}
+
+	 		_update_timers()
+	 		{
+	 			SDK.times(this._stack_size, function(i) { 
+	 				var index = (this._timers.length - 1) - i; //Reverse 
+	 				var timer = this._timers[index];
+	 				if(timer == null)
+	 					return;
+	 				else
+	 				{
+	 					if(timer < ABSObject_PopUpMachine.MAX_TIME)
+	 						this._timers[index] = this._timers[index] + 1;
+	 					if(timer == ABSObject_PopUpMachine.MAX_TIME) {
+	 						if(this._items[index] != null)
+	 						{
+	 							this._items[index].dispose();
+	 						}
+	 						this._items[index] = null;
+	 						this._timers[index] = null;
+	 					}
+	 				}
+	 			}.bind(this));
+	 		}
+
+	 		_step()
+	 		{
+	 			SDK.times(this._items.length, function(i) {
+	 				var index = (this._items.length - 1) - i; //Reverse 
+	 				var item = this._items[index];
+	 				if(item == null)
+	 					return;
+	 				
+	 				var y = 0;
+	 				if(this._upMode)
+	 					y = this._y - (ABSObject_PopUpMachine.Y_STEP * i);
+	 				else
+	 					y = this._y + (ABSObject_PopUpMachine.Y_STEP * i);
+
+	 				this._items[index].setX(this._x);
+	 				this._items[index].setY(y);
+	 			}.bind(this));
+	 		}
+		}
+		
+		SDK.setConstant(ABSObject_PopUpMachine, 'Y_STEP',   24);
+		SDK.setConstant(ABSObject_PopUpMachine, 'MAX_TIME', 60);
+		SDK.setConstant(ABSObject_PopUpMachine, 'SETTINGS', [1, false, 12]); //zoom, isUpdateZoom, +toTextSize
+		//END ABSObject_PopUpMachine
+	//------------------------------------------------------------------------------
+
+
+	//PopInfoManagerABS
+	//------------------------------------------------------------------------------
+		function PopInfoManagerABS() {
+	 		throw new Error('This is a static class');
+	 	}
+
+	 	PopInfoManagerABS.makeDamagePopUp = function(user) {
+	 		let result = user.result();
+
+	 		if(result.hpDamage != 0) {
+	 			let value = PopInfoManagerABS.HP(result.hpDamage, result.critical);
+	 	    	this._apply_pop_up(user, value);
+	 		}
+
+	 		if(result.mpDamage != 0) {
+	 			let value = PopInfoManagerABS.MP(result.mpDamage, result.critical);
+	 			this._apply_pop_up(user, value);
+	 		}
+
+	 		if(result.tpDamage != 0) {
+	 			let value = PopInfoManagerABS.TP(result.tpDamage, result.critical);
+	 			this._apply_pop_up(user, value);
+	 		}
+	 	}
+
+	 	PopInfoManagerABS.makeZeroDamagePopUp = function(user) {
+	 		let result = user.result();
+	 		let value = PopInfoManagerABS.HP(0, result.critical);
+	 		this._apply_pop_up(user, value);
+	 	}
+
+	 	PopInfoManagerABS.makeDrainPopUp = function(user) { //user - who get drained HP
+	 		let result = user.result();
+				if(result.hpDamage != 0) {
+					let value = PopInfoManagerABS.HP(result.hpDamage, result.critical);
+					value.getFontSettings()[2] = true;
+					this._apply_pop_up(user, value);
+				}
+
+				if(result.mpDamage != 0) {
+					let value = PopInfoManagerABS.MP(result.mpDamage, result.critical);
+					value.getFontSettings()[2] = true;
+					this._apply_pop_up(user, value);
+				}
+	 	}
+
+	 	PopInfoManagerABS.makeStatePopUp = function(user, stateId, isErase) {
+	 		let state = $dataStates[stateId];
+	 		if(state.iconIndex == 0)
+	 			return;
+	 		if(state.id == user.deathStateId()) 
+	 			return;
+	 		let value = PopInfoManagerABS.STATE((user.isEnemy() ? "" : state.name), state.iconIndex, isErase);
+	 		this._apply_pop_up(user, value);
+	 	}
+
+	 	PopInfoManagerABS.makeItemPopUp = function(user) {
+	 		let result = user.result();
+	 		if(!user.isAlive()) return;
+	 		if(result.missed) {
+	 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_MISS[SDK.isRU()]));
+	 			return;
+	 		}
+
+	 		if(result.evaded) {
+	 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_EVADE[SDK.isRU()]));
+	 			return;
+	 		}
+
+	 		if(result.isHit() && !result.success) {
+	 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_FAIL[SDK.isRU()]));
+	 			return;
+	 		}
+	 	}
+
+	 	PopInfoManagerABS.makeBuffPopUp = function(user, paramId, isPositive) {
+	 		//if(!BattleManagerRTBS.isBattle()) return;
+	 		if(!user.isAlive()) return;
+	 		let paramName = user.isEnemy() ? "" : TextManager.param(paramId);
+	 		var temp = isPositive ? 1 : -1;
+	 		let iconIndex = user.buffIconIndex(temp, paramId);
+	 		let value = PopInfoManagerABS.BUFF(paramName, iconIndex, isPositive);
+	 		if(!user.getInfoPops().include(value)) {
+	 			this._apply_pop_up(user, value);
+	 		}
+	 	}
+
+	 	PopInfoManagerABS.makeSkillRechargePopUp = function(user, skillId) {
+	 		//if(!BattleManagerRTBS.isBattle()) return;
+	 		if(!user.isAlive()) return;
+	 		if(user.isEnemy()) return; //This is for ActorEnemy, in version 1 not develop yet
+	 		let skill = $dataSkills[skillId];
+	 		let value = PopInfoManagerABS.SKILL(skill.name, skill.iconIndex);
+	 		if(!user.getInfoPops().include(value)) {
+	 			this._apply_pop_up(user, value);
+	 		}
+	 	}
+
+	 	PopInfoManagerABS.calcRate = function(rate) {
+	 		this.text = "";
+	 		/*if(rate > 1) {
+	 			this.text = AlphaABS.SYSTEM.STRING_POPUP_WEAK[SDK.isRU()];
+	 		} else if(rate === 0) {
+	 			this.text = AlphaABS.SYSTEM.STRING_POPUP_IMMUNE[SDK.isRU()];
+	 		} else if(rate < 1) {
+	 			this.text = AlphaABS.SYSTEM.STRING_POPUP_ABSORB[SDK.isRU()];
+	 		} else {
+	 			this.text = "Resist"; //What a hell?
+	 		}*/ //Not yet, my friend...
+	 	}
+
+	 	//STATIC
+	 	PopInfoManagerABS.HP = function(value, critical) {
+	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+	 		var color = Color.YELLOW;
+	 		if(value < 0) {
+	 			color = Color.GREEN;
+	 			value = Math.abs(value);
+	 		} else if(critical) {
+	 			color = Color.RED;
+	 			fontSettings[1] = 34;
+	 		}
+
+	 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
+	 		x.setNumered();
+	 		return x;
+	 	}
+
+	 	PopInfoManagerABS.TP = function(value, critical) {
+	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+	 		var color = Color.ORANGE;
+	 		if(value < 0) {
+	 			color = Color.GREEN;
+	 			value = Math.abs(value);
+	 		} else if(critical) {
+	 			color = Color.RED;
+	 			fontSettings[1] = 34;
+	 		}
+
+	 		value = value + " " +TextManager.tpA;
+	 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
+	 		x.setNumered();
+	 		return x;
+	 	}
+
+	 	PopInfoManagerABS.MP = function(value, critical) {
+	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+	 		var color = Color.MAGENTA;
+	 		if(value < 0) {
+	 			color = Color.BLUE;
+	 			value = Math.abs(value);
+	 		} else if(critical) {
+	 			color = Color.MAGENTA;
+	 			fontSettings[1] = 34;
+	 		}
+
+	 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
+	 		x.setNumered();
+	 		return x;
+	 	}
+
+	 	PopInfoManagerABS.STATE = function(name, iconIndex, isErase) {
+	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+	 		fontSettings[2] = true;
+
+	 		var temp = isErase ? "- " : "+ ";
+	 		fontSettings[0] = AlphaABS.SYSTEM.FONT;
+	 		return new ABSObject_PopUp(temp + name, null, iconIndex, fontSettings);
+	 	}
+
+	 	PopInfoManagerABS.BUFF = function(name, iconIndex, isPositive) {
+	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+	 		fontSettings[2] = true;
+
+	 		var color = isPositive ? Color.GREEN : Color.RED;
+	 		fontSettings[0] = AlphaABS.SYSTEM.FONT;
+	 		return new ABSObject_PopUp(name, color, iconIndex, fontSettings);
+	 	}
+
+	 	PopInfoManagerABS.TEXT = function(text) {
+	 		return new ABSObject_PopUp(text);
+	 	}
+
+	 	PopInfoManagerABS.TEXT_WITH_COLOR = function(text, color) {
+	 		return new ABSObject_PopUp(text, color);
+	 	}
+
+	 	PopInfoManagerABS.ALERT = function(text) {
+	 		return new ABSObject_PopUp(text, Color.RED, null, [null, 22, false, 2, Color.BLACK]);
+	 	}
+
+	 	PopInfoManagerABS.EXP = function(value) {
+	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+	 		fontSettings[1] = 32;
+	 		let x = new ABSObject_PopUp(value, Color.MAGENTA, null, fontSettings);
+	 		x.setNumered();
+	 		return x;
+	 	}
+
+	 	PopInfoManagerABS.SKILL = function(name, iconIndex) {
+	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+	 		fontSettings[2] = true;
+	 		return new ABSObject_PopUp(AlphaABS.SYSTEM.STRING_POPUP_SKILL[SDK.isRU()], Color.GREEN, iconIndex, fontSettings);
+	 	}
+
+	 	//PRIVATE
+	 	PopInfoManagerABS._apply_pop_up = function(user, value) {
+	 		/*if(this.text === undefined)
+	 			this.text = "";
+	 		if(this.text != "") {
+	 			if(value.isNumered()) value.setExtraText(this.text);
+	 			this.text = "";
+	 		}*/ 
+	 		user.addInfoPop(value);
+	 	}
+
+		//END PopInfoManagerABS
+	//------------------------------------------------------------------------------
+
+		AlphaABS.ABSObject_PopUp = ABSObject_PopUp;
+		AlphaABS.ABSObject_PopUpMachine = ABSObject_PopUpMachine;
+		AlphaABS.PopInfoManagerABS = PopInfoManagerABS;
+
+	})();
 //------------------------------------------------------------------------------
-
-
-//ABSObject_PopUpMachine
-//------------------------------------------------------------------------------
-
-	class ABSObject_PopUpMachine {
-		constructor(x, y, width, stack_size, parent)
- 		{
- 			this._x = x;
- 			this._y = y;
- 			this._width = width;
- 			this._stack_size = stack_size;
- 			this._parent = parent;
- 			this._effectType = null;
- 			this._upMode = false;
-
- 			this._items = [];
- 			this._timers = [];
-
- 			this._init_items();
- 		}
-
- 		setUpMode() {
- 			this._upMode = true;
- 		}
-
- 		setEffectSettings(effect) {
- 			this._effectType = effect;
- 		}
-
- 		setSingleMode() {
- 			//this._singleMode = true;
- 		}
-
- 		move(x,y) {
- 			this._x = x;
- 			this._y = y;
- 			this._step();
- 		}
-
- 		push(popUpItem)
- 		{
- 			if(this._effectType != null)
- 				popUpItem.setEffectSettings(this._effectType);
-
- 			popUpItem.setup(this._x, this._y, this._width, this._parent);
-
- 			let item = this._items.shift();
- 			if(item != null) item.dispose();
-
- 			this._items.push(popUpItem);
- 			this._step();
- 			this._timers.shift();
- 			this._timers.push(0);
- 		}
-
- 		clear()
- 		{
- 			this._items.forEach(function(item){
- 				if(item != null) item.dispose();
- 			});
- 			this._items = [];
- 			this._timers = [];
- 			this._init_items();
- 		}
-
- 		update()
- 		{
- 			this._update_timers();
- 			this._items.forEach(function(item){
- 				if(item != null) item.update();
- 			});
- 		}
-
- 		//PRIVATE
- 		_init_items()
- 		{
- 			SDK.times(this._stack_size, function() { 
- 				this._items.push(null);
- 				this._timers.push(null);
- 			}.bind(this));
- 		}
-
- 		_update_timers()
- 		{
- 			SDK.times(this._stack_size, function(i) { 
- 				var index = (this._timers.length - 1) - i; //Reverse 
- 				var timer = this._timers[index];
- 				if(timer == null)
- 					return;
- 				else
- 				{
- 					if(timer < ABSObject_PopUpMachine.MAX_TIME)
- 						this._timers[index] = this._timers[index] + 1;
- 					if(timer == ABSObject_PopUpMachine.MAX_TIME) {
- 						if(this._items[index] != null)
- 						{
- 							this._items[index].dispose();
- 						}
- 						this._items[index] = null;
- 						this._timers[index] = null;
- 					}
- 				}
- 			}.bind(this));
- 		}
-
- 		_step()
- 		{
- 			SDK.times(this._items.length, function(i) {
- 				var index = (this._items.length - 1) - i; //Reverse 
- 				var item = this._items[index];
- 				if(item == null)
- 					return;
- 				
- 				var y = 0;
- 				if(this._upMode)
- 					y = this._y - (ABSObject_PopUpMachine.Y_STEP * i);
- 				else
- 					y = this._y + (ABSObject_PopUpMachine.Y_STEP * i);
-
- 				this._items[index].setX(this._x);
- 				this._items[index].setY(y);
- 			}.bind(this));
- 		}
-	}
-	
-	SDK.setConstant(ABSObject_PopUpMachine, 'Y_STEP',   24);
-	SDK.setConstant(ABSObject_PopUpMachine, 'MAX_TIME', 60);
-	SDK.setConstant(ABSObject_PopUpMachine, 'SETTINGS', [1, false, 12]); //zoom, isUpdateZoom, +toTextSize
-	//END ABSObject_PopUpMachine
-//------------------------------------------------------------------------------
-
-
-//PopInfoManagerABS
-//------------------------------------------------------------------------------
-	function PopInfoManagerABS() {
- 		throw new Error('This is a static class');
- 	}
-
- 	PopInfoManagerABS.makeDamagePopUp = function(user) {
- 		let result = user.result();
-
- 		if(result.hpDamage != 0) {
- 			let value = PopInfoManagerABS.HP(result.hpDamage, result.critical);
- 	    	this._apply_pop_up(user, value);
- 		}
-
- 		if(result.mpDamage != 0) {
- 			let value = PopInfoManagerABS.MP(result.mpDamage, result.critical);
- 			this._apply_pop_up(user, value);
- 		}
-
- 		if(result.tpDamage != 0) {
- 			let value = PopInfoManagerABS.TP(result.tpDamage, result.critical);
- 			this._apply_pop_up(user, value);
- 		}
- 	}
-
- 	PopInfoManagerABS.makeZeroDamagePopUp = function(user) {
- 		let result = user.result();
- 		let value = PopInfoManagerABS.HP(0, result.critical);
- 		this._apply_pop_up(user, value);
- 	}
-
- 	PopInfoManagerABS.makeDrainPopUp = function(user) { //user - who get drained HP
- 		let result = user.result();
-			if(result.hpDamage != 0) {
-				let value = PopInfoManagerABS.HP(result.hpDamage, result.critical);
-				value.getFontSettings()[2] = true;
-				this._apply_pop_up(user, value);
-			}
-
-			if(result.mpDamage != 0) {
-				let value = PopInfoManagerABS.MP(result.mpDamage, result.critical);
-				value.getFontSettings()[2] = true;
-				this._apply_pop_up(user, value);
-			}
- 	}
-
- 	PopInfoManagerABS.makeStatePopUp = function(user, stateId, isErase) {
- 		let state = $dataStates[stateId];
- 		if(state.iconIndex == 0)
- 			return;
- 		if(state.id == user.deathStateId()) 
- 			return;
- 		let value = PopInfoManagerABS.STATE((user.isEnemy() ? "" : state.name), state.iconIndex, isErase);
- 		this._apply_pop_up(user, value);
- 	}
-
- 	PopInfoManagerABS.makeItemPopUp = function(user) {
- 		let result = user.result();
- 		if(!user.isAlive()) return;
- 		if(result.missed) {
- 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_MISS[SDK.isRU()]));
- 			return;
- 		}
-
- 		if(result.evaded) {
- 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_EVADE[SDK.isRU()]));
- 			return;
- 		}
-
- 		if(result.isHit() && !result.success) {
- 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_FAIL[SDK.isRU()]));
- 			return;
- 		}
- 	}
-
- 	PopInfoManagerABS.makeBuffPopUp = function(user, paramId, isPositive) {
- 		//if(!BattleManagerRTBS.isBattle()) return;
- 		if(!user.isAlive()) return;
- 		let paramName = user.isEnemy() ? "" : TextManager.param(paramId);
- 		var temp = isPositive ? 1 : -1;
- 		let iconIndex = user.buffIconIndex(temp, paramId);
- 		let value = PopInfoManagerABS.BUFF(paramName, iconIndex, isPositive);
- 		if(!user.getInfoPops().include(value)) {
- 			this._apply_pop_up(user, value);
- 		}
- 	}
-
- 	PopInfoManagerABS.makeSkillRechargePopUp = function(user, skillId) {
- 		//if(!BattleManagerRTBS.isBattle()) return;
- 		if(!user.isAlive()) return;
- 		if(user.isEnemy()) return; //This is for ActorEnemy, in version 1 not develop yet
- 		let skill = $dataSkills[skillId];
- 		let value = PopInfoManagerABS.SKILL(skill.name, skill.iconIndex);
- 		if(!user.getInfoPops().include(value)) {
- 			this._apply_pop_up(user, value);
- 		}
- 	}
-
- 	PopInfoManagerABS.calcRate = function(rate) {
- 		this.text = "";
- 		/*if(rate > 1) {
- 			this.text = AlphaABS.SYSTEM.STRING_POPUP_WEAK[SDK.isRU()];
- 		} else if(rate === 0) {
- 			this.text = AlphaABS.SYSTEM.STRING_POPUP_IMMUNE[SDK.isRU()];
- 		} else if(rate < 1) {
- 			this.text = AlphaABS.SYSTEM.STRING_POPUP_ABSORB[SDK.isRU()];
- 		} else {
- 			this.text = "Resist"; //What a hell?
- 		}*/ //Not yet, my friend...
- 	}
-
- 	//STATIC
- 	PopInfoManagerABS.HP = function(value, critical) {
- 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
- 		var color = Color.YELLOW;
- 		if(value < 0) {
- 			color = Color.GREEN;
- 			value = Math.abs(value);
- 		} else if(critical) {
- 			color = Color.RED;
- 			fontSettings[1] = 34;
- 		}
-
- 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
- 		x.setNumered();
- 		return x;
- 	}
-
- 	PopInfoManagerABS.TP = function(value, critical) {
- 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
- 		var color = Color.ORANGE;
- 		if(value < 0) {
- 			color = Color.GREEN;
- 			value = Math.abs(value);
- 		} else if(critical) {
- 			color = Color.RED;
- 			fontSettings[1] = 34;
- 		}
-
- 		value = value + " " +TextManager.tpA;
- 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
- 		x.setNumered();
- 		return x;
- 	}
-
- 	PopInfoManagerABS.MP = function(value, critical) {
- 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
- 		var color = Color.MAGENTA;
- 		if(value < 0) {
- 			color = Color.BLUE;
- 			value = Math.abs(value);
- 		} else if(critical) {
- 			color = Color.MAGENTA;
- 			fontSettings[1] = 34;
- 		}
-
- 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
- 		x.setNumered();
- 		return x;
- 	}
-
- 	PopInfoManagerABS.STATE = function(name, iconIndex, isErase) {
- 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
- 		fontSettings[2] = true;
-
- 		var temp = isErase ? "- " : "+ ";
- 		fontSettings[0] = AlphaABS.SYSTEM.FONT;
- 		return new ABSObject_PopUp(temp + name, null, iconIndex, fontSettings);
- 	}
-
- 	PopInfoManagerABS.BUFF = function(name, iconIndex, isPositive) {
- 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
- 		fontSettings[2] = true;
-
- 		var color = isPositive ? Color.GREEN : Color.RED;
- 		fontSettings[0] = AlphaABS.SYSTEM.FONT;
- 		return new ABSObject_PopUp(name, color, iconIndex, fontSettings);
- 	}
-
- 	PopInfoManagerABS.TEXT = function(text) {
- 		return new ABSObject_PopUp(text);
- 	}
-
- 	PopInfoManagerABS.TEXT_WITH_COLOR = function(text, color) {
- 		return new ABSObject_PopUp(text, color);
- 	}
-
- 	PopInfoManagerABS.ALERT = function(text) {
- 		return new ABSObject_PopUp(text, Color.RED, null, [null, 22, false, 2, Color.BLACK]);
- 	}
-
- 	PopInfoManagerABS.EXP = function(value) {
- 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
- 		fontSettings[1] = 32;
- 		let x = new ABSObject_PopUp(value, Color.MAGENTA, null, fontSettings);
- 		x.setNumered();
- 		return x;
- 	}
-
- 	PopInfoManagerABS.SKILL = function(name, iconIndex) {
- 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
- 		fontSettings[2] = true;
- 		return new ABSObject_PopUp(AlphaABS.SYSTEM.STRING_POPUP_SKILL[SDK.isRU()], Color.GREEN, iconIndex, fontSettings);
- 	}
-
- 	//PRIVATE
- 	PopInfoManagerABS._apply_pop_up = function(user, value) {
- 		/*if(this.text === undefined)
- 			this.text = "";
- 		if(this.text != "") {
- 			if(value.isNumered()) value.setExtraText(this.text);
- 			this.text = "";
- 		}*/ //chotto matte, watashi no tomodachi
- 		user.addInfoPop(value);
- 	}
-
-	//END PopInfoManagerABS
-//------------------------------------------------------------------------------
-
-	AlphaABS.ABSObject_PopUp = ABSObject_PopUp;
-	AlphaABS.ABSObject_PopUpMachine = ABSObject_PopUpMachine;
-	AlphaABS.PopInfoManagerABS = PopInfoManagerABS;
-
-})();
 
 //==========================================================================================================================================================
 // Alpha ABS EXTENSION Particle Engine
@@ -2251,9 +2785,6 @@ AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
         }
 
         update() {
-            //if(this.particles.length == this.limit) {
-            //    this.particles.shift();
-            //}
             if(this.particles.length == this.limit)
                 return;
             if(this.isWork()) {
@@ -2401,7 +2932,6 @@ AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
 
 })();
 
-
 //==========================================================================================================================================================
 // Alpha ABS MAIN 
 //==========================================================================================================================================================
@@ -2417,7 +2947,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//PLATFORM
 	var LOG = new PLATFORM.DevLog("Dev ABS");
 	var SDK = PLATFORM.SDK;
-	var IKey = PLATFORM.IKey;
 	var Color = PLATFORM.Color;
 
 	//ABS
@@ -2435,9 +2964,10 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//EXTEND for DEV
 	AlphaABS.BattleManagerABS = BattleManagerABS;
 	var ABSUtils = AlphaABS.UTILS;
+	var ABSPathfinding = AlphaABS.ABSPathfinding;
 
-	//BattleManagerABS
-	//------------------------------------------------------------------------------
+//BattleManagerABS
+//------------------------------------------------------------------------------
 	function BattleManagerABS() {
 	 	throw new Error('This is a static class');
 	}
@@ -2450,6 +2980,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		BattleProcessABS = new Game_BattleProcessABS();
 		BattleManagerABS.clearABS();
 		this._prepareResources();
+		Input.loadSchemeABS();
+		ABSPathfinding.init();
 	}
 
 	BattleManagerABS.onMapLoaded = function() {
@@ -2491,6 +3023,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		LOG.p("Manager : ABS Map loaded");
 		this._isABSMap = true;
 		this._absMapId = $gameMap.mapId();
+		ABSPathfinding.setup();
 	}
 
 	BattleManagerABS.stopABS = function() {
@@ -2694,11 +3227,13 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	BattleManagerABS._prepareResources = function() {
 		//Load images to memory 
-		//DEPRECATED
+		ImageManager.loadPictureABS('CircleSegment_small')
+	    ImageManager.loadPictureABS('CircleSegment_small_down');
+	    ImageManager.loadPictureABS('CircleSegment_small_L');
+	    ImageManager.loadPictureABS('CircleSegment_small_R');
 	}
 
-	SDK.setConstant(BattleManagerABS, 'TURN', 60);
-
+	SDK.setConstant(BattleManagerABS, 'TURN', AlphaABS.SYSTEM.FRAMES_PER_SECOND);
 //END BattleManagerABS
 //------------------------------------------------------------------------------
 
@@ -2839,13 +3374,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		}
 		LOG.p("Skill " + this.name() + " loaded external params");
 	}	
-
-	/*Game_SkillABS.prototype.resetStack = function() {
-		if(this.stackTime > 0) {
-			this._currentStack = 0;
-			this.onUse();
-		}
-	}*/
 
 	Game_SkillABS.prototype.chargeStack = function(size) {
 		if(size === undefined) {
@@ -3200,12 +3728,14 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			var item = this._skillsABS[i];
 			if(isItem) {
 				if(item.skillId == objId && item.isItem()) {
-					this._skillsABS.splice(i,0);
+					this._skillsABS.splice(i,1);
+					this._requestRefresh();
 					break;
 				}
 			} else {
 				if(item.skillId == objId && !item.isItem()) {
-					this._skillsABS.splice(i,0);
+					this._skillsABS.splice(i,1);
+					this._requestRefresh();
 					break;
 				} 
 			}
@@ -3839,9 +4369,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 
 //Game_TimerABS
-	//Game_TimerABS.prototype = Object.create();
-	//Game_TimerABS.prototype.constructor = Game_TimerABS;
-	
+//------------------------------------------------------------------------------
 	Game_TimerABS.prototype.initialize = function() {
 		this._paused = false;
 		this._mValue = 0;
@@ -3916,13 +4444,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//END Game_TimerABS
 //------------------------------------------------------------------------------
 
-
 //Game_AIBot
 //------------------------------------------------------------------------------
-	/*function Game_AIBot() {
-    	this.initialize.apply(this, arguments);
-	}*/
-
 	Game_AIBot.prototype = Object.create(Game_Event.prototype);
 	Game_AIBot.prototype.constructor = Game_AIBot;
 
@@ -3966,7 +4489,10 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    this._absParams.agressive = b.agressive; //Агрессивный враг (будет догонять)
 		this.setRevive(this._absParams.reviveTime);
 
-		this._absParams.useAStar = true;
+		if(Imported.Quasi_Movement)
+			this._absParams.useAStar = true;
+		else
+			this._absParams.useAStar = false;
 
 	    this._storeMoveData();
 	};
@@ -4529,6 +5055,14 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		if(!this.target().inActive()) {
 			this._changeState('free');
 		}
+
+		if(!this._checkVision(this.target())) {
+			if(this._absParams.behavior.noMove) {
+				this._changeState('free');
+				return;
+			}
+		}
+
 		this._makeActions();
 		switch(this._absParams.actionState) {
 		case 'approach': 
@@ -4769,10 +5303,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				this.battler().regenerateAllonFree();
 			}
 		}
-	}
-
-	
-//END Game_AIBot
+	}	
+	//END Game_AIBot
 //------------------------------------------------------------------------------
 
 //Game_EnemyABS
@@ -4790,15 +5322,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		Game_Enemy.prototype.initMembers.call(this);
 		this._absParams.myTurnCount = 0; //Количество секунд, проведённых в сессии боя
 	}
-
-	/*var _GameBattleBase_xparam = Game_BattlerBase.prototype.xparam;
-	Game_EnemyABS.prototype.xparam = function(xparamId) {
-		if(xparamId == 'enemyHpRegenRate') {
-			return 0.5;
-		} else {
-			return Game_BattlerBase.prototype.xparam.call(this, xparamId);
-		}
-	};*/
 
 	//NEW
 	Game_EnemyABS.prototype.regenerateAllonFree = function() {
@@ -4994,14 +5517,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 		if(!this.isPlayer()) {
 			this._setupSelection();
-			//if(this._character && this._character.battler()) {
-				//this._updateEffect(); //Пока отключу это
-			//}
-			//this._setupDebugInfo();
 		} else {
 			this._setupWeaponAnimation();
-			//this._setupPopUpExp();
-			//this._setupExpPopUp();
 			this._setupMotion();
 			this._updateMotion();
 		}
@@ -5068,6 +5585,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    if (this._stateIconSprite.y < 20 - this.y) {
 	        this._stateIconSprite.y = 20 - this.y;
 	    }
+
+	    this._stateIconSprite.visible = this._character.inActive();
 	}
 
 	Sprite_CharacterABS.prototype._updateDamagePopup = function() {
@@ -5195,15 +5714,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	};
 
 
-	//TODO Объекты POPUP и машины устарели!!! ААААА, надо переделать111
+	//TODO Объекты POPUP и машины устарели!!!
 	Sprite_CharacterABS.prototype._setupPopUpExp = function() {
 		if(!this._absParams.popUpMachineExp) {
-			//let point = this._getCornerPoint();
 			this._absParams.popUpMachineExp = new ABS.ABSObject_PopUpMachine(0,0, this.patternWidth(), 4, this.parent);
-			//this._absParams.popUpMachineExp.setEffectSettings([1.5, false, 0]);
 			this._absParams.popUpMachineExp.setUpMode();
-
-			//this._absParams.popUpMachineExp.move(point.x,point.y - 32);
 		}
 
 		this._absParams.popUpMachineExp.update();
@@ -5218,30 +5733,15 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	Sprite_CharacterABS.prototype._setupPopUp = function() {
-		/*if(!this._absParams.popUpMachine) {
-			let point = this._getCornerPoint();
-			this._absParams.popUpMachine = new ABS.ABSObject_PopUpMachine(point.x,point.y - 26, this.patternWidth(), 1, this.parent);
-			this._absParams.popUpMachine.setEffectSettings([1.0, false, 0]);
-			this._absParams.popUpMachine.setSingleMode();
-			this._absParams.popUpMachine.setUpMode();
-		}*/
-
-		//let point = this._getCornerPoint();
-		//this._absParams.popUpMachine.move(point.x,point.y - this.patternHeight() - 12);
-
 		let items = this._character.battler().getInfoPops();
 		if(items.length != 0) {
 			for(let j = 0; j<items.length; j++)
 			{
 				let item = items[j];
 				this._pushPopOnUI(item);
-				//if(!item.hasIcon()) {
-				//	this._absParams.popUpMachine.push(item);
-				//} 
 			}
 		}
 		this._character.battler().clearInfoPops();
-		//this._absParams.popUpMachine.update();
 	}
 
 	Sprite_CharacterABS.prototype._pushPopOnUI = function(item) {
@@ -5274,7 +5774,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 		} else {
 			if(this._animationCast) {
-				//this._animationSprites.delete(this._animationCast);
 				this._animationCast.remove();
 				this._animationCast = null;
 				if(this._animationCastAudio) {
@@ -5316,7 +5815,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	Sprite_CharacterABS.prototype._setupDamagePopup = function() {
 		var t = this._character.battler();
 	    if (t && t.isDamagePopupRequested()) {
-	    	if(t.isAlive()) {
+	    	//if(t.isAlive()) {
 		        var sprite = new Sprite_Damage();
 		        sprite.x = this.x;
 		        sprite.y = this.y - this.patternHeight() - 10;
@@ -5325,7 +5824,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		        sprite.scale.y = 0.6;
 		        this._absParams.damages.push(sprite);
 		        this.parent.addChild(sprite);
-		    }
+		    //}
 	        t.clearDamagePopup();
 	        t.clearResult();
 	    }
@@ -5377,32 +5876,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 //Game_Map
 //------------------------------------------------------------------------------
-	/*var _Game_Map_setupEvents = Game_Map.prototype.setupEvents;
-	Game_Map.prototype.setupEvents = function() {
-		this._isABSMap = false;
-		if($dataMap.meta.ABS) {
-			this._absParams = {};
-
-			this._isABSMap = true;
-			this._absParams.sVectors = [];
-			this._absParams.animationABS = null;
-			this._absParams.targetCircle = null;
-			this._absParams.targetCircleNeedLock = false;
-			this._absParams.needCast = null;
-			this._absParams.menuClickCount = 1;
-
-			this.setupEventsABS();
-			$gamePlayer.hideFollowers();
-		} else  {
-			_Game_Map_setupEvents.call(this);
-			if($dataSystem.optFollowers) $gamePlayer.showFollowers();
-		}
-	};*/
-
 	var _Game_Map_setupEvents = Game_Map.prototype.setupEvents;
 	Game_Map.prototype.setupEvents = function() {
 		_Game_Map_setupEvents.call(this);
 		this._isABSMap = false;
+		if(!$dataMap.meta) return;
 		if($dataMap.meta.ABS) {
 			this._absParams = {};
 
@@ -5536,246 +6014,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		this._absParams.animationABS = animationId;
 	}
 
-	//NEW http://buildnewgames.com/astar/
-	//TODO OPTIMAZE TO MODULE (лишнее выделение памяти + умножение размер карты, надо вывести в модуль, при MapOnLoad пересчтывать размеры)
-	Game_Character.prototype.astar = function(goalX, goalY) {
-		//LOG.p("A* run");
-        var abs = Math.abs;
-        var max = Math.max;
-        var pow = Math.pow;
-        var sqrt = Math.sqrt;
-
-        var worldWidth = $gameMap.width();
-        var worldHeight = $gameMap.height();
-        var worldSize = worldWidth * worldHeight;
-
-        var distanceFunction = ManhattanDistance;
-        var findNeighbours = function() {};
-
-        var char = this;
-
-        function ManhattanDistance(Point, Goal)
-        {   // linear movement - no diagonals - just cardinal directions (NSEW)
-            return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
-        }
-
-        function canWalkHere(x, y)
-        {
-            if(x == char.x && y == char.y) {
-                return true;
-            }
-
-            if (!$gameMap.isValid(x, y)) {
-                return false;
-            }
-
-            if (char.isThrough() || char.isDebugThrough()) {
-                return true;
-            }
-
-            if(x == goalX && y == goalY) {
-                return true;
-            }
-
-            if (char.isCollidedWithCharacters(x, y)) {
-                return false;
-            }
-
-            if(!char.isMapPassable(x,y,1)) {
-               return false;
-            }
-
-            return true;
-        };
-
-        function Node(Parent, Point)
-        {
-            var newNode = {
-                // pointer to another Node object
-                Parent:Parent,
-                // array index of this Node in the world linear array
-                value:Point.x + (Point.y * worldWidth),
-                // the location coordinates of this Node
-                x:Point.x,
-                y:Point.y,
-                // the distanceFunction cost to get
-                // TO this Node from the START
-                f:0,
-                // the distanceFunction cost to get
-                // from this Node to the GOAL
-                g:0
-            };
-
-            return newNode;
-        }
-
-        function Neighbours(x, y)
-        {
-            var N = y - 1,
-            S = y + 1,
-            E = x + 1,
-            W = x - 1,
-            myN = N > -1 && canWalkHere(x, N),
-            myS = S < worldHeight && canWalkHere(x, S),
-            myE = E < worldWidth && canWalkHere(E, y),
-            myW = W > -1 && canWalkHere(W, y),
-            result = [];
-            if(myN)
-                result.push({x:x, y:N});
-            if(myE)
-                result.push({x:E, y:y});
-            if(myS)
-                result.push({x:x, y:S});
-            if(myW)
-                result.push({x:W, y:y});
-            findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
-            return result;
-        }
-
-        function DiagonalNeighbours(myN, myS, myE, myW, N, S, E, W, result)
-        {
-            if(myN)
-            {
-                if(myE && canWalkHere(E, N))
-                    result.push({x:E, y:N});
-                if(myW && canWalkHere(W, N))
-                    result.push({x:W, y:N});
-            }
-            if(myS)
-            {
-                if(myE && canWalkHere(E, S))
-                    result.push({x:E, y:S});
-                if(myW && canWalkHere(W, S))
-                    result.push({x:W, y:S});
-            }
-        }
-
-        function DiagonalNeighboursFree(myN, myS, myE, myW, N, S, E, W, result)
-        {
-            myN = N > -1;
-            myS = S < worldHeight;
-            myE = E < worldWidth;
-            myW = W > -1;
-            if(myE)
-            {
-                if(myN && canWalkHere(E, N))
-                    result.push({x:E, y:N});
-                if(myS && canWalkHere(E, S))
-                    result.push({x:E, y:S});
-            }
-            if(myW)
-            {
-                if(myN && canWalkHere(W, N))
-                    result.push({x:W, y:N});
-                if(myS && canWalkHere(W, S))
-                    result.push({x:W, y:S});
-            }
-        }
-
-        function calculatePath()
-        {
-            // create Nodes from the Start and End x,y coordinates
-            var mypathStart = Node(null, {x:char.x, y:char.y});
-            var mypathEnd = Node(null, {x:goalX, y:goalY});
-            // create an array that will contain all world cells
-            var AStar = new Array(worldSize);
-            // list of currently open Nodes
-            var Open = [mypathStart];
-            // list of closed Nodes
-            var Closed = [];
-            // list of the final output array
-            var result = [];
-            // reference to a Node (that is nearby)
-            var myNeighbours;
-            // reference to a Node (that we are considering now)
-            var myNode;
-            // reference to a Node (that starts a path in question)
-            var myPath;
-            // temp integer variables used in the calculations
-            var length, max, min, i, j;
-            // iterate through the open list until none are left
-            while(length = Open.length)
-            {
-                max = worldSize;
-                min = -1;
-                for(i = 0; i < length; i++)
-                {
-                    if(Open[i].f < max)
-                    {
-                        max = Open[i].f;
-                        min = i;
-                    }
-                }
-                // grab the next node and remove it from Open array
-                myNode = Open.splice(min, 1)[0];
-                // is it the destination node?
-                if(myNode.value === mypathEnd.value)
-                {
-                    myPath = Closed[Closed.push(myNode) - 1];
-                    do
-                    {
-                        result.push([myPath.x, myPath.y]);
-                    }
-                    while (myPath = myPath.Parent);
-                    // clear the working arrays
-                    AStar = Closed = Open = [];
-                    // we want to return start to finish
-                    result.reverse();
-                }
-                else // not the destination
-                {
-                    // find which nearby nodes are walkable
-                    myNeighbours = Neighbours(myNode.x, myNode.y);
-                    // test each one that hasn't been tried already
-                    for(i = 0, j = myNeighbours.length; i < j; i++)
-                    {
-                        myPath = Node(myNode, myNeighbours[i]);
-                        if (!AStar[myPath.value])
-                        {
-                            // estimated cost of this particular route so far
-                            myPath.g = myNode.g + distanceFunction(myNeighbours[i], myNode);
-                            // estimated cost of entire guessed route to the destination
-                            myPath.f = myPath.g + distanceFunction(myNeighbours[i], mypathEnd);
-                            // remember this new path for testing above
-                            Open.push(myPath);
-                            // mark this node in the world graph as visited
-                            AStar[myPath.value] = true;
-                        }
-                    }
-                    // remember this route as having no more untested options
-                    Closed.push(myNode);
-                }
-            } // keep iterating until the Open list is empty
-            return result;
-        }
-
-        var path = calculatePath();
-
-        if(path.length > 0) {
-
-            if(path.length > 1) {
-                var stepX = path[1][0];
-                var stepY = path[1][1];
-
-                var deltaX1 = $gameMap.deltaX(stepX, char.x);
-                var deltaY1 = $gameMap.deltaY(stepY, char.y);
-
-                if (deltaY1 > 0) {
-                    return 2;
-                } else if (deltaX1 < 0) {
-                    return 4;
-                } else if (deltaX1 > 0) {
-                    return 6;
-                } else if (deltaY1 < 0) {
-                    return 8;
-                }
-            } 
-
-        } 
-        
-        return 0;
-    }
-
 	//NEW
 	Game_Character.prototype.moveToPoint = function(point) {
         var dir = this.findDirectionTo(point.x,point.y);
@@ -5815,7 +6053,9 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
             return _Game_Character_findDirectionTo.call(this, goalX, goalY);
         }
         else {
-            return this.astar(goalX, goalY);
+            var t = ABSPathfinding.findPath(this, goalX, goalY);
+            if(t == 0) t = _Game_Character_findDirectionTo.call(this, goalX, goalY);
+            return t;
         }
     }
 
@@ -5833,6 +6073,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    this._absParams.inBattle = false;
 	    this._absParams.control = true; //Отвечат на управление
 	    this._absParams.dead = false;
+
+	    this._absParams.inputMode = 0; //0 - ControllPanel, 1 - Weapons
 
 	    this._absParams.state = 'free'; //Состояние
 	    this._absParams.target = null; //Моя цель
@@ -5860,6 +6102,25 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    	this.moveStraight(direction);
 	    }
 	};
+
+	//NEW
+    Game_Player.prototype.changeInputMode = function(mode) {
+        if(mode == 0){
+            if(BattleManagerABS.UI().weapCircle().isOpen()) {
+                BattleManagerABS.UI().weapCircle().close();
+                this._absParams.inputMode = mode;
+                 BattleManagerABS.UI().controlPanel().selectItemAt(4, false);
+            }
+        }
+        else {
+            if(!BattleManagerABS.UI().weapCircle().isOpen()) {
+                BattleManagerABS.UI().weapCircle().open();
+                this._absParams.inputMode = mode;
+                BattleManagerABS.UI().controlPanel().selectItemAt(4, true);
+            }
+        }
+
+    }
 
 	//NEW
 	Game_Player.prototype.onGameLoad = function() {
@@ -5900,7 +6161,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	Game_Player.prototype.initABS = function() {
 		LOG.p("Player inited");
 		this._absParams.battler = $gameParty.leader();
-		this._absParams.useAStar = true;
+		if(!Imported.Quasi_Movement)
+			this._absParams.useAStar = true;
 	}
 
 	//NEW
@@ -5921,6 +6183,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		this.clearExpPopup();
 		this._resetTarget();
 		this.battler().refreshABSSkills();
+		this.changeInputMode(0);
 	}
 
 	//NEW
@@ -5983,7 +6246,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//NEW
 	Game_Player.prototype.onBattleStart = function() {
 		LOG.p("PL : Battle start");
-		BattleManagerABS.alertOnUI(Consts.STRING_ALERT_INBATTLE[SDK.isRU()]);
+		//BattleManagerABS.alertOnUI(Consts.STRING_ALERT_INBATTLE[SDK.isRU()]);
 		this._absParams.inBattle = true;
 		this._absParams.inBattleTimer = new Game_TimerABS();
 		this._absParams.inBattleTimer.start(120);
@@ -5992,7 +6255,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//NEW
 	Game_Player.prototype.onBattleEnd = function() {
 		LOG.p("PL : Battle end");
-		BattleManagerABS.alertOnUI(Consts.STRING_ALERT_OUTBATTLE[SDK.isRU()]);
+		//BattleManagerABS.alertOnUI(Consts.STRING_ALERT_OUTBATTLE[SDK.isRU()]);
 		this._absParams.inBattle = false;
 		this._absParams.inBattleTimer = null;
 	}
@@ -6037,7 +6300,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//NEW
 	Game_Player.prototype.touchControlAt = function(index) {
 		if(!this.canControl()) return;
-		if(index > 3) {
+		if(index > 4) {
 			return;
 		}
 
@@ -6071,12 +6334,17 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				}
 			break;
 			case 2:
-				if(this._absParams.state == 'free' && !this.isJumping() && this.canPass(this.x, this.y, this.direction())) {
-					switch(ABSUtils.getDirKey(this)){
-						case 'u' : this.jump(0,-1); break;
-						case 'd' : this.jump(0, 1); break;
-						case 'l' : this.jump(-1,0); break;
-						case 'r' : this.jump( 1,0); break;
+				if(Imported.YEP_SmartJump == true) {
+					if(this._absParams.state == 'free' && !this.isJumping())
+						$gamePlayer.smartJump(1);
+				} else {
+					if(this._absParams.state == 'free' && !this.isJumping() && this.canPass(this.x, this.y, this.direction())) {
+						switch(ABSUtils.getDirKey(this)){
+							case 'u' : this.jump(0,-1); break;
+							case 'd' : this.jump(0, 1); break;
+							case 'l' : this.jump(-1,0); break;
+							case 'r' : this.jump( 1,0); break;
+						}
 					}
 				}
 				BattleManagerABS.UI().controlPanel().touchItemAt(index);
@@ -6090,9 +6358,31 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				}
 				BattleManagerABS.UI().controlPanel().touchItemAt(index);
 			break;
+			case 4:
+				if(!this.battler().isFavWeapExists()) return;
+	            BattleManagerABS.UI().controlPanel().touchItemAt(index);
+	            if(this._absParams.inputMode == 0) {
+	                this.changeInputMode(1);
+	            }
+	            else {
+	                this.changeInputMode(0);               
+	            }
+			break;
 		}
 
 	}
+
+	//NEW
+    Game_Player.prototype.touchWeaponAt = function(index) {
+        BattleManagerABS.UI().weapCircle().click(index);
+        if(this.battler().changeFavWeap(index)) {
+            SoundManager.playEquip();
+            this.changeInputMode(0);
+        } else
+            SoundManager.playBuzzer();
+
+        BattleManagerABS.UI().weapCircleRefresh();
+    }   
 
 	//NEW
 	Game_Player.prototype.onActionOnMe = function(who) {
@@ -6406,38 +6696,49 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	Game_Player.prototype._update_input = function() {
-		if(Input.isTriggered(IKey.W())) {
-			this.touchControlAt(1);
-			return;
-		}
+		if(Input.isTriggered(AlphaABS.Key.symbol.wC)) {
+            this.touchControlAt(4);
+            return;
+        }
 
-		for(var i = 1; i<9; i++) {
-			if(Input.isTriggered(i.toString())) {
-				this.touchSkillAt(i);
-				break;
-			}
-		}
+		if(this._absParams.inputMode == 0) {
+			if(Input.isTriggered(AlphaABS.Key.symbol.cpW)) {
+	            this.touchControlAt(AlphaABS.Key.indexSchemeB.cpW);
+	            return;
+	        }
 
-		if(Input.isTriggered(IKey.A())) {
-			this.touchControlAt(0);
-			return;
-		}
+	        var isSp = AlphaABS.Key.isTriggeredSP();
+	        if(isSp != null) {
+	            this.touchSkillAt(isSp);
+	        }
 
-		if(Input.isTriggered(IKey.D())) {
-			this.touchControlAt(3);
-			return;
-		}
+	        if(Input.isTriggered(AlphaABS.Key.symbol.cpA)) {
+	            this.touchControlAt(AlphaABS.Key.indexSchemeB.cpA);
+	            return;
+	        }
 
-		if(Input.isTriggered(IKey.TAB())) {
-			var t = BattleManagerABS.nextPlayerTarget();
-			if(t) BattleManagerABS.setPlayerTarget(t);
+	        if(Input.isTriggered(AlphaABS.Key.symbol.cpD)) {
+	            this.touchControlAt(AlphaABS.Key.indexSchemeB.cpD);
+	            return;
+	        }
 
-		}
+	        if(Input.isTriggered(AlphaABS.Key.symbol.tS)) {
+	            var t = BattleManagerABS.nextPlayerTarget();
+	            if(t) BattleManagerABS.setPlayerTarget(t);
 
-		if(Input.isTriggered(IKey.S())) {
-			this.touchControlAt(2);
-			return;
-		}
+	        }
+
+	        if(Input.isTriggered(AlphaABS.Key.symbol.cpS)) {
+	            this.touchControlAt(AlphaABS.Key.indexSchemeB.cpS);
+	            return;
+	        }
+    	} else {
+    		var index = AlphaABS.Key.isTriggeredWS();
+            if(index != null) {
+                this.touchWeaponAt(index);
+                return;
+            }
+    	}
 
 	}
 
@@ -6818,6 +7119,12 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				AudioManager.playSe({name:'Equip2',pan:0,pitch:140,volume:90});
 				BattleManagerABS.UI().pushOnItemPanel('item', item);
 			}
+
+			if(DataManager.isWeapon(item)) {
+	            if(AlphaABS.BattleManagerABS.UI()) {
+	                AlphaABS.BattleManagerABS.UI().weapCircleRefresh();
+	            }
+        	}
 		}
 	}
 
@@ -6938,7 +7245,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		return (this == $gamePlayer.battler());
 	}
  	//END Game_BattlerBase
- //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 //Game_Battler
 //------------------------------------------------------------------------------
@@ -7074,14 +7381,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		var action = this.action(0);
 		var skill = this.skillABS_byAction(action);
 		if(skill.isNeedReloadParam()) {
-			//LOG.p("ReloadParam " + skill.reloadParam);
-			var reloadVar = 60;
-			try {
-				reloadVar = Math.round(parseInt(eval(skill.reloadParam)));
-			} catch(err) {
-				LOGW.p("Can't calculate" + skill.name() + " <reloadParam> " + err);
-			}
-			skill.preUse(reloadVar);
+			skill.preUse(this._calculateABSSkillReloadParam(skill.reloadParam));
 		}
 		this.useItem(action.item());
 		skill.onUse();
@@ -7095,6 +7395,17 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 		this.removeStatesAuto(1);
     	this.removeBuffsAuto();
+	}
+
+	Game_Battler.prototype._calculateABSSkillReloadParam = function(reloadParam) {
+		var reloadVar = 10;
+		try {
+			reloadVar = Math.round(parseInt(eval(reloadParam)));
+		} catch(err) {
+			LOGW.p("Can't calculate" + skill.name() + " <reloadParam> " + err);
+			reloadVar = 10;
+		}
+		return reloadVar;
 	}
 
 	var _Game_Battler_onDamage = Game_Battler.prototype.onDamage;
@@ -7146,12 +7457,84 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 //Game_Actor
 //------------------------------------------------------------------------------
-
 	var _Game_Actor_initMembers = Game_Actor.prototype.initMembers;
 	Game_Actor.prototype.initMembers = function() {
 		_Game_Actor_initMembers.call(this);
 		this._absParams.panelSkills = [null,null,null,null,null,null,null,null]; //[id,type]
+		this._absParams.favoriteWeapons = [null,null,null,null];
 	}
+
+	//NEW
+	Game_Actor.prototype.getFavWeapIcons = function() {
+        return this._absParams.favoriteWeapons.map(function(argument) {
+            if(argument) {
+                return $dataWeapons[argument].iconIndex;
+            } 
+            return null;
+        });
+    };
+
+    //NEW
+    Game_Actor.prototype.setFavWeap = function(item, index) {
+        if(index > 3) return;
+        if(item == null) {
+            this.removeFavWeap(index);
+            return;
+        }
+        if(this._absParams.favoriteWeapons[index] && 
+            item.id == this._absParams.favoriteWeapons[index]) {
+            this.removeFavWeap(index);
+        }
+        else {
+            this._absParams.favoriteWeapons[index] = item.id;
+        }
+    };
+
+    //NEW
+    Game_Actor.prototype.isFavWeapExists = function() {
+        return this._absParams.favoriteWeapons.some(function(elem){return (elem !== null);});
+    };
+
+    //NEW
+    Game_Actor.prototype.getFavWeapIndex = function(item) {
+        var index = 0;
+        if(item == null)
+            return null;
+
+        var finded = null; //This is not good at all
+        this._absParams.favoriteWeapons.forEach(function(i){
+            if(i && i == item.id) {
+                finded = index;
+            }
+            index++;
+        }.bind(this));
+
+        return finded;
+    };
+
+    //NEW
+    Game_Actor.prototype.removeFavWeap = function(index) {
+        this._absParams.favoriteWeapons[index] = null;
+    };
+
+    //NEW
+    Game_Actor.prototype.changeFavWeap = function(index) {
+        var fvItem = this._absParams.favoriteWeapons[index];
+        if(fvItem != null) {
+            var fvItemX = $dataWeapons[fvItem];
+            if(fvItemX != null) {
+                if(this.hasWeapon(fvItemX)) {
+                    return false;
+                }
+                if($gameParty.hasItem(fvItemX, false)) {
+                    this.changeEquipById(fvItemX.etypeId, fvItemX.id);
+                    return true;
+                } 
+            }
+        }
+
+        return false;
+    };
 
 	//OVER
 	Game_Actor.prototype.performAttack = function() {
@@ -7281,7 +7664,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
     	return false;
     }
 
-    //Возвращяет номер этого навыка на панели или Null, если навыка нет на панели
+    //Возвращяет номер этого навыка на панели или -1, если навыка нет на панели
     Game_Actor.prototype.skillIndexOnUI = function(skillId, isItem) {
     	for(var i = 0; i<this._absParams.panelSkills.length; i++) {
     		var item = this._absParams.panelSkills[i];
@@ -7441,28 +7824,56 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	var _Game_Actor_refresh = Game_Actor.prototype.refresh;
 	Game_Actor.prototype.refresh = function() {
 		_Game_Actor_refresh.call(this);
-		if(this._absParams.needWeaponCheck && $gameMap.isABS()) {
-			LOG.p("PL : Check weapon skill");
-			if(this.weapons().length > 0) {
-				var w = this.weapons()[0];
-				if(w.meta.ABS) {
-					if(w.meta.ABS == 0) {
-						this._absParams.battleSkillsABS.all()[0].loadExternal(w.meta);
-					}
-					if(w.meta.ABS == 1) {
-						this._absParams.battleSkillsABS.all()[0].loadExternal(w.meta,1);
+		if(this._absParams.needWeaponCheck) {
+			this._checkAdditionSkills();
+			if($gameMap.isABS()) {
+				LOG.p("PL : Check weapon skill");
+				if(this.weapons().length > 0) {
+					var w = this.weapons()[0];
+					if(w.meta.ABS) {
+						if(w.meta.ABS == 0) {
+							this._absParams.battleSkillsABS.all()[0].loadExternal(w.meta);
+						}
+						if(w.meta.ABS == 1) {
+							this._absParams.battleSkillsABS.all()[0].loadExternal(w.meta,1);
+						}
+					} else {
+						this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
 					}
 				} else {
 					this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
 				}
-			} else {
-				this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
+				this._absParams.needWeaponCheck = false;
+				if(BattleManagerABS.UI() && BattleManagerABS.UI().controlPanel()) //NOT GOOD THIS, UI need to be rewrite
+					BattleManagerABS.UI().controlPanel().refreshWeaponIconAt(0);
 			}
-			this._absParams.needWeaponCheck = false;
-			if(BattleManagerABS.UI() && BattleManagerABS.UI().controlPanel()) //NOT GOOD THIS, UI need to be rewrite
-				BattleManagerABS.UI().controlPanel().refreshWeaponIconAt(0);
 		}
 	}
+
+	//NEW
+	Game_Actor.prototype._checkAdditionSkills = function() {
+		LOG.p("Check addition skills");
+		this.addedSkills().forEach(function(i){
+			if(this._absParams.battleSkillsABS.skillById(i) == null) {
+				this._absParams.battleSkillsABS.push(i, false);
+				this.setSkillOnPanel(i, undefined);
+			}
+		}.bind(this));
+
+		//CHECK ALL
+		var d = this._skills.concat(this.addedSkills());
+		this._absParams.battleSkillsABS.all().forEach(function(i){
+			if(!d.include(i.skillId)) {
+				if(i.skillId != this.attackSkillId()) {
+					this._absParams.battleSkillsABS.remove(i.skillId, false);
+					var index = this.skillIndexOnUI(i.skillId, false);
+					if(index != -1) {
+						this.setSkillOnPanel(null, index);
+					}
+				}
+			}
+		}.bind(this));
+	};
 
 	//1
 	var _Game_Actor_isEquipTypeLocked = Game_Actor.prototype.isEquipTypeLocked;
@@ -7561,14 +7972,30 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
             	}
             break;
             case 'saveUI':
-            	if(BattleManagerABS.UI() && $gameMap.isABS()) {
-            		BattleManagerABS.UI().saveUIPattern();
+            	if(Utils.isNwjs()) {
+	            	if(BattleManagerABS.UI() && $gameMap.isABS()) {
+	            		BattleManagerABS.UI().saveUIPattern();
+	            	}
+            	} else {
+            		LOGW.p("Not supported in browser");
             	}
             break;
             case 'loadUI':
-            	AlphaABS.SYSTEM.LoadUI();
-            	if(BattleManagerABS.UI() && $gameMap.isABS()) {
-            		BattleManagerABS.UI()._refreshPlacement();
+            	if(Utils.isNwjs()) {
+            		AlphaABS.SYSTEM.LoadUI();
+	            	if(BattleManagerABS.UI() && $gameMap.isABS()) {
+	            		BattleManagerABS.UI()._refreshPlacement();
+	            	}
+            	} else {
+            		SDK.loadDataFileWeb('ABSUI.rpgsave', function(data) {
+            			$gameVariables._uiPositions = data;
+            			if(BattleManagerABS.UI() && $gameMap.isABS()) {
+		            		BattleManagerABS.UI()._refreshPlacement();
+		            	}
+            		},
+            		function() {
+            			LOGW.p("UI save file not exists");
+            		});
             	}
             break;
         	}
@@ -8199,7 +8626,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 //------------------------------------------------------------------------------
 	var _Scene_Title_start = Scene_Title.prototype.start;
 	Scene_Title.prototype.start = function() {
-		BattleManagerABS.init();
+		BattleManagerABS.clearABS();
 	    _Scene_Title_start.call(this);
 	};
 	//END Scene_Title
@@ -8231,6 +8658,10 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		if($gameMap.isABS()) {
 			BattleManagerABS.updateABS();
 			this._updateABS();
+			if(BattleManagerABS.UI()) {
+                var p = this._spriteset._spritePlayerABS;
+                BattleManagerABS.UI().weapCircle().move(p.x,p.y - 24);
+            }
 		}
 	}
 
@@ -8323,6 +8754,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    if (TouchInput.isTriggered() || this._touchCount > 0) {
 	        if (TouchInput.isPressed()) {
 	            if (this._touchCount === 0 || this._touchCount >= 15) {
+
+                    if(BattleManagerABS.UI().weapCircle().isTouchedAny()) {
+                        return;
+                    }
+                    
 	            	var indexT = BattleManagerABS.UI().isTouched();
 	            	if(indexT != null && indexT[1] != null) {	
 	            		if(indexT[0] == 'skill')
@@ -8400,20 +8836,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//END Scene_Map
 //------------------------------------------------------------------------------
 
-//Scene_Menu
-//------------------------------------------------------------------------------
-	var _Scene_Menu_start = Scene_Menu.prototype.start;
-	Scene_Menu.prototype.start = function() {
-	    _Scene_Menu_start.call(this);
-	    if(___scene_menu_needCloseByEditUI) {
-	    	___scene_menu_needCloseByEditUI = false;
-	    	this.popScene();
-	    }
-	};
-	
-	//END Scene_Menu
-//------------------------------------------------------------------------------
-
 //Scene_Gameover
 //------------------------------------------------------------------------------
 	var _Scene_Gameover_create = Scene_Gameover.prototype.create
@@ -8433,7 +8855,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 	//END Scene_Title
 //------------------------------------------------------------------------------
-
 
 //Scene_Boot
 //------------------------------------------------------------------------------
@@ -8457,80 +8878,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    return _Window_MenuCommand_isFormationEnabled.call(this) && !$gameMap.isABS();
 	};
 	//END Window_MenuCommand
-//------------------------------------------------------------------------------
-
-//Window_Options
-//------------------------------------------------------------------------------
-	    //I know this is very wierd, but...
-    var ___scene_menu_needCloseByEditUI = false;
-    
-	var _Window_Options_makeCommandList = Window_Options.prototype.makeCommandList;
-	Window_Options.prototype.makeCommandList = function() {
-	    _Window_Options_makeCommandList.call(this);
-	    this._addUIOptions();
-	};
-
-	Window_Options.prototype._addUIOptions = function() {
-		if($gameMap.isABS()) {
-			LOG.p("CONFIG!");
-			var p = AlphaABS.SYSTEM.PARAMS;
-			if(p.ALLOW_UI_VIS == true) this.addCommand(AlphaABS.SYSTEM.STRING_MENU_UIVIS[SDK.isRU()], 'absUI');
-			if(p.ALLOW_UI_POS == true) this.addCommand(AlphaABS.SYSTEM.STRING_MENU_UIPOS[SDK.isRU()], 'absEditUI');
-		}
-	}
-
-	Window_Options.prototype._isABSSymbol = function(symbol) {
-		return symbol.contains('abs');
-	}
-
-	Window_Options.prototype._isABSSymbol2 = function(symbol) {
-		return symbol.contains('absEdit');
-	}
-
-	var _Window_Options_statusText = Window_Options.prototype.statusText;
-	Window_Options.prototype.statusText = function(index) {
-	    var symbol = this.commandSymbol(index);
-	    if(this._isABSSymbol2(symbol)) {
-	    	return '';
-	    } else {
-	    	return _Window_Options_statusText.call(this, index);
-	    }
-	};
-
-	var _Window_Options_changeValue = Window_Options.prototype.changeValue;
-	Window_Options.prototype.changeValue = function(symbol, value) {
-		if(this._isABSSymbol(symbol)) {
-			if(this._isABSSymbol2(symbol)) {
-				BattleManagerABS.UI().needFree();
-				SoundManager.playCursor();
-				___scene_menu_needCloseByEditUI = true;
-				this.callHandler('cancel');
-			} else {
-				var lastValue = this.getConfigValue(symbol);
-				if (lastValue !== value) {
-					BattleManagerABS.UI().setShowUI(value);
-					this.redrawItem(this.findSymbol(symbol));
-	        		SoundManager.playCursor();
-				}
-			}
-		} else {
-			_Window_Options_changeValue.call(this, symbol, value);
-		}
-	};
-
-	var _Window_Options_getConfigValue = Window_Options.prototype.getConfigValue;
-	Window_Options.prototype.getConfigValue = function(symbol) {
-	    if(this._isABSSymbol(symbol)) {
-	    	if(this._isABSSymbol2(symbol)) {
-	    		return true;
-	    	} else {
-	    		return BattleManagerABS.UI().isVisible();
-	    	}
-	    } else {
-	    	return _Window_Options_getConfigValue.call(this, symbol);
-	    }
-	};
-	//END Window_Options
 //------------------------------------------------------------------------------
 
 //Window_SkillList
@@ -8637,47 +8984,52 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 //MV OTHER
 //==========================================================================================================================================================
 
-var _DataManager_extractSaveContents = DataManager.extractSaveContents;
-DataManager.extractSaveContents = function(contents) {
-   	_DataManager_extractSaveContents.call(this, contents);
+//DataManager
+//------------------------------------------------------------------------------
+	var _DataManager_extractSaveContents = DataManager.extractSaveContents;
+	DataManager.extractSaveContents = function(contents) {
+	   	_DataManager_extractSaveContents.call(this, contents);
 
-    if($gameMap.isABS()) {
-    	var t = $gameMap.events();
-    	t.forEach(function(ev) {
-			if(ev instanceof Game_AIBot) {
-		    	ev.onGameLoad();
-		    }
-    	});
-    	$gamePlayer.onGameLoad();
-    }
-};
+	    if($gameMap.isABS()) {
+	    	var t = $gameMap.events();
+	    	t.forEach(function(ev) {
+				if(ev instanceof Game_AIBot) {
+			    	ev.onGameLoad();
+			    }
+	    	});
+	    	$gamePlayer.onGameLoad();
+	    }
+	};
 
-var _DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
-DataManager.isDatabaseLoaded = function() {
-	if(_DataManager_isDatabaseLoaded.call(this) == true) {
-		if(!$dataSkills[1].meta.ABS) {
-			throw new Error(Consts.STRING_ERROR_SKILLNAN[SDK.isRU()]);				
-		} 
-		if(!Utils.RPGMAKER_VERSION) {
-			throw new Error(Consts.STRING_ERROR_OLDDATA[SDK.isRU()]);	
-		}
-		var v = Utils.RPGMAKER_VERSION.split('.');
-		if(v[0] < 1) {
-			throw new Error(Consts.STRING_ERROR_VERSION[SDK.isRU()]);
-		} else {
-			if(v[1] < 3) {
+	var _DataManager_isDatabaseLoaded = DataManager.isDatabaseLoaded;
+	DataManager.isDatabaseLoaded = function() {
+		if(_DataManager_isDatabaseLoaded.call(this) == true) {
+			if(!$dataSkills[1].meta.ABS) {
+				throw new Error(Consts.STRING_ERROR_SKILLNAN[SDK.isRU()]);				
+			} 
+			if(!Utils.RPGMAKER_VERSION) {
+				throw new Error(Consts.STRING_ERROR_OLDDATA[SDK.isRU()]);	
+			}
+			var v = Utils.RPGMAKER_VERSION.split('.');
+			if(v[0] < 1) {
 				throw new Error(Consts.STRING_ERROR_VERSION[SDK.isRU()]);
 			} else {
-				if(v[1] == 3 && v[2] < 1)
+				if(v[1] < 3) {
 					throw new Error(Consts.STRING_ERROR_VERSION[SDK.isRU()]);
+				} else {
+					if(v[1] == 3 && v[2] < 1)
+						throw new Error(Consts.STRING_ERROR_VERSION[SDK.isRU()]);
+				}
 			}
-		}
-		return true;
-	} else
-		return false;
-}
+			return true;
+		} else
+			return false;
+	}
+	//END DataManager
+//------------------------------------------------------------------------------
 
 })();
+
 
 //==========================================================================================================================================================
 // Alpha ABS UI
@@ -8700,40 +9052,44 @@ DataManager.isDatabaseLoaded = function() {
 
 	var Consts = AlphaABS.SYSTEM;
 	var LOGW = Consts.LOGW;
+	var BattleManagerABS = AlphaABS.BattleManagerABS;
 
-//=============================================================================================
-		Game_Variables.prototype.setUIPosition = function(id, x, y) {
-			if(!this._uiPositions)
-				this._uiPositions = {};
-			this._uiPositions[id] = [x,y];
+//Game_Variables
+//------------------------------------------------------------------------------
+	Game_Variables.prototype.setUIParam = function(param, value) {
+		if(!this._uiParams) {
+			this._uiParams = {};
 		}
+		this._uiParams[param] = value;
+	}
 
-		Game_Variables.prototype.getUIPosition = function(id) {
-			if(this._uiPositions) {
-				var p = this._uiPositions[id];
-				if(p) {
-					return {x:p[0], y:p[1]};
-				}
-			} 
-			return null;
+	Game_Variables.prototype.getUIParam = function(param) {
+		if(this._uiParams) {
+			return this._uiParams[param];
 		}
+		return null;
+	}
 
-		Game_Variables.prototype.setUIParam = function(param, value) {
-			if(!this._uiParams) {
-				this._uiParams = {};
+	Game_Variables.prototype.setUIPosition = function(id, x, y, vis, extra) {
+		if(!this._uiPositions)
+			this._uiPositions = {};
+		vis = SDK.check(vis,null);
+		extra = SDK.check(extra, null);
+		this._uiPositions[id] = [x,y,vis,extra];
+	}
+
+	Game_Variables.prototype.getUIPosition = function(id) {
+		if(this._uiPositions) {
+			var p = this._uiPositions[id];
+			if(p) {
+				return {x:p[0], y:p[1], vis:SDK.check(p[2],null), extra:SDK.check(p[3],null)};
 			}
-			this._uiParams[param] = value;
-		}
-
-		Game_Variables.prototype.getUIParam = function(param) {
-			if(this._uiParams) {
-				return this._uiParams[param];
-			}
-			return null;
-		}
-
-//=============================================================================================
-
+		} 
+		return null;
+	}
+	//END Game_Variables
+//------------------------------------------------------------------------------
+	
 //Sprite_Ext
 //------------------------------------------------------------------------------
     function Sprite_Ext() {
@@ -8877,6 +9233,181 @@ DataManager.isDatabaseLoaded = function() {
     }
     AlphaABS.LIB.Sprite_Ext = Sprite_Ext;
 	//END Sprite_Ext
+//------------------------------------------------------------------------------
+
+//Sprite_Ext2
+//------------------------------------------------------------------------------
+    function Sprite_Ext2 () {
+        this.initialize.apply(this, arguments);
+    }
+
+    Sprite_Ext2.prototype = Object.create(AlphaABS.LIB.Sprite_Ext.prototype);
+    Sprite_Ext2.prototype.constructor = Sprite_Ext2;
+
+    Sprite_Ext2.prototype.initialize = function(frames) {
+        AlphaABS.LIB.Sprite_Ext.prototype.initialize.call(this);
+
+        this._mouseIn = false;
+        this._ready  = false;
+        this._readyHandler = null;
+        this._outHandler = null;
+        this._readyCalled = false;
+        this._frames = frames;
+        this.timerA = new Game_TimerABS();
+        this.thread = setInterval( function() { this._checkMouseIn(); }.bind(this), (1000.0 / 60) );
+    };
+
+    Sprite_Ext2.prototype.setReadyHandler = function(func) {
+        this._readyHandler = func;
+    }
+
+    Sprite_Ext2.prototype.setOutHandler = function(func) {
+        this._outHandler = func;
+    }
+
+    Sprite_Ext2.prototype.update = function() {
+        AlphaABS.LIB.Sprite_Ext.prototype.update.call(this);
+        if(this._mouseIn) {
+            this.timerA.update();
+            if(this.timerA.isReady()) {
+                this._ready = true;
+                this._onReady();
+            }
+        }
+    };
+
+    Sprite_Ext2.prototype.isReady = function() {
+        return (this._ready == true);
+    }
+
+    Sprite_Ext2.prototype.terminate = function() {
+        clearInterval(this.thread);
+    }
+
+
+    //PRIVATE
+    Sprite_Ext2.prototype._checkMouseIn = function() {
+        var mp = ABSUtils.SMouse.getMousePosition();
+        if(ABSUtils.SMath.inRect(mp, this._myRectangle())) {
+            this._mouseInF();
+        } else {
+            this._mouseOutF();
+        }
+    }
+
+    Sprite_Ext2.prototype._mouseOutF = function() {
+        if(this._mouseIn == true) {
+            //LOG.p("Mouse OUT");
+            this._mouseIn = false;
+            this.timerA.reset();
+            if(this.isReady()) {
+                this._onOut();
+            }
+        }
+    }
+
+    Sprite_Ext2.prototype._mouseInF = function() {
+        if(this._mouseIn == false) {
+            //LOG.p("Mouse IN");
+            this._mouseIn = true;
+            this.timerA.start(this._frames);
+        }
+    }
+
+    Sprite_Ext2.prototype._onOut = function() {
+        //LOG.p("on OUT");
+        this.ready = false;
+        if(this._outHandler) {
+            this._outHandler.call();
+        }
+        this._readyCalled = false;
+    }
+
+    Sprite_Ext2.prototype._onReady = function() {
+        if(this._readyCalled == true) return;
+        if(this._readyHandler) {
+            this._readyHandler.call();
+        }
+        this._readyCalled = true;
+    }
+    AlphaABS.LIB.Sprite_Ext2 = Sprite_Ext2;
+    //END Sprite_Ext2
+//------------------------------------------------------------------------------
+
+
+//Sprite_Hover
+//------------------------------------------------------------------------------
+	function Sprite_Hover() {
+    	this.initialize.apply(this, arguments);
+	}
+
+	Sprite_Hover.prototype = Object.create(Sprite_Button.prototype);
+	Sprite_Hover.prototype.constructor = Sprite_Hover;
+
+	Sprite_Hover.prototype.initialize = function(w,h) {
+	    Sprite_Button.prototype.initialize.call(this);
+	    this._step = 0;
+	    this._free = true;
+	    this._createHover(w,h);
+	};
+
+    Sprite_Hover.prototype.update = function() {
+    	Sprite_Button.prototype.update.call(this);
+    	if(this._free) {
+			if(this.isHoverByMouse()) {
+					this._step++;
+					this._onHover();
+			} else {
+				this._reset();
+			}
+		}
+    }
+
+    Sprite_Hover.prototype.freeze = function() {
+    	this._free = false;
+    	this.alpha = 1;
+    }
+
+    Sprite_Hover.prototype.free = function() {
+    	this._free = true;
+    	this._reset();
+    }
+
+    Sprite_Hover.prototype.standardFrameWidth = function() {
+    	return 2;
+    }
+
+	//PRIVATE
+	Sprite_Hover.prototype._createHover = function(w,h) {
+        this.bitmap = new Bitmap(w, h);
+        var color1 = Sprite_Hover.CWHITE.CSS;
+        var color2 = Sprite_Hover.CWHITE2.CSS;
+        this._drawFrame(color1, color2, this.standardFrameWidth());
+        this.alpha = 0;
+    }
+
+    Sprite_Hover.prototype._reset = function() {
+    	this._step = 0;
+    	this.alpha = 0;
+    }
+
+    Sprite_Hover.prototype._drawFrame = function(color1,color2, w) {
+    	this.bitmap.clear();
+    	this.bitmap.gradientFillRect(0, 0, w, this.height, color1, color2);
+        this.bitmap.gradientFillRect(this.width-w, 0, w, this.height, color2, color1);
+        this.bitmap.gradientFillRect(0, 0, this.width, w, color1, color2, true);
+        this.bitmap.gradientFillRect(0, this.height-w, this.width, w, color2, color1, true);
+    }
+
+    Sprite_Hover.prototype._onHover = function() {
+        this.alpha = 0.6 - Math.abs((this._step * 0.01) % 0.5);
+    }
+
+    SDK.setConstant(Sprite_Hover, 'CWHITE',  (Color.WHITE.reAlpha(220)));
+    SDK.setConstant(Sprite_Hover, 'CWHITE2', (Color.WHITE.reAlpha(60)));
+
+    AlphaABS.LIB.Sprite_Hover = Sprite_Hover;
+	//END Sprite_Hover
 //------------------------------------------------------------------------------
 
 //PKD_Object_Bar
@@ -9168,7 +9699,6 @@ DataManager.isDatabaseLoaded = function() {
     //END NotifyMachine
 //------------------------------------------------------------------------------
 
-
 //------------------------------------------------------------------------------
 //ItemLineSprite
     class ItemLineSprite extends Sprite {
@@ -9280,6 +9810,13 @@ DataManager.isDatabaseLoaded = function() {
 			}
 		}
 
+		setEditMode() {
+			//Чтобы заблокировать некоторые способновсти элементов, например Hover когда мышь наведина
+			if(!this._isABS) return;
+			this.spriteSkillPanel.setEditMode();
+			this.spriteControlPanel.setEditMode();
+		}
+
 		hide() {
 			this.freezeElements();
 			this._isABS = false;
@@ -9327,7 +9864,11 @@ DataManager.isDatabaseLoaded = function() {
 			$gameVariables.setUIParam('free', false);
 			this._moveElements.forEach(function(item) {
 				item[1].freeze();
-				$gameVariables.setUIPosition(item[0], item[1].x, item[1].y);
+				$gameVariables.setUIPosition(item[0], 
+					item[1].x, 
+					item[1].y, 
+					item[1].visibleMode(), 
+					item[1].specialMode());
 			});
 			this._free = false;
 			$gamePlayer.controlOn();
@@ -9423,7 +9964,6 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		update() {
-			super();
 			this._updatePosition();
 			if(this._isABS) {
 				this.popUpMachine.update();
@@ -9440,6 +9980,9 @@ DataManager.isDatabaseLoaded = function() {
 				} else {
 					this.itemsBar.update();
 				}
+
+				if(this._sCircle)
+                	this._sCircle.update();
 			}
 		}
 
@@ -9455,11 +9998,13 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		showSkillPanel() {
-			this.spriteSkillPanel.visible = true;
+			if(this.spriteSkillPanel)
+				this.spriteSkillPanel.visible = true;
 		}
 
 		hideSkillPanel() {
-			this.spriteSkillPanel.visible = false;
+			if(this.spriteSkillPanel)
+				this.spriteSkillPanel.visible = false;
  		}
 
  		showControlPanel() {
@@ -9473,10 +10018,27 @@ DataManager.isDatabaseLoaded = function() {
  		saveUIPattern() {
  			var _items = {};
  			this._moveElements.forEach(function(item) {
- 				_items[item[0]] = [item[1].x, item[1].y];
+ 				_items[item[0]] = [item[1].x, item[1].y, item[1].visibleMode(), item[1].specialMode()];
  			});
  			AlphaABS.SYSTEM.SaveUI(_items);
  			LOG.p("UI Saved");
+ 		}
+
+ 		weapCircle() {
+ 			return this._sCircle;
+ 		}
+
+ 		weapCircleRefresh() {
+ 			if(this.weapCircle())
+                this.weapCircle().refresh();
+
+            if(this.controlPanel()) {
+                if($gamePlayer.battler().isFavWeapExists()) {
+                    this.controlPanel().disableItemAt(4, false);
+                } else {
+                    this.controlPanel().disableItemAt(4, true);
+                }
+            }
  		}
 
 		//PRIVATE
@@ -9485,6 +10047,15 @@ DataManager.isDatabaseLoaded = function() {
 				var p = $gameVariables.getUIPosition(item[0]);
 				if(p) {
 					item[1].move(p.x,p.y);
+
+					if(p.vis !== null) {
+						item[1].setElementVisibility(p.vis);
+					}
+
+					if(p.extra!= null) {
+						item[1].setSpecialMode(p.extra);
+					}
+
 				} //else {
 					//$gameVariables.setUIPosition(item[0], item[1].x, item[1].y);
 				//}
@@ -9500,73 +10071,96 @@ DataManager.isDatabaseLoaded = function() {
 			this._createUserStatusBar();
 			this._createAlertBar();
 			this._createItemsBar();
+			this._createFavWeapCircle();
 		}
 
 		_createUIContainers() {
-			var skillCtn = new UIContainer(0,0,342,48);
+			var skillCtn = new UIObject_Container(0,0,342,48);
 			skillCtn.addUI(this.spriteSkillPanel);
-			skillCtn.setText('UI Skill Panel', false);
+			skillCtn.setText(' UI Skill Panel ', false);
 			skillCtn.x = SDK.toCX(skillCtn.width);
 			skillCtn.y = Graphics.height - skillCtn.height - 10;
+			skillCtn.addVisButtton();
 			this.addChild(skillCtn);
 			this._moveElements.push(['skillPanel',skillCtn]);
 			this._layerSkillPanel = skillCtn; //For touch
 
-			var userCtn = new UIContainer(0,0,242,98);
+			var userCtn = new UIObject_Container(0,0,242,98);
 			userCtn.addUI(this.spriteUserUI);
-			userCtn.setText('UI Player', false);
+			userCtn.setText(' UI Player ', false);
 			userCtn.x = 6;
 			userCtn.y = 4;
+			userCtn.addVisButtton();
 			this.addChild(userCtn);
 			this._moveElements.push(['userPanel',userCtn]);
 
-			var userCastBars = new UIContainer(0,0,150,80);
+			var userCastBars = new UIObject_Container(0,0,150,80);
 			userCastBars.addChild(this.spriteCastBar);
 			userCastBars.addUI(this.spriteAttackBar);
-			userCastBars.setText('UI Cast bar', false);
+			userCastBars.setText(' UI Cast bar ', false);
 			userCastBars.x = userCtn.x + 10;
 			userCastBars.y = userCtn.height + 24;
+			userCastBars.addVisButtton();
 			this.addChild(userCastBars);
 			this._moveElements.push(['userCastBars',userCastBars]);
 
-			var targetUI = new UIContainer(0,0,180,100);
+			var targetUI = new UIObject_Container(0,0,180,100);
 			targetUI.addChild(this.spriteTarget );
 			targetUI.addUI(this.spriteTargetStatuses);
 			targetUI.setText('UI Target', false);
 			targetUI.x = 250;
 			targetUI.y = 50;
+			targetUI.addVisButtton();
 			this.addChild(targetUI);
 			this._moveElements.push(['targetUI',targetUI]);
 
-			var controlPanel = new UIContainer(0,0,this.spriteControlPanel.width,this.spriteControlPanel.height);
+			var controlPanel = new UIObject_Container(0,0,this.spriteControlPanel.width,this.spriteControlPanel.height);
 			controlPanel.addUI(this.spriteControlPanel);
 			controlPanel.setText('CP', false);
 			controlPanel.x = 4;
 			controlPanel.y = SDK.toCX(controlPanel.height, Graphics.height);
+			controlPanel.addVisButtton();
+			controlPanel.addSpecialButton({image:'icon_transfer',func:(function(){
+					this._uiElement.transfer();
+					this.width = this._uiElement.width;
+					this.height = this._uiElement.height;
+					if(this.backSprite) {
+						this.removeChild(this.backSprite);
+						this.removeChild(this._hover);
+						this.backSprite = null;
+						this.onFree();
+						this.update();
+					}
+					this._specMode = !this._specMode;
+					this._updateButtonsPlacement();
+				}.bind(controlPanel))});
 			this.addChild(controlPanel);
 			this._moveElements.push(['controlPanel',controlPanel]);
 			this._layerControlPanel = controlPanel; //For touch
 
-			var alertBar = new UIContainer(0,0,this.spriteAlertLayer.width,this.spriteAlertLayer.height);
+			var alertBar = new UIObject_Container(0,0,this.spriteAlertLayer.width,this.spriteAlertLayer.height);
 			alertBar.addUI(this.spriteAlertLayer);
-			alertBar.setText("UI System messages", true);
+			alertBar.setText(" UI System messages ", true);
 			alertBar.x = SDK.toCX(alertBar.width);
 			alertBar.y = Graphics.height - alertBar.height - this._layerSkillPanel.height - 4;
+			alertBar.addVisButtton();
 			this.addChild(alertBar);
 			this._moveElements.push(['alertBar',alertBar]);
 
-			var statusBar = new UIContainer(0,0,180,100);
+			var statusBar = new UIObject_Container(0,0,180,100);
 			statusBar.addUI(this.userStatusPanel);
-			statusBar.setText("UI Player Statuses", true);
+			statusBar.setText(" UI Player Statuses ", true);
 			statusBar.x = Graphics.width - statusBar.width - 4;
 			statusBar.y = 4;
+			statusBar.addVisButtton();
 			this.addChild(statusBar);
 			this._moveElements.push(['statusBar',statusBar]);
 
 			var h = this.itemsBar.maxHeight();
-			var itemsBarC = new UIContainer(Graphics.width - 124, (Graphics.height/2) - h/2, this.itemsBar.width, h);
+			var itemsBarC = new UIObject_Container(Graphics.width - 124, (Graphics.height/2) - h/2, this.itemsBar.width, h);
 			itemsBarC.addUI(this.itemsBar);
-			itemsBarC.setText('UI Items', true);
+			itemsBarC.setText(' UI Items ', true);
+			itemsBarC.addVisButtton();
 			this.addChild(itemsBarC);
 			this.itemsBar.refresh();
 			this._moveElements.push(['itemsBar', itemsBarC]);
@@ -9585,7 +10179,7 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		_createControlPanel() {
-			this.spriteControlPanel = new UIObject_ControlPanel(46,160);
+			this.spriteControlPanel = new UIObject_ControlPanel();
 			this.spriteControlPanel.createBaseItems();
 		}
 
@@ -9601,8 +10195,8 @@ DataManager.isDatabaseLoaded = function() {
 			this.spriteTargetStatuses.y = this.spriteTarget.height + 2;
 			this.spriteTargetStatuses.setLimit(6);
 
-			this.popUpMachineTarget = new ABSObject_PopUpMachine(0, 0, this.spriteTarget.width, 1, this.spriteTarget);
-			this.popUpMachineTarget2 = new ABSObject_PopUpMachine(0, -20, this.spriteTarget.width, 1, this.spriteTarget);
+			this.popUpMachineTarget = new ABSObject_PopUpMachine(0, 0, this.spriteTarget.width - 60, 1, this.spriteTarget);
+			this.popUpMachineTarget2 = new ABSObject_PopUpMachine(0, -20, this.spriteTarget.width - 60, 1, this.spriteTarget);
 			this.popUpMachineTarget.setEffectSettings(ABSObject_PopUpMachine.SETTINGS);
 		}
 
@@ -9626,6 +10220,12 @@ DataManager.isDatabaseLoaded = function() {
 			this.popUpMachine = new ABSObject_PopUpMachine(0, 0, this.spriteAlertLayer.width, 3, this.spriteAlertLayer);
 			this.popUpMachine.setEffectSettings([1.0, false, 0]);
 			this.popUpMachine.setUpMode();
+		}
+
+		_createFavWeapCircle() {
+			this._sCircle = new UIObject_InputCircle_FW($gamePlayer.battler(), function(index) {$gamePlayer.touchWeaponAt(index);});
+			this.addChild(this._sCircle);
+			this.weapCircleRefresh();
 		}
 
 		_updatePosition() {
@@ -9652,57 +10252,1463 @@ DataManager.isDatabaseLoaded = function() {
 	//END Spriteset_InterfaceABS
 //------------------------------------------------------------------------------
 
-	class UIContainer extends Sprite_Ext {
-		constructor(x,y,w,h) {
-			super();
-			this.setFrame(0,0,w,h);
-			this.x = x;
-			this.y = y;
-			this.backSprite = null;
-			this.text = null;
-			this.text_vis_always = false;
-			this._uiElement = null;
-		}
+//Scene_InterfaceEdit
+//------------------------------------------------------------------------------
+	function Scene_InterfaceEdit() {
+	    this.initialize.apply(this, arguments);
+	}
+	
+	Scene_InterfaceEdit.prototype = Object.create(Scene_Base.prototype);
+	Scene_InterfaceEdit.prototype.constructor = Scene_InterfaceEdit;
+	
+	Scene_InterfaceEdit.prototype.create = function() {
+		Scene_Base.prototype.create.call(this);
+		this._draw_background();
+		this.createWindowLayer();
 
-		setText(text, always) {
+		AlphaABS.BattleManagerABS.UI().needFree();
+		this._spritesetUI = new Spriteset_InterfaceABS();
+    	this.addChild(this._spritesetUI);
+    	this._spritesetUI.initABS();
+    	this._spritesetUI.setEditMode();
+	}
+
+	Scene_InterfaceEdit.prototype.update = function() {
+		Scene_Base.prototype.update.call(this);
+		//EXIT
+		if(this.isExit()) {
+			this._spritesetUI.terminate();
+			this.popScene();
+		}
+	}
+
+	Scene_InterfaceEdit.prototype.isExit = function() { 
+		return (Input.isTriggered('cancel') || TouchInput.isCancelled()); 
+	}
+
+	//RPIVATE
+	Scene_InterfaceEdit.prototype._draw_background = function() {
+		this._backgroundSprite = new Sprite();
+    	this._backgroundSprite.bitmap = SceneManager.backgroundBitmap();
+    	this._backgroundSprite.setBlendColor([16, 16, 16, 128]);
+    	this.addChild(this._backgroundSprite);
+	}
+	//END Scene_InterfaceEdit
+//------------------------------------------------------------------------------
+
+//UIObject_Container
+//------------------------------------------------------------------------------
+	function UIObject_Container() {
+	    this.initialize.apply(this, arguments);
+	}
+	
+	UIObject_Container.prototype = Object.create(Sprite_Ext.prototype);
+	UIObject_Container.prototype.constructor = UIObject_Container;
+	
+	UIObject_Container.prototype.initialize = function(x,y,w,h) {
+	    Sprite_Ext.prototype.initialize.call(this);
+	    this.setFrame(0,0,w,h);
+		this.x = x;
+		this.y = y;
+		this.backSprite = null;
+		this.text = null;
+		this.text_vis_always = false;
+		this._uiElement = null;
+		this._uiElementVisMode = true;
+		this._specButton = null;
+		this._specMode = false;
+	};
+
+	UIObject_Container.prototype.setText = function(text, always) {
 			this.text = text;
 			this.text_vis_always = always || false;
 		}
 
-		addUI(element) {
-			this._uiElement = element;
-			this.addChild(element);
-		}
+	UIObject_Container.prototype.addUI = function(element) {
+		this._uiElement = element;
+		this.addChild(element);
+	}
 
-		onFree() {
-			if(this.backSprite) {
-				this.backSprite.visible = true;
-			} else {
-				this.backSprite = new Sprite();
-				this.backSprite.bitmap = new Bitmap(this.width, this.height);
-				this.backSprite.bitmap.fillRect(0,0,this.width,this.height, Color.BLACK);
-				this.backSprite.opacity = 100;
-				this.addChild(this.backSprite);
-				if(this.text) {
-					if(this.text_vis_always)
+	UIObject_Container.prototype.onStartMove = function() {
+		if(this._hover) this._hover.freeze();
+	}
+
+	UIObject_Container.prototype.onEndMove = function() {
+		if(this._hover) this._hover.free();
+		this._updateButtonsPlacement();
+	}
+
+	UIObject_Container.prototype.onFree = function() {
+		if(this.backSprite) {
+			this.backSprite.visible = true;
+		} else {
+			this.backSprite = new Sprite();
+			this.backSprite.bitmap = new Bitmap(this.width, this.height);
+			this.backSprite.bitmap.fillRect(0,0,this.width,this.height, Color.BLACK.CSS);
+			this.backSprite.opacity = 100;
+			this.addChild(this.backSprite);
+			if(this.text) {
+				if(this.text_vis_always)
+					this.backSprite.bitmap.drawText(this.text, 0, this.height/2, this.width, 0, 'center');
+				else {
+					if(this._uiElement && this._uiElement.visible == false) {
 						this.backSprite.bitmap.drawText(this.text, 0, this.height/2, this.width, 0, 'center');
-					else {
-						if(this._uiElement && this._uiElement.visible == false) {
-							this.backSprite.bitmap.drawText(this.text, 0, this.height/2, this.width, 0, 'center');
-						}
 					}
 				}
 			}
 		}
+		this.visible = true;
+		this.refreshVisButtons();
+		this._hover = new Sprite_Hover(this.width,this.height);
+		this.addChild(this._hover);
+	}
 
-		onFreeze() {
-			if(this.backSprite) {
-				this.backSprite.visible = false;
+	UIObject_Container.prototype.onFreeze = function() {
+		if(this.backSprite) {
+			this.backSprite.visible = false;
+		}
+		if(this._uiElementVisMode == false)
+			this.visible = false;
+
+		if(this._visibleButton) {
+			this._visibleButton.visible = false;
+			this._visibleButton2.visible = false;
+		}
+	}
+
+	UIObject_Container.prototype.setElementVisibility = function(isVis) {
+		this._uiElementVisMode = isVis;
+		if(this._uiElementVisMode == false && this._free == false) {
+			this.visible = false;
+		}
+		this.refreshVisButtons();
+	}
+
+	UIObject_Container.prototype.setSpecialMode = function(value) {
+		if(value == true) {
+			this._specButton.callClickHandler();
+		}
+
+		this._specMode = value;
+	}
+
+	UIObject_Container.prototype.visibleMode = function() {
+		return this._uiElementVisMode;
+	}
+
+	UIObject_Container.prototype.specialMode = function() {
+		return this._specMode;
+	}
+
+	UIObject_Container.prototype.addSpecialButton = function(button_config) {
+		this._specButton = new UIObject_ContainerButton(button_config.image);
+		this._specButton.setClickHandler(function(){
+			button_config.func(); 
+			this.removeChild(this._hover);
+			this._hover = new Sprite_Hover(this.width, this.height);
+			this.addChild(this._hover);
+		}.bind(this));
+		this._updateButtonsPlacement();
+		this.addChild(this._specButton);
+		this._specButton.visible = false;
+	}
+
+	//TODO Надо создать отдельную кнопку (класс) от Sprite_Button
+	UIObject_Container.prototype.addVisButtton = function() {
+		//LOG.p("Visible buttons created");
+		this._visibleButton =  new UIObject_ContainerButton('icon_eyeOn');
+		this._visibleButton2 = new UIObject_ContainerButton('icon_eyeOff');
+		this.refreshVisButtons();
+
+		this._visibleButton.setClickHandler(function(){this._visClickHandler()}.bind(this));
+		this._visibleButton2.setClickHandler(function(){this._visClickHandler()}.bind(this));
+		this._updateButtonsPlacement();
+
+		this.addChild(this._visibleButton);
+		this.addChild(this._visibleButton2);
+	}
+
+	UIObject_Container.prototype._updateButtonsPlacement = function() {
+		if(!this._visibleButton) return;
+
+		var _r = 0;
+		var _u = 0;
+		if(SDK.toGlobalCoord(this, 'x') < Graphics.width / 2) {
+			_r = 1;
+		}
+
+		if(SDK.toGlobalCoord(this,'y') < Graphics.height / 2) {
+			_u = 1;
+		}
+
+		if(_r == 1) {
+			this._visibleButton.x = this.width;
+			if(this._specButton)
+				this._specButton.x = this._visibleButton.x + 24;
+		} else {
+			this._visibleButton.x = -24;
+			if(this._specButton)
+				this._specButton.x = this._visibleButton.x - 24;
+		}
+
+		if(_u == 1) {
+			this._visibleButton.y = this.height;
+			if(this._specButton)
+				this._specButton.y = this._visibleButton.y;
+		} else {
+			this._visibleButton.y = - 24;
+			if(this._specButton)
+				this._specButton.y = this._visibleButton.y;
+		}
+
+
+		this._visibleButton2.x = this._visibleButton.x;
+		this._visibleButton2.y = this._visibleButton.y;
+	}
+
+
+
+	UIObject_Container.prototype.refreshVisButtons = function() {
+		//LOG.p("Refresh visible buttons");
+		if(!this._visibleButton) return;
+		if(this._uiElementVisMode == false) {
+			this._visibleButton.visible = false;
+			this._visibleButton2.visible = true;
+		} else {
+			this._visibleButton.visible = true;
+			this._visibleButton2.visible = false;
+		}
+
+		if(this._specButton)
+			this._specButton.visible = true;
+
+		if(!this._free) {
+			if(this._visibleButton) {
+				this._visibleButton.visible = false;
+				this._visibleButton2.visible = false;
+			}
+			if(this._specButton)
+				this._specButton.visible = false;
+		}
+	}
+
+
+	UIObject_Container.prototype._visClickHandler = function() {
+		//LOG.p("Visible button clicked");
+		this.setElementVisibility(!this._uiElementVisMode);
+		$gameVariables.setUIParam('visX', this._uiElementVisMode);
+		this.refreshVisButtons();
+	}
+
+	AlphaABS.LIB.UIObject_Container = UIObject_Container;
+	//END UIObject_Container
+//------------------------------------------------------------------------------
+	
+//UIObject_ContainerButton
+//------------------------------------------------------------------------------
+	class UIObject_ContainerButton extends Sprite_Button 
+	{
+		constructor(imageName) {
+			super();
+			var b = ImageManager.loadPictureABS(imageName);
+			this.image = b;
+			b.addLoadListener(function() {
+				this.refresh();
+			}.bind(this));
+		} 
+
+		refresh() {
+			this.bitmap = new Bitmap(this.image.width, this.image.height);
+			//this.bitmap.fillRect(0,0,this.image.width, this.image.height, Color.BLACK.CSS); //getLightestColor(250)
+			this.bitmap.blt(this.image, 0, 0, this.image.width, this.image.height, 0, 0);
+		}
+	}
+
+	//END UIObject_ContainerButton
+//------------------------------------------------------------------------------
+
+//UIObject_OpacitySwing
+//------------------------------------------------------------------------------
+    class UIObject_OpacitySwing {
+        constructor(object, time) { //object with opacity, timer = Game_TimerABS
+            this._main = object;
+            this.mode = 1;
+            this.repeat = false;
+            this.ready = false;
+            this._start = false;
+            this.config = {};
+            this.config.start = object.opacity;
+            this.config.step = Math.round(object.opacity/time); //timer.getMaxValue()
+            this._refreshConfig();
+        }
+
+        start() {
+            this.ready = false;
+            this._start = true;
+        }
+
+        reset() {
+            this.ready = true;
+            this._main.opacity = this.config.start;
+        }
+
+        stop() {
+            this._start = false;
+        }
+
+        isStarted() {
+            return (this._start == true);
+        }
+
+        isReady() {
+            return (this.ready == true);
+        }
+
+        setToUp() {
+            //LOG.p("toUP");
+            this.mode = 0;
+            this._start = false;
+            this._refreshConfig();
+        }
+
+        setToDown() {
+            //LOG.p("toDWN");
+            this.mode = 1;
+            this._start = false;
+            this._refreshConfig();
+        }
+
+        setRepeat() {
+            this.repeat = true;
+        }
+
+        isUp() {
+            return (this.mode == 0);
+        }
+
+        update() {
+            if(this._start == false) return;
+
+            if(this.isUp())
+                this._updateUp();
+            else
+                this._updateDown();
+
+            if(this.isReady() && this.repeat == true) {
+                if(this.isUp()) {
+                    this.setToDown();
+                    this.start();
+                } else {
+                    this.setToUp();
+                    this.start();
+                }
+            }
+        }
+
+        //PRIVATE
+        _refreshConfig() {
+            if(this.isUp()) {
+                this.config.toV = this.config.start; 
+                this.config.from = 0;
+            } else {
+                this.config.toV = 0;
+                this.config.from = this.config.start;
+            }
+            this._main.opacity = this.config.from;
+        }
+
+        _updateUp() {
+            if(this.ready) return;
+
+            if(this._main.opacity < (this.config.toV - this.config.step)) {
+                this._main.opacity += this.config.step;
+            } else {
+                this._main.opacity = this.config.toV;
+                this.ready = true;
+            }
+        }
+
+        _updateDown() {
+            if(this.ready) return;
+
+            if(this._main.opacity > (this.config.toV + this.config.step)) {
+                this._main.opacity -= this.config.step;
+            } else {
+                this._main.opacity = this.config.toV;
+                this.ready = true;
+            }
+        }
+    }
+    AlphaABS.LIB.UIObject_OpacitySwing = UIObject_OpacitySwing;
+    //END UIObject_OpacitySwing
+//------------------------------------------------------------------------------
+
+//UIObject_ABSSkillInfo
+//------------------------------------------------------------------------------
+    function UIObject_ABSSkillInfo() {
+        this.initialize.apply(this, arguments);
+    }
+    
+    UIObject_ABSSkillInfo.prototype = Object.create(Sprite.prototype);
+    UIObject_ABSSkillInfo.prototype.constructor = UIObject_ABSSkillInfo;
+    
+    UIObject_ABSSkillInfo.prototype.initialize = function(absSkill, isWeaponMode) {
+        Sprite.prototype.initialize.call(this);
+
+        this.width = 200;
+        this.height = 600;
+        this._skill = absSkill;
+        this.bitmap = new Bitmap(this.width, this.height);
+        this._descriptionText = null;
+        isWeaponMode = SDK.check(isWeaponMode, false);
+        this._weaponMode = isWeaponMode;
+
+        this.refresh();
+    };
+
+    UIObject_ABSSkillInfo.prototype.refresh = function() {
+        this.bitmap.clear();
+
+        if(this._descriptionText) {
+            this.removeChild(this._descriptionText);
+            this._descriptionText.destroy();
+            this._descriptionText = null;
+        }
+
+        if(this._weaponMode)
+        	this._skill = $gamePlayer.battler().skillABS_attack();
+
+        this._deltaY = 0;
+        this._deltaX = 0;
+        this._textPosition = 'center';
+        if(this._skill == null) return;
+        this._createBackground();
+        this._drawInfo();
+        this.height = this._deltaY + 8;
+    }
+
+    UIObject_ABSSkillInfo.prototype._createBackground = function() {
+        this.bitmap.fillAll(UIObject_ABSSkillInfo.COLOR_BACKGROUND.CSS);
+    };
+
+    UIObject_ABSSkillInfo.prototype._drawInfo = function() {
+        this._nextLine(4);
+        this._drawName();
+        this._drawLine(4,4);
+        this._setFontSize(16);
+        this._deltaX = 8;
+        this._drawCost();
+        this._nextLine(4);
+        this._drawTargetType();
+        this._nextLine(10);
+        this._drawABSInfo();
+        this._drawDescription();   
+        this._drawRecharge();
+        this._drawDamageFormula();
+    };
+
+    UIObject_ABSSkillInfo.prototype._drawName = function() {
+        this._setFontSize(24);
+        this._setColor(Color.WHITE);
+        this.bitmap.outlineWidth = 2;
+        this.bitmap.outlineColor = Color.BLACK.CSS;
+        var name = this._skill.name();
+        if(this._weaponMode) {
+        	if($gamePlayer.battler().weapons().length > 0) {
+        		name = $gamePlayer.battler().weapons()[0].name;
+        	}
+        }
+        this._drawText(name, this.width, 32);
+        this._nextLine(28);
+        this.bitmap.outlineWidth = 1;
+    };
+
+    UIObject_ABSSkillInfo.prototype._drawCost = function() {
+        if(this._skill.isItem()) return;
+        var mvSkill = this._skill.skill();
+        if(mvSkill.mpCost > 0) {
+            this._drawPair(UIObject_ABSSkillInfo.COLOR_TEXT, TextManager.mpA + " ", UIObject_ABSSkillInfo.COLOR_VALUE, mvSkill.mpCost, 'left');
+            this._nextLine();
+        }
+        if(mvSkill.tpCost > 0) {
+            this._drawPair(UIObject_ABSSkillInfo.COLOR_TEXT, TextManager.tpA + " ", UIObject_ABSSkillInfo.COLOR_VALUE, mvSkill.tpCost, 'left');
+            this._nextLine();
+        }
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawTargetType = function() {
+        var targetText = this._extractTargetMode();
+        if(targetText != "") {
+            var offset = 10;
+            this._deltaX += offset;
+            this._drawRectInner(this.width - (offset * 2), 30);
+            this._textPosition = 'center';
+            this._setColor(UIObject_ABSSkillInfo.COLOR_TEXT);
+            this._drawText(targetText, this.width - (offset * 2) - this._deltaX, 24);
+            this._nextLine();
+        }
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawABSInfo = function() {
+        var text_color = new Color(128 , 128 , 255);
+        var value_color = UIObject_ABSSkillInfo.COLOR_VALUE.reAlpha(220);
+
+        if(this._skill.isRadiusType() && !this._skill.isNeedTarget()) {
+            this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_RADIUS[SDK.isRU()], value_color, this._skill.radius, 'left');
+            this._nextLine();
+        } else {
+            if(this._skill.range > 0) {   
+                if(this._skill.radius > 0) {
+                    this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_RANGE2[SDK.isRU()], value_color, this._skill.range, 'left');
+                    this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_RADIUS[SDK.isRU()], value_color, this._skill.radius, 'right');
+                } else {
+                    this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_RANGE[SDK.isRU()], value_color, this._skill.range, 'left');
+                }
+                this._nextLine();
+            } else {
+            	if(this._skill.range == 0 && this._skill.isNeedTarget()) {
+            		this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_RANGE2[SDK.isRU()], value_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_MELEE[SDK.isRU()], 'left');
+            		this._nextLine();
+            	}
+            }
+        }
+        
+        if(this._skill.isNeedCast()) {
+            this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_CAST[SDK.isRU()], value_color, 
+                SDK.decimalAdjust('round',this._skill.castTime/AlphaABS.BattleManagerABS.TURN, -1) + 
+                AlphaABS.SYSTEM.STRING_SKILL_INFO_SEC[SDK.isRU()], 'left');
+            this._nextLine();
+        }
+
+        if(this._skill.getReloadTime() > 0 || this._skill.isNeedReloadParam()) {
+            var reloadTime = this._skill.getReloadTime();
+            if(this._skill.isNeedReloadParam()) {
+                reloadTime += $gamePlayer.battler()._calculateABSSkillReloadParam(this._skill.reloadParam);
+            }
+            reloadTime = SDK.decimalAdjust('round',reloadTime/AlphaABS.BattleManagerABS.TURN, -1);
+            this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_COOLDOWN[SDK.isRU()], value_color, reloadTime + 
+                AlphaABS.SYSTEM.STRING_SKILL_INFO_SEC[SDK.isRU()], 'left');
+            this._nextLine();
+        }
+    };
+
+    UIObject_ABSSkillInfo.prototype._drawDescription = function() {
+        var descriptionText = this._skill.skill().description;
+        if(this._skill.skillId == $gamePlayer.battler().attackSkillId()) {
+            if($gamePlayer.battler().weapons().length > 0)
+                descriptionText = $gamePlayer.battler().weapons()[0].description;
+        }
+
+        if(descriptionText == "") return;
+
+        this._deltaX = 0;
+        this._drawLine(4,2);
+        this._deltaX = 4;
+
+        this._setColor(UIObject_ABSSkillInfo.COLOR_TEXT);
+        this._textPosition = 'center';
+        this._drawText(AlphaABS.SYSTEM.STRING_SKILL_INFO_DESCRIPTION[SDK.isRU()], this.width - this._deltaX, 24);
+        this._nextLine(26);
+
+        this._descriptionTextWidth = this.width - (this._deltaX * 4);
+
+        var style = this._getDescriptionStyle(this._descriptionTextWidth);
+
+        this._descriptionText = new PIXI.Text(descriptionText, style);
+        this._descriptionText.x = this._deltaX + 2;
+        this._descriptionText.y = this._deltaY + 2;
+        this.addChild(this._descriptionText);
+
+        this._drawRectInner(this.width - this._deltaX, this._descriptionText.height + 8);
+
+        this._nextLine(this._descriptionText.height + 12);
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawDamageFormula = function() {
+        var mvSkill = this._skill.skill();
+        var damage = mvSkill.damage;
+        if(damage.type == 0) return;
+
+        this._deltaX = 0;
+        this._drawLine(4,2);
+        this._deltaX = 12;
+
+        var damageTypeText = AlphaABS.SYSTEM.STRING_SKILL_INFO_DAMAGE[SDK.isRU()];
+        switch(damage.type) {
+            case 1:
+                damageTypeText += TextManager.hpA;
+                break;
+            case 2:
+                damageTypeText += TextManager.mpA;
+                break;
+            case 3:
+                damageTypeText = AlphaABS.SYSTEM.STRING_SKILL_INFO_RECOVER[SDK.isRU()] + TextManager.hpA;
+                break;
+            case 4:
+                damageTypeText = AlphaABS.SYSTEM.STRING_SKILL_INFO_RECOVER[SDK.isRU()] + TextManager.mpA;
+                break;
+            case 5:
+                damageTypeText = AlphaABS.SYSTEM.STRING_SKILL_INFO_DRAIN[SDK.isRU()] + TextManager.hpA;
+                break;
+            case 6:
+                damageTypeText = AlphaABS.SYSTEM.STRING_SKILL_INFO_DRAIN[SDK.isRU()] + TextManager.mpA;
+                break;
+        }
+
+        var damageValueText = '';
+
+        var isForUser = (this._skill.type == 0 && !this._skill.isNeedTarget());
+        var isNeedTarget = damage.formula.contains('b');
+        var tempTarget = null;
+
+        if(isNeedTarget) {
+            if(isForUser) 
+                tempTarget = $gamePlayer.battler();
+            else
+                tempTarget = AlphaABS.BattleManagerABS.getPlayerTarget();
+
+            if(tempTarget == null) {
+                damageValueText = AlphaABS.SYSTEM.STRING_SKILL_INFO_TARGET[SDK.isRU()];
+            } else 
+                damageValueText = this._getPotentialDamage(tempTarget.battler());
+
+        } else {
+            damageValueText = this._getPotentialDamage($gamePlayer.battler());
+        }
+
+        this._drawPair(UIObject_ABSSkillInfo.COLOR_TEXT, damageTypeText + " ", UIObject_ABSSkillInfo.COLOR_VALUE, damageValueText, 'center');
+        this._nextLine();
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawRecharge = function() {
+        if(this._skill.isNeedAmmo() || this._skill.isStackType()) {
+            this._deltaX = 0;
+            this._drawLine(4,2);
+            this._deltaX = 12;      
+        }
+
+        this._setFontSize(14);
+        var value_color = new Color(252 , 157 , 101);
+        if(this._skill.isNeedAmmo()) {
+            var ammoName = $dataItems[this._skill.ammo].name;
+            this._drawPair(value_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_USE[SDK.isRU()], UIObject_ABSSkillInfo.COLOR_VALUE, ammoName, 'left');
+            this._drawPair(value_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_HAS[SDK.isRU()], UIObject_ABSSkillInfo.COLOR_VALUE, $gameParty.numItems($dataItems[this._skill.ammo]), 'right');
+            this._nextLine();
+        }
+        if(this._skill.isStackType()) {
+            var stackText = this._skill._currentStack + '/' + this._skill.stack; 
+            this._drawPair(value_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_CHARGES[SDK.isRU()], UIObject_ABSSkillInfo.COLOR_VALUE, stackText, 'left');
+            this._nextLine();
+            var reloadStack = SDK.decimalAdjust('round',this._skill.stackTime/AlphaABS.BattleManagerABS.TURN, -1) + AlphaABS.SYSTEM.STRING_SKILL_INFO_SEC[SDK.isRU()];
+            this._drawPair(value_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_RELOADCHR[SDK.isRU()], UIObject_ABSSkillInfo.COLOR_VALUE, reloadStack, 'left');
+            this._nextLine();
+        }
+        this._setFontSize(18);
+    }
+
+    UIObject_ABSSkillInfo.prototype._setFontSize = function(size) {
+        this.bitmap.fontSize = size;
+    }
+
+    UIObject_ABSSkillInfo.prototype._setColor = function(color) {
+        this.bitmap.textColor = color.CSS;
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawLine = function(offsetTop, offsetBottom) {
+        var offsetTop = SDK.check(offsetTop, 0);
+        var offsetBottom = SDK.check(offsetBottom, 0);
+        this._deltaY += offsetTop;
+        this._deltaX += this._lineOffsetX();
+        this._drawRect(this.width - (this._deltaX + this._lineOffsetX()), 1, Color.WHITE.reAlpha(50));
+        this._deltaX -= this._lineOffsetX();
+        this._deltaY += offsetBottom;
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawPair = function(color1, text1, color2, text2, position) {
+        var textOffset = 6;
+        var offset = 0;
+        var dx = this._deltaX;
+        var width = this.width - (this._deltaX * 2);
+        if(position != 'center') {
+            width = this.bitmap.measureTextWidth(text1) + this.bitmap.measureTextWidth(text2) + textOffset;
+        }
+
+        if(position == 'right') {
+            this._deltaX = this.width - width - this._deltaX;
+        } else {
+            offset = this._deltaX - textOffset;
+        }
+
+        var oldColor = this.bitmap.textColor;
+        this._textPosition = 'left';
+        this._setColor(color1);
+        this._drawText(text1, width - offset);
+        this._textPosition = 'right';
+        this._setColor(color2);
+        this._drawText(text2, width - offset);
+
+        this.bitmap.textColor = oldColor;
+        this._textPosition = 'center';
+
+        if(position == 'right')
+            this._deltaX = dx;
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawRect = function(width, height, color) {
+        this.bitmap.fillRect(this._deltaX, this._deltaY, width, height, color.CSS);
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawRectInner = function(width, height) {
+        this._deltaX -= 1;
+        this._deltaY -= 1;
+        this._drawRect(width - this._deltaX, 1, UIObject_ABSSkillInfo.COLOR_BACKGROUND);
+        this._drawRect(1, height + 1, UIObject_ABSSkillInfo.COLOR_BACKGROUND);
+        this._deltaX += 1;
+        this._deltaY += 1;
+        this._drawRect(width - this._deltaX, height, UIObject_ABSSkillInfo.COLOR_BACKGROUND.getLightestColor(30)); 
+    }
+
+    UIObject_ABSSkillInfo.prototype._drawText = function(text, width, height) {
+        var height = SDK.check(height, 24);
+        var width = SDK.check(width, this.width);
+        this.bitmap.drawText(text, this._deltaX, this._deltaY, width, height, this._textPosition);
+    }
+
+    UIObject_ABSSkillInfo.prototype._nextLine = function(offset) {
+        var offset = SDK.check(offset, 24);
+        this._deltaY += offset;
+    }
+
+    UIObject_ABSSkillInfo.prototype._lineOffsetX = function() {
+        return 18;
+    }
+
+    UIObject_ABSSkillInfo.prototype._getDescriptionStyle = function(width) {
+        var style = {
+            fontStyle: 'italic',
+            fontFamily:'Arial',
+            fontSize: '12px',
+            fill : '#FFFFFF',
+            stroke : '#000000',
+            strokeThickness : 1,
+            dropShadow : true,
+            dropShadowColor : '#000000',
+            dropShadowAngle : Math.PI / 6,
+            dropShadowDistance : 2,
+            wordWrap : true,
+            wordWrapWidth : width
+        };
+        return style;
+    };
+
+    UIObject_ABSSkillInfo.prototype._extractTargetMode = function() {
+        var targetText = "";
+        switch(this._skill.type) {
+            case 0:
+                if(this._skill.isNeedTarget()) {
+                    targetText = AlphaABS.SYSTEM.STRING_SKILL_INFO_ONTARGET[SDK.isRU()];
+                } else {
+                    targetText = AlphaABS.SYSTEM.STRING_SKILL_INFO_ONUSER[SDK.isRU()];
+                }
+                break;
+            case 1:
+                if(this._skill.isVectorTypeR()) {
+                    targetText = AlphaABS.SYSTEM.STRING_SKILL_INFO_AREA[SDK.isRU()];
+                } else {
+                    targetText = AlphaABS.SYSTEM.STRING_SKILL_INFO_ONTARGET[SDK.isRU()];
+                }
+                break;
+            case 2:
+                if(this._skill.isNeedTarget()) {
+                    targetText = AlphaABS.SYSTEM.STRING_SKILL_INFO_AREA[SDK.isRU()];
+                } else {
+                    targetText = AlphaABS.SYSTEM.STRING_SKILL_INFO_CIRCLE[SDK.isRU()];
+                }
+                break;
+            case 3:
+                targetText = AlphaABS.SYSTEM.STRING_SKILL_INFO_ZONE[SDK.isRU()];
+                break;
+            default: 
+        }
+        return targetText;
+    };
+
+    UIObject_ABSSkillInfo.prototype._getPotentialDamage = function(target) {
+        var damageValueText = '';
+        var action = new Game_Action($gamePlayer.battler());
+        if(this._skill.isItem()) {
+            action.setItem(this._skill.skill().id);
+        } else {
+            action.setSkill(this._skill.skill().id);
+        }
+        var damageValue = Math.abs(action.evalDamageFormula(target));
+        if(damageValue > 0 && this._skill.skill().damage.variance > 0) {
+            var percent = SDK.percent(damageValue, this._skill.skill().damage.variance);
+            var min = damageValue - percent;
+            var max = damageValue + percent;
+            damageValueText = min + '-' + max;
+        } else {
+            damageValueText = damageValue;
+        }
+        return damageValueText;
+    };
+
+    SDK.setConstant(UIObject_ABSSkillInfo, 'COLOR_TEXT', Color.AQUA.reAlpha(200));
+    SDK.setConstant(UIObject_ABSSkillInfo, 'COLOR_VALUE', Color.ORANGE.reAlpha(200));
+    SDK.setConstant(UIObject_ABSSkillInfo, 'COLOR_BACKGROUND', Color.BLACK.reAlpha(200));
+
+    AlphaABS.LIB.UIObject_ABSSkillInfo = UIObject_ABSSkillInfo;
+    //END UIObject_ABSSkillInfo
+//------------------------------------------------------------------------------
+
+//UIObject_HelpHover
+//------------------------------------------------------------------------------
+	function UIObject_HelpHover() {
+	    this.initialize.apply(this, arguments);
+	}
+	
+	UIObject_HelpHover.prototype = Object.create(Sprite.prototype);
+	UIObject_HelpHover.prototype.constructor = UIObject_HelpHover;
+	
+	UIObject_HelpHover.prototype.initialize = function(width, height) {
+	    Sprite.prototype.initialize.call(this);
+
+	    this.setFrame(0,0,width, height);
+	    this._hoverHelp = new Sprite_Ext2(120);
+	    this._hoverHelp.bitmap = new Bitmap(width, height);
+
+	    this._skillInfo = null;
+	    this._swing = null;
+	    this._skillABS = null;
+	    this._infoVisible = false;
+	    this._updateTimer = new Game_TimerABS();
+	    this._updateTimer.start(60);
+	    this._weaponMode = false;
+
+	    this.addChild(this._hoverHelp);
+
+	    this._setup();
+	};
+
+	UIObject_HelpHover.prototype.terminate = function() {
+		this._hoverHelp.terminate();
+	};
+
+	UIObject_HelpHover.prototype.update = function() {
+		Sprite.prototype.update.call(this);
+		this._hoverHelp.update();
+		if(this._swing)
+			this._swing.update();	
+
+		if(this._infoVisible === true) {
+			this._updateTimer.update();
+			if(this._updateTimer.isReady()) {
+				this._skillInfo.refresh();
+				this._updateTimer.reset();
+			}
+		}	
+	};
+
+	UIObject_HelpHover.prototype.setHover = function(hover) {
+		this._hover = hover;
+	};
+
+	UIObject_HelpHover.prototype.setSkillIndex = function(index) {
+		this._skillABS = $gamePlayer.battler().uiPanelSkills()[index];
+	};
+
+	UIObject_HelpHover.prototype.setSkillABS = function(skillABS) {
+		this._skillABS = skillABS;
+	};
+
+	UIObject_HelpHover.prototype.setWeaponMode = function() {
+		this._weaponMode = true;
+	}
+
+	//PRIVATE
+	UIObject_HelpHover.prototype._setup = function() {
+		this._hoverHelp.setReadyHandler(function(){
+			if(!this._isSkillExist()) return;
+
+			this._createSkillInfo();
+			this._createSwing();
+			this._swing.start();
+
+			if(this._hover)
+            	this._hover.freeze();
+
+            this._infoVisible = true;
+        }.bind(this));
+
+        this._hoverHelp.setOutHandler(function(){
+        	if(!this._isSkillExist()) return;
+
+        	if(this._skillInfo) {
+	            this._skillInfo.visible = false;
+	            this.removeChild(this._skillInfo);
+	            this._skillInfo = null;
+        	}
+            this._swing.stop();
+            if(this._hover)
+            	this._hover.free();
+
+            this._infoVisible = false;
+        }.bind(this));
+	};
+
+	UIObject_HelpHover.prototype._createSkillInfo = function() {
+		if(this._weaponMode) {
+			this._skillABS = $gamePlayer.battler().skillABS_attack();
+		}
+		this._skillInfo = new AlphaABS.LIB.UIObject_ABSSkillInfo(this._skillABS, this._weaponMode);
+		ABSUtils.linkSprite(this._hoverHelp, this._skillInfo);
+		this.addChild(this._skillInfo);
+	};
+
+	UIObject_HelpHover.prototype._createSwing = function() {
+		this._swing = new AlphaABS.LIB.UIObject_OpacitySwing(this._skillInfo, 30);
+        this._swing.setToUp();
+	};
+
+	UIObject_HelpHover.prototype._isSkillExist = function() {
+		return (this._skillABS != null);
+	};
+	AlphaABS.LIB.UIObject_HelpHover = UIObject_HelpHover;
+	//END UIObject_HelpHover
+//------------------------------------------------------------------------------
+
+//UIObject_InputCircle
+//------------------------------------------------------------------------------
+    function UIObject_InputCircle() {
+        this.initialize.apply(this, arguments);
+    }
+    
+    UIObject_InputCircle.prototype = Object.create(Sprite.prototype);
+    UIObject_InputCircle.prototype.constructor = UIObject_InputCircle;
+    
+    UIObject_InputCircle.prototype.initialize = function(x,y, isOpen) {
+        Sprite.prototype.initialize.call(this);
+        this.x = x;
+        this.y = y;
+
+        //Circle
+        this._isOpen = SDK.check(isOpen, true);
+        this.isClicked = false;
+        this.isSelected = false;
+        this.icons = [];
+        this.segments = [];
+        this.helps = [];
+        this._helpsSprites = [];
+        this.optionLightTimer = 0;
+        this._moveSpeedX = 1;
+
+        this.helpShowIn = false;
+        this._helpIsHidden = true;
+
+        var radius = this._radius_max()
+        if(!this._isOpen) {
+            this._set_opacity(0)
+            radius = this._radius_min()
+        }
+
+        //Funcs
+        this._create_segments();
+        this._create_icons(this._get_standart_icon_pack());
+        this._move_segments(radius);
+    };
+
+    UIObject_InputCircle.prototype.setIcons = function(arrayOfIndexes)
+    {
+        this._create_icons(arrayOfIndexes);
+        if(!this._isOpen) this._set_opacity(0);
+    }
+
+    UIObject_InputCircle.prototype.setSpeed = function(speed) {
+        this._moveSpeedX = speed;
+    }
+
+    UIObject_InputCircle.prototype.setHelps = function(arrayOfHelps)
+    {
+        this.helps[0] = arrayOfHelps[0] || null;
+        this.helps[1] = arrayOfHelps[1] || null;
+        this.helps[2] = arrayOfHelps[2] || null;
+        this.helps[3] = arrayOfHelps[3] || null;
+        if(this.helpShowIn) {
+            this._helpIsHidden = true;
+        }
+        this._create_helps();
+    }
+
+    UIObject_InputCircle.prototype.isOpen = function() { return this._isOpen;}
+
+    UIObject_InputCircle.prototype.open = function() 
+    {
+        if(this._isOpen) return;
+        if(this.isAnimate) return;
+        this.r = this._radius_min();
+        this._set_opacity(0);
+        this.isAnimate = true;
+    }
+
+    UIObject_InputCircle.prototype.close = function()
+    {
+        if(!this._isOpen) return;
+        if(this.isAnimate) return;
+        this.r = this._radius_max();
+        this._set_opacity(255);
+        this.isAnimate = true;
+        this._hide_help();
+    }
+
+    UIObject_InputCircle.prototype.hideAll = function()
+    {
+        SDK.times(4, function(i) { this.hideSegment(i); }.bind(this));
+    }
+
+    UIObject_InputCircle.prototype.enableAllIcons = function()
+    {
+        SDK.times(4, function(i) { this.disableIcon(i, false);}.bind(this));
+    }
+
+    UIObject_InputCircle.prototype.diselectAllIcons = function()
+    {
+        this._reset_colors();
+        this.isSelected = false;
+    }
+
+    UIObject_InputCircle.prototype.unHideSegments = function()
+    {
+        SDK.times(4, function(i) { this.hideSegment(i, false); }.bind(this));
+    }
+
+    UIObject_InputCircle.prototype.reset = function()
+    {
+        this.unHideSegments();
+        this.diselectAllIcons();
+        this.enableAllIcons();
+    }
+
+    UIObject_InputCircle.prototype.showHelp = function()
+    {
+        this.helpShowIn = true;
+    }
+
+    UIObject_InputCircle.prototype.hideHelp = function()
+    {
+        this.helpShowIn = false;
+    }
+
+    UIObject_InputCircle.prototype.addListener = function(index, func)
+    {
+        this.segments[index].setClickHandler(func);
+    }
+
+    UIObject_InputCircle.prototype.click = function(index)
+    {
+        this.diselectAllIcons();
+        this.optionLightTimer = 0;
+        this.isClicked = true;
+        this.segments[index].setBlendColor(UIObject_InputCircle.COLOR_CLICK);
+    }
+
+    UIObject_InputCircle.prototype.select = function(index)
+	{
+		this.diselectAllIcons();
+		this.segments[index].setBlendColor(UIObject_InputCircle.COLOR_SELECTED);
+		this.isSelected = true;
+	}
+
+	UIObject_InputCircle.prototype.hideSegment = function(index, isHided)
+	{
+		if(isHided === undefined)
+			isHided = true;
+		this.segments[index].visible = !isHided;
+		if(this.icons[index])
+			this.icons[index].visible = !isHided;
+
+		if(this._helpsSprites[index])
+		{
+			if(isHided == true) {
+				this._helpsSprites[index].visible = false;
+			} else {
+				if(this.helpAllwaysShow || this.helpShowIn)
+					this._helpsSprites[index].visible = true;
 			}
 		}
 	}
 
-	AlphaABS.LIB.UIContainer = UIContainer;
+    UIObject_InputCircle.prototype.disableIcon = function(index, isDisabled)
+	{
+		if(isDisabled === undefined)
+			isDisabled = true;
+		if(!this.icons[index])
+			return;
+		else
+		{
+			if(isDisabled) {
+				this.icons[index].setBlendColor(UIObject_InputCircle.COLOR_DISABLED);
+			}
+			else {
+				this.icons[index].setBlendColor(Color.NONE);
+			}
+		}
+	}
+
+    UIObject_InputCircle.prototype.diselectAllIcons = function()
+    {
+        this._reset_colors();
+        this.isSelected = false;
+    }
+
+    UIObject_InputCircle.prototype.update = function()
+    {
+        this._update_animation();
+        this._update_click();
+        this.segments.forEach(function(i){
+            i.update();
+        });
+        this._update_help();
+    }
+
+    //PRIVATE
+
+    UIObject_InputCircle.prototype._create_segments = function() {
+        var csT = new Sprite_Button();
+        csT.bitmap = ImageManager.loadPictureABS('CircleSegment_small');
+        var csD = new Sprite_Button();
+        csD.bitmap = ImageManager.loadPictureABS('CircleSegment_small_down');
+        var csL = new Sprite_Button();
+        csL.bitmap = ImageManager.loadPictureABS('CircleSegment_small_L');
+        var csR = new Sprite_Button();
+        csR.bitmap = ImageManager.loadPictureABS('CircleSegment_small_R');
+        this.segments = [csT, csR, csD, csL];
+        this.segments.forEach(function(x) { this.addChild(x); }.bind(this));
+    }
+
+    UIObject_InputCircle.prototype._create_icons = function(arrayOfIndexes) {
+        this.icons.forEach(function(x){ 
+            this.removeChild(x);
+            x.visible = false;
+        }.bind(this));
+
+        this.icons = [];
+
+        for(var i = 0; i<4; i++) {
+            if(arrayOfIndexes[i] !== undefined)
+            {
+                this.icons[i] = new Sprite(this._get_icon_bitmap(arrayOfIndexes[i]));
+                //this.icons[i].anchor = this.segments[i].anchor;
+                this._config_icon(i, this.icons[i]);
+                this.segments[i].addChild(this.icons[i]);
+            }
+            else {
+                this.icons[i] = undefined;
+            }
+        }
+    }
+
+    UIObject_InputCircle.prototype._move_segments = function(radius) {
+        radius = SDK.check(radius, this._radius_max());
+
+        //TOP
+        //this.segments[0].anchor.x = 0.5;
+        this.segments[0].x = -this._segment_HW()/2; 
+        this.segments[0].y = -radius;
+        
+        //DOWN
+        //this.segments[2].anchor.x = 0.5;
+        //this.segments[2].anchor.y = 1;
+        this.segments[2].x = this.segments[0].x;
+        this.segments[2].y = radius - this._segment_HH();
+        
+        //LEFT
+        //this.segments[3].anchor.y = 0.5;
+        this.segments[3].x = -radius;
+        this.segments[3].y = -this._segment_HW()/2;
+        
+        //RIGHT
+        //this.segments[1].anchor.x = 1;
+        //this.segments[1].anchor.y = 0.5;
+        this.segments[1].x = radius - this._segment_HH();
+        this.segments[1].y = this.segments[3].y;
+    }
+
+    UIObject_InputCircle.prototype._config_icon = function(index, icon) {
+        switch(index) {
+            case 0:
+                icon.anchor.x = 0.5;
+                icon.x = this._segment_HW()/2;
+                break;
+            case 1:  //RIGHT
+                icon.anchor.x = 1;
+                icon.anchor.y = 0.5;
+                icon.x = this._segment_HH(); 
+                icon.y = this._segment_HW()/2;
+                break;
+            case 2:  //DOWN
+                icon.anchor.x = 0.5;
+                icon.anchor.y = 1;
+                icon.x = this._segment_HW()/2;
+                icon.y = this._segment_HH();
+                break;
+            case 3:
+                icon.anchor.y = 0.5;
+                icon.y = this._segment_HW()/2;
+                break;
+        }
+    }
+
+    UIObject_InputCircle.prototype._create_helps = function()
+    {
+        this._helpsSprites.forEach(function(item){
+            if(item!=null) {
+                item.parent.removeChild(item);
+            }
+        }.bind(this));
+        this._helpsSprites = [];
+
+        //UP
+        if(this.helps[0] != null) {
+            var bitmap = new Bitmap(this._segment_HW(), this._segment_HH());
+            bitmap.addLoadListener(function() {
+                //bitmap.fillAll(Color.RED);
+                bitmap.drawText(this.helps[0], 0, 0, bitmap.width, bitmap.height, 'center');
+            }.bind(this));
+            var sprite = new Sprite(bitmap);
+            sprite.visible = false;
+            sprite.y = -this._segment_HH();
+            this.segments[0].addChild(sprite);
+            this._helpsSprites[0] = sprite;
+        }
+        else {
+            this._helpsSprites[0] = null;
+        }
+        //LEFT
+        if(this.helps[3] != null) {
+            var bitmap = new Bitmap(this._segment_HW(), this._segment_HH());
+            bitmap.addLoadListener(function() {
+                //bitmap.fillAll(Color.RED);
+                bitmap.drawText(this.helps[3], 0, 0, bitmap.width, bitmap.height, 'right');
+            }.bind(this));
+            var sprite = new Sprite(bitmap);
+            sprite.visible = false;
+            sprite.y = this._segment_HW()/2;
+            sprite.x = -4;
+            sprite.anchor.y = 0.5;
+            sprite.anchor.x = 1;
+            this.segments[3].addChild(sprite);
+            this._helpsSprites[3] = sprite;
+        }
+        else {
+            this._helpsSprites[3] = null;
+        }
+        //DOWN
+        if(this.helps[2] != null) {
+            var bitmap = new Bitmap(this._segment_HW(), this._segment_HH());
+            bitmap.addLoadListener(function() {
+                //bitmap.fillAll(Color.RED);
+                bitmap.drawText(this.helps[2], 0, 0, bitmap.width, bitmap.height, 'center');
+            }.bind(this));
+            var sprite = new Sprite(bitmap);
+            sprite.visible = false;
+            sprite.y = this._segment_HH();
+            this.segments[2].addChild(sprite);
+            this._helpsSprites[2] = sprite;
+        }
+        else {
+            this._helpsSprites[2] = null;
+        }
+        //RIGHT
+        if(this.helps[1] != null) {
+            var bitmap = new Bitmap(this._segment_HW(), this._segment_HH());
+            bitmap.addLoadListener(function() {
+                //bitmap.fillAll(Color.RED);
+                bitmap.drawText(this.helps[1], 0, 0, bitmap.width, bitmap.height, 'left');
+            }.bind(this));
+            var sprite = new Sprite(bitmap);
+            sprite.anchor.y = 0.5;
+            sprite.y = this._segment_HW()/2;
+            sprite.x = this._segment_HH() + 4;
+            sprite.visible = false;
+            this.segments[1].addChild(sprite);
+            this._helpsSprites[1] = sprite;
+        }
+        else {
+            this._helpsSprites[1] = null;
+        }
+
+    }
+
+    UIObject_InputCircle.prototype._update_animation = function()
+    {
+        if(!this.isAnimate) return;
+        if(this.isClicked) return;
+
+        this._move_segments(this.r);
+        if(!this._isOpen)
+        {
+            if(this.opacity <= 250) this._change_opacity(5);
+            if (this.r < this._radius_max()) this.r += this._moveSpeedX;
+            if (this.r >= this._radius_max()) {
+                this._isOpen = true;
+                this.isAnimate = false;
+                this._set_opacity(255);
+            }
+        }
+        else 
+        {
+            if(this.opacity > 5) this._change_opacity(5, false);
+            if (this.r > this._radius_min()) this.r -= this._moveSpeedX;
+            if (this.r <= this._radius_min()) {
+                this._isOpen = false;
+                this.isAnimate = false;
+                this._set_opacity(0);
+            }
+        }
+    }
+
+    UIObject_InputCircle.prototype._update_click = function()
+    {
+        if (this.optionLightTimer < UIObject_InputCircle.CLICK_TIME)
+            this.optionLightTimer += 1;
+
+        if(this.optionLightTimer == UIObject_InputCircle.CLICK_TIME)
+        {
+            if(!this.isSelected)
+                this._reset_colors();
+            this.isClicked = false;
+        }
+    }
+
+    UIObject_InputCircle.prototype._change_opacity = function(value, isAdd)
+    {
+        isAdd = SDK.check(isAdd, true);
+        var op = this.opacity;
+        if(isAdd) {
+            op += value;
+        } else {
+            op -= value;
+        }
+        this._set_opacity(op);
+    }
+
+    UIObject_InputCircle.prototype._update_help = function()
+    {
+        if(this.isAnimate)
+        {
+            this._hide_help();
+        }
+        else {
+            if(this._isOpen)
+                if(this.helpShowIn)
+                    this._show_help();
+                else
+                    this._hide_help(); 
+            else
+                this._hide_help();
+        }
+    }
+
+    UIObject_InputCircle.prototype._show_help = function()
+    {
+        if(this._helpIsHidden == false)
+            return;
+
+        for(var i = 0; i<4; i++) {
+            let sprite = this._helpsSprites[i] || null;
+            if(sprite !=null) {
+                sprite.visible = (this.segments[i].visible == true);
+            }
+        }
+
+        this._helpIsHidden = false;
+    }
+
+    UIObject_InputCircle.prototype._hide_help = function()
+    {
+        if(this._helpIsHidden == true)
+            return;
+        for(var i = 0; i<4; i++) {
+            let sprite = this._helpsSprites[i] || null;
+            if(sprite !=null) {
+                sprite.visible = false;
+            }
+        }
+        this._helpIsHidden = true;
+    }
+
+    UIObject_InputCircle.prototype._set_opacity = function(value)
+    {
+        this.opacity = value;
+        if(value == 0)
+        	this.visible = false;
+        else
+        	this.visible = true;
+    }
+
+    UIObject_InputCircle.prototype._get_standart_icon_pack = function() {
+        return [null,null,null,null];
+    }
+
+    UIObject_InputCircle.prototype._get_icon_bitmap = function(index)
+    {
+        if(index == null)
+            return ImageManager.loadEmptyBitmap();
+        else
+            return ImageManager.getIcon('img/ABS/', index, this._icon_size());
+    }
+
+    UIObject_InputCircle.prototype._reset_colors = function()
+    {
+        this.segments.forEach(function(x) { x.setBlendColor(Color.NONE); });
+    }
+
+    //VALUES
+
+    UIObject_InputCircle.prototype._segment_HW = function()
+    {
+        return 78;
+    }
+
+    UIObject_InputCircle.prototype._segment_HH = function()
+    {
+        return 34;
+    }
+
+    UIObject_InputCircle.prototype._segment_VW = function()
+    {
+        return this._segment_HH();
+    }
+
+    UIObject_InputCircle.prototype._segment_VH = function()
+    {
+        return this._segment_HW();
+    }
+
+    UIObject_InputCircle.prototype._radius_max = function()
+    {
+        return 66;
+    }
+
+    UIObject_InputCircle.prototype._radius_min = function()
+    {
+        return 58;
+    }
+
+    UIObject_InputCircle.prototype._icon_size = function()
+    {
+        return 24;
+    }
+
+    SDK.setConstant(UIObject_InputCircle, 'CLICK_TIME', 5);                               //Время анимции клика (в кадрах)
+    SDK.setConstant(UIObject_InputCircle, 'COLOR_CLICK', new Color(98,225,236,220));      //Цвет при клике на сегмент
+    SDK.setConstant(UIObject_InputCircle, 'COLOR_SELECTED', new Color(164,255,164,220));  //Цвет выбраного сегмента
+    SDK.setConstant(UIObject_InputCircle, 'COLOR_DISABLED', new Color(89,89,89,120));     //Цвет отключённого сегмента
+
+    AlphaABS.LIB.UIObject_InputCircle = UIObject_InputCircle;
+
+    //END UIObject_InputCircle
+//------------------------------------------------------------------------------
 
 	class Sprite_UserUI extends Sprite
 	{
@@ -9712,7 +11718,7 @@ DataManager.isDatabaseLoaded = function() {
 			this.faceSize = 90;
 			this.faceX = 8;
 			this.faceY = 8;
-			//this._oldLevel = 1;
+			this._oldLevel = 1;
 
 			this._init();
 			this._updateABS();
@@ -9742,17 +11748,15 @@ DataManager.isDatabaseLoaded = function() {
 			 //@opt Эту часть можно вызывать только когда начинается и заканчивается битва	
 			if($gamePlayer.inBattle()) {
 				this.spriteBattleMask.showMaskOne(30);
-				//this.spriteInfo_Level.visible = false;
 				this.spriteInfo_Battle.visible = true;
+				this.spriteInfo_LevelText.visible = false;
 			} else {
-				//this.spriteInfo_Level.visible = true;
 				this.spriteInfo_Battle.visible = false;
+				this.spriteInfo_LevelText.visible = true;
 
-				/*if(this._oldLevel != $gamePlayer.battler().level) {
-					this.spriteInfo_Level.bitmap.clear();
-					this._oldLevel = $gamePlayer.battler().level;
-					this.spriteInfo_Level.bitmap.drawText($gamePlayer.battler().level, 0, 0, 24, 24, 'center');
-				}*/
+				if(this._oldLevel != $gamePlayer.battler().level) {
+					this._drawPlayerLevel();
+				}
 			}
 			this.spriteBattleMask.update();
 			
@@ -9796,20 +11800,30 @@ DataManager.isDatabaseLoaded = function() {
 			}.bind(this));
 		}
 
+		_drawPlayerLevel() {
+			this._oldLevel = $gamePlayer.battler().level;
+			this.spriteInfo_LevelText.bitmap.clear();
+			this.spriteInfo_LevelText.bitmap.drawText(this._oldLevel, 0, 0, 24, 24, 'center');
+		}
+
 		_createPlayerInfo() {
-			this.spriteInfo = new Sprite(new Bitmap(45,48)); //ImageManager.loadPicture("Circle")
+			this.spriteInfo = new Sprite(new Bitmap(45,48));
 			this.spriteInfo.anchor.y = 0.5;
 			this.spriteInfo.x = 0;
 			this.spriteInfo.y = this.faceSize;
 
-			/*this.spriteInfo_Level = new Sprite(new Bitmap(24,24));
-			this.spriteInfo_Level.bitmap.fontSize = 18;
-			//this.spriteInfo_Level.bitmap.outlineWidth = 3;
-			//this.spriteInfo_Level.bitmap.outlineColor = Color.BLACK.CSS;
-			this._oldLevel = $gamePlayer.battler().level;
-			this.spriteInfo_Level.bitmap.drawText(this._oldLevel, 0, 0, 24, 24, 'center');
+			this.spriteInfo_Level = new Sprite(ImageManager.loadPictureABS('levelBar')); //new Sprite(new Bitmap(24,24));
+			this.spriteInfo_Level.opacity = 200;
 			this.spriteInfo_Level.anchor.y = 0.5;
-			this.spriteInfo_Level.x = 9;*/
+			this.spriteInfo_Level.x = 7;
+			this.spriteInfo_Level.y = -10;
+
+			this.spriteInfo_LevelText = new Sprite(new Bitmap(24,24));
+			this.spriteInfo_LevelText.bitmap.fontSize = 18;
+			this.spriteInfo_LevelText.anchor.y = 0.5;
+			this.spriteInfo_Level.addChild(this.spriteInfo_LevelText);
+			this._drawPlayerLevel();
+
 
 			this.spriteInfo_Battle = new Sprite(ImageManager.loadPictureABS('InBattleIcon'));
 			this.spriteInfo_Battle.anchor.y = 0.5;
@@ -9818,7 +11832,7 @@ DataManager.isDatabaseLoaded = function() {
 			this.spriteInfo_Battle.visible = false;
 
 
-			//this.spriteInfo.addChild(this.spriteInfo_Level);
+			this.spriteInfo.addChild(this.spriteInfo_Level);
 			this.spriteInfo.addChild(this.spriteInfo_Battle);
 
 			this.addChild(this.spriteInfo);
@@ -9878,6 +11892,12 @@ DataManager.isDatabaseLoaded = function() {
 			return null;
 		}
 
+		setEditMode() {
+			this.items.forEach(function(item) {
+				item.setEditMode();
+			});
+		}
+
 		terminate() {
 			this.items.forEach(function(item) {
 				item.terminate();
@@ -9893,14 +11913,14 @@ DataManager.isDatabaseLoaded = function() {
 		_initSkills() {
 			this.items = [];
 			/*for(var i = 1; i<5; i++) { //LEFT
-				var item = new Sprite_PanelIconABS(i);
+				var item = new UIObject_SkillPanelItem(i);
 				item.x = this.x - ((5 - i) * 42); 
 				item.y = 0;
 				this.items.push(item);
 				this.addChild(item);
 			}
 			for(var i = 5; i<9; i++) { //RIGHT
-				var item = new Sprite_PanelIconABS(i);
+				var item = new UIObject_SkillPanelItem(i);
 				item.x = ((i - 5) * 42); 
 				item.y = 0;
 				this.items.push(item);
@@ -9908,7 +11928,7 @@ DataManager.isDatabaseLoaded = function() {
 			}*/
 
 			for(var i = 1; i<9; i++) { //ALL
-				var item = new Sprite_PanelIconABS(i - 1);
+				var item = new UIObject_SkillPanelItem(i - 1);
 				item.x = ((i - 1) * 42); 
 				item.y = 0;
 				this.items.push(item);
@@ -9917,7 +11937,9 @@ DataManager.isDatabaseLoaded = function() {
 		}
 	}
 
-	class Sprite_PanelIconABS extends Sprite {
+	AlphaABS.LIB.Sprite_SkillPanelABS = Sprite_SkillPanelABS;
+
+	class UIObject_SkillPanelItem extends Sprite {
 		constructor(index) {
 			super(new Bitmap(40,40));
 			this.index = index;
@@ -9927,10 +11949,18 @@ DataManager.isDatabaseLoaded = function() {
 			this.bitmap.outlineWidth = 3;
 			this.bitmap.outlineColor = Color.BLACK.CSS;
 			this._pulsed = true;
-			//this._createOverlay();
+			this._createOverlay();
+			this._createHover();
+			this._createHelp();
 			this._createRecharge();
 			this._createMask();
 			this._updateABS();
+		}
+
+		setEditMode() {
+			this.removeChild(this._hover);
+			this.removeChild(this._help);
+			this._help.visible = false;
 		}
 
 		pulse() {
@@ -9947,12 +11977,6 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		isTouched() {
-			/*if(ABSUtils.SMath.inRect(new Point(TouchInput.x, TouchInput.y), this._getRectangle())) {
-				//LOG.p("Skill at INDEX " + this.index);
-				//$gamePlayer.touchSkillAt(this.index);
-				return true;
-			}
-			return false;*/
 			return ABSUtils.SMath.inRect(new Point(TouchInput.x, TouchInput.y), this._getRectangle());
 		}
 
@@ -9960,6 +11984,7 @@ DataManager.isDatabaseLoaded = function() {
 			if(this.parent)
 				this.parent.removeChild(this);
 			clearInterval(this._thread);
+			this._help.terminate();
 		}
 
 		//PRIVATE
@@ -9968,66 +11993,71 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		_updateABS() {
-			if(!this.bitmap) return;
-			this.bitmap.clear();
-			this.spriteRecharge.bitmap.clear();
-			this.item = $gamePlayer.battler().uiPanelSkills()[this.index];
-			if(this.item !== null) {
-				var object = this.item.skill();
-				SDK.drawIcon(6,7,object.iconIndex,this.bitmap,32);
-				if(AlphaABS.BattleManagerABS.canUseABSSkillUI(this.item)) {
-					 this.bitmap.textColor = Color.WHITE.CSS;				 
-					 //this.spriteOverlay.visible = false;
-					 this.pulseReady();
-					
-				} else {
-					this.bitmap.textColor = Color.RED.CSS;
-					if(AlphaABS.BattleManagerABS.canUseSkillByTimer(this.item)) {
-						//this.spriteOverlay.visible = true;
-						this.bitmap.drawText(this.index + 1, 6,6, 32, 24, 'right');
-					} else {
-						//this.bitmap.drawText(this._framesToTime(t.timer.getMaxValue() - t.timer.getValue()), 6,6, 32, 24, 'right');
-						this._pulsed = false;
-						this._drawRecharge(this.item);
-					}
-				}
+            if(!this.bitmap) return;
+            this.bitmap.clear();
+            this.spriteRecharge.bitmap.clear();
+            this.item = $gamePlayer.battler().uiPanelSkills()[this.index];
+            if(this.item !== null) {
+            	this._hover.update();
+				this._help.update();
+            	this._hover.visible = true;
+                var object = this.item.skill();
+                SDK.drawIcon(6,7,object.iconIndex,this.bitmap,32);
+                if(AlphaABS.BattleManagerABS.canUseABSSkillUI(this.item)) {
+                     this.bitmap.textColor = Color.WHITE.CSS;                
+                     //this.spriteOverlay.visible = false;
+                     this.pulseReady();
+                    
+                } else {
+                    this.bitmap.textColor = Color.RED.CSS;
+                    if(AlphaABS.BattleManagerABS.canUseSkillByTimer(this.item)) {
+                        //this.spriteOverlay.visible = true;
+                        this.bitmap.drawText(AlphaABS.Key.symbol['sp' + (this.index + 1)].toUpperCase(), 6,6, 32, 24, 'right');
+                    } else {
+                        //this.bitmap.drawText(this._framesToTime(t.timer.getMaxValue() - t.timer.getValue()), 6,6, 32, 24, 'right');
+                        this._pulsed = false;
+                        this._drawRecharge(this.item);
+                    }
+                }
 
-				this.bitmap.drawText(this.index + 1, 6,6, 32, 24, 'right');
+                this.bitmap.drawText(AlphaABS.Key.symbol['sp' + (this.index + 1)].toUpperCase(), 6,6, 32, 24, 'right');
 
-				if(this.item.isItem()) {
-					var count = $gameParty.numItems(object);
-					var c = this.bitmap.textColor;
-					if(count > 0) {
-						this.bitmap.textColor = Color.WHITE.CSS;
-					} else 
-						this.bitmap.textColor = Color.RED.CSS;
+                if(this.item.isItem()) {
+                    var count = $gameParty.numItems(object);
+                    var c = this.bitmap.textColor;
+                    if(count > 0) {
+                        this.bitmap.textColor = Color.WHITE.CSS;
+                    } else 
+                        this.bitmap.textColor = Color.RED.CSS;
 
-					var c2 = this.bitmap.fontSize;
-					this.bitmap.fontSize = 14;
-					this.bitmap.drawText(count, 8,22, 32, 24, 'left');
+                    var c2 = this.bitmap.fontSize;
+                    this.bitmap.fontSize = 14;
+                    this.bitmap.drawText(count, 8,22, 32, 24, 'left');
 
-					this.bitmap.textColor = c;
-					this.bitmap.fontSize = c2;
-				}
+                    this.bitmap.textColor = c;
+                    this.bitmap.fontSize = c2;
+                }
 
-				if(this.item.isNeedAmmo()) {
-					var count = $gameParty.numItems($dataItems[this.item.ammo]);
-					var c = this.bitmap.textColor;
-					if(count > 0) {
-						this.bitmap.textColor = Color.WHITE.CSS;
-					} else 
-						this.bitmap.textColor = Color.RED.CSS;
+                if(this.item.isNeedAmmo()) {
+                    var count = $gameParty.numItems($dataItems[this.item.ammo]);
+                    var c = this.bitmap.textColor;
+                    if(count > 0) {
+                        this.bitmap.textColor = Color.WHITE.CSS;
+                    } else 
+                        this.bitmap.textColor = Color.RED.CSS;
 
-					var c2 = this.bitmap.fontSize;
-					this.bitmap.fontSize = 14;
-					this.bitmap.drawText(count, 8,2, 32, 24, 'left');
+                    var c2 = this.bitmap.fontSize;
+                    this.bitmap.fontSize = 14;
+                    this.bitmap.drawText(count, 8,2, 32, 24, 'left');
 
-					this.bitmap.textColor = c;
-					this.bitmap.fontSize = c2;
-				}
-			} 
-			this._spriteMask.update();
-		}
+                    this.bitmap.textColor = c;
+                    this.bitmap.fontSize = c2;
+                }
+            } else {
+            	this._hover.visible = false;
+            }
+            this._spriteMask.update();
+        }
 
 		_calc_px_percent(current, max) {
 			var c_inp = (100* current) / max;
@@ -10055,16 +12085,28 @@ DataManager.isDatabaseLoaded = function() {
 			this.addChild(this.spriteRecharge);
 		}
 
+		_createHover() {
+			this._hover = new AlphaABS.LIB.Sprite_Hover(32,32);
+			this._hover.x = 6;
+			this._hover.y = 7;
+			this.addChild(this._hover);
+		}
+
+		_createHelp() {
+			this._help = new AlphaABS.LIB.UIObject_HelpHover(32,32);
+			this._help.move(6,7);
+			this._help.setHover(this._hover);
+			this._help.setSkillIndex(this.index);
+			this.addChild(this._help);
+		}
+
 		_createOverlay() {
-			/*this.spriteOverlay = new Sprite(ImageManager.loadPictureABS("SkillOverlayR"));
-			this.spriteOverlay.visible = false;
-			this.spriteOverlay.x = 2;
-			this.spriteOverlay.y = 3;
-			this.spriteOverlay.opacity = 150;
-			this.addChild(this.spriteOverlay);*/
+			//EMPTY
 		}
 
 	}
+
+	AlphaABS.LIB.UIObject_SkillPanelItem = UIObject_SkillPanelItem;
 
 	class Sprite_SkillPanelABS_L extends Sprite_SkillPanelABS {
 		constructor() {
@@ -10084,7 +12126,7 @@ DataManager.isDatabaseLoaded = function() {
 		_initSkills2() {
 			this.items = [];
 			for(var i = 1; i<9; i++) { //ALL
-				var item = new Sprite_PanelIconABS_L(i - 1, this.actor);
+				var item = new UIObject_SkillPanelItem_L(i - 1, this.actor);
 				item.x = ((i - 1) * 42); 
 				item.y = 0;
 				this.items.push(item);
@@ -10093,8 +12135,9 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 	}
+	AlphaABS.LIB.Sprite_SkillPanelABS_L = Sprite_SkillPanelABS_L;
 
-	class Sprite_PanelIconABS_L extends Sprite {
+	class UIObject_SkillPanelItem_L extends Sprite {
 		constructor(index, actor) {
 			super(new Bitmap(40,40));
 			this.actor = actor;
@@ -10126,7 +12169,7 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		update() {
-			super();
+			//super();
 			this._update();
 		}
 
@@ -10141,33 +12184,36 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		_update() {
-			if(!this.bitmap) return;
-			this.bitmap.clear();
-			if(!this.actor.uiPanelSkills()) return;
-			this.item = this.actor.uiPanelSkills()[this.index];
-			if(this.item !== null) {
-				var object = this.item.skill();
-				SDK.drawIcon(6,7,object.iconIndex,this.bitmap,32);
-				this.bitmap.textColor = Color.WHITE.CSS;	
-				this.bitmap.drawText(this.index + 1, 6,6, 32, 24, 'right');
+			 if(!this.bitmap) return;
+            this.bitmap.clear();
+            if(this.actor && this.actor.uiPanelSkills()) {
+                this.item = this.actor.uiPanelSkills()[this.index];
+                if(this.item !== null) {
+                    var object = this.item.skill();
+                    SDK.drawIcon(6,7,object.iconIndex,this.bitmap,32);
+                    if(this.item.isItem()) {
+                        var count = $gameParty.numItems(object);
+                        var c = this.bitmap.textColor;
+                        if(count > 0) {
+                            this.bitmap.textColor = Color.WHITE.CSS;
+                        } else 
+                            this.bitmap.textColor = Color.RED.CSS;
 
-				if(this.item.isItem()) {
-					var count = $gameParty.numItems(object);
-					var c = this.bitmap.textColor;
-					if(count > 0) {
-						this.bitmap.textColor = Color.WHITE.CSS;
-					} else 
-						this.bitmap.textColor = Color.RED.CSS;
+                        var c2 = this.bitmap.fontSize;
+                        this.bitmap.fontSize = 14;
+                        this.bitmap.drawText(count, 8,22, 32, 24, 'left');
 
-					var c2 = this.bitmap.fontSize;
-					this.bitmap.fontSize = 14;
-					this.bitmap.drawText(count, 8,22, 32, 24, 'left');
-
-					this.bitmap.textColor = c;
-					this.bitmap.fontSize = c2;
-				}
-			} 
-			this._spriteMask.update();
+                        this.bitmap.textColor = c;
+                        this.bitmap.fontSize = c2;
+                    }
+                } 
+                this.bitmap.textColor = Color.WHITE.CSS;    
+                this.bitmap.drawText(AlphaABS.Key.symbol['sp' + (this.index + 1)].toUpperCase(), 6,6, 32, 24, 'right');
+                this._spriteMask.update();
+            } else {
+                this.bitmap.textColor = Color.WHITE.CSS;    
+                this.bitmap.drawText(AlphaABS.Key.symbol['sp' + (this.index + 1)].toUpperCase(), 6,6, 32, 24, 'right');
+            }
 		}
 
 		_createMask() {
@@ -10178,8 +12224,12 @@ DataManager.isDatabaseLoaded = function() {
 		}
 	}
 
+	AlphaABS.LIB.UIObject_SkillPanelItem_L = UIObject_SkillPanelItem_L;
 
-	class Sprite_ControlItemABS extends Sprite {
+
+//UIObject_ControlPanelItem
+//------------------------------------------------------------------------------
+	class UIObject_ControlPanelItem extends Sprite {
 		constructor() {
 			super(new Bitmap(40,40));
 			this._iconIndex = null; //No icon
@@ -10187,11 +12237,20 @@ DataManager.isDatabaseLoaded = function() {
 			this._createBorder();
 			this._createMask();
 			this._createOverlay();
+			this._createHover();
 
+			this._help = null;
 			this._symbol = null;
 			this._absSkill = null;
 
 			this._thread = setInterval(function() { this._updateABS(); }.bind(this), 10);
+		}
+
+		setEditMode() {
+			this._hover.visible = false;
+			if(this._help) {
+				this._help.visible = false;
+			}
 		}
 
 		setIcon(index) {
@@ -10212,6 +12271,14 @@ DataManager.isDatabaseLoaded = function() {
 			} else {
 				if(this._absSkill == null) this.spriteAmmoCount.bitmap.clear();
 			}
+
+			if(absSkill != null && this._help == null) {
+				this._createHelp();
+			}
+		}
+
+		refresh() {
+			this._drawSymbol();
 		}
 
 		pulse() {
@@ -10255,20 +12322,22 @@ DataManager.isDatabaseLoaded = function() {
 		_updateABS() {
 			this._spriteMask.update();
 			this._drawAmmoCount();
+
+			this._hover.update();
+			if(this._help)
+				this._help.update();
 		}
 
 		_drawSymbol() {
 			if(!this.spriteText) {
-				this.spriteText = new Sprite(new Bitmap(this.bitmap.width, this.bitmap.height));
-				this.spriteText.bitmap.fontSize = 16;
-				this.addChild(this.spriteText);
-			}
-			this.spriteText.bitmap.clear();
-			if(this._symbol != null) {
-				this.spriteText.bitmap.drawText(this._symbol, 0, 0, this.spriteText.bitmap.width - 6, 24, 'right');
-			}
-
-			
+                this.spriteText = new Sprite(new Bitmap(this.bitmap.width, this.bitmap.height));
+                this.spriteText.bitmap.fontSize = 16;
+                this.addChild(this.spriteText);
+            }
+            this.spriteText.bitmap.clear();
+            if(this._symbol != null) {
+                this.spriteText.bitmap.drawText(AlphaABS.Key.symbol[this._symbol].toUpperCase(), 0, 0, this.spriteText.bitmap.width - 6, 24, 'right');
+            }
 		}
 
 		_drawAmmoCount() {
@@ -10324,99 +12393,207 @@ DataManager.isDatabaseLoaded = function() {
 			this._spriteMask.scale.y = this._spriteMask.scale.x;	
 			this.addChild(this._spriteMask);
 		}
+
+		_createHover() {
+			this._hover = new AlphaABS.LIB.Sprite_Hover(30,30);
+			this._hover.x = 4;
+			this._hover.y = 5;
+			this.addChild(this._hover);
+		}
+
+		_createHelp() {
+			this._help = new AlphaABS.LIB.UIObject_HelpHover(30,30);
+			this._help.move(4,5);
+			this._help.setHover(this._hover);
+			this._help.setSkillABS(this._absSkill);
+			this._help.setWeaponMode();
+			this.addChild(this._help);
+		}
+	}
+	AlphaABS.LIB.UIObject_ControlPanelItem = UIObject_ControlPanelItem;
+	//END UIObject_ControlPanelItem
+//------------------------------------------------------------------------------
+
+//UIObject_ControlPanel
+//------------------------------------------------------------------------------
+	function UIObject_ControlPanel() {
+	    this.initialize.apply(this, arguments);
+	}
+	
+	UIObject_ControlPanel.prototype = Object.create(Sprite.prototype);
+	UIObject_ControlPanel.prototype.constructor = UIObject_ControlPanel;
+	
+	UIObject_ControlPanel.prototype.initialize = function() {
+	    Sprite.prototype.initialize.call(this);
+		this.items = [];
+		this._transfered = false;
+		this.setFrame(0,0,this._getY(1),this._getY(4));
+	};
+
+	UIObject_ControlPanel.prototype.terminate = function() {
+		this.items.forEach(function(item) {
+			item.terminate();
+		});
 	}
 
-	class UIObject_ControlPanel extends Sprite {
-		constructor(w,h) {
-			super();
-			this.setFrame(0,0,w,h);
-			this.items = [];
+	UIObject_ControlPanel.prototype.checkTouch = function() {
+		if(!this.visible) return null;
+		if(this.parent) {
+			if(this.parent.visible == false)
+				return null;
 		}
-
-		terminate() {
-			this.items.forEach(function(item) {
-				item.terminate();
-			});
-		}
-
-		checkTouch() {
-			for(var i = 0; i<this.items.count(); i++) {
-				if(this.items[i].isTouched()) {
-					return i;
-				}
+		for(var i = 0; i<this.items.count(); i++) {
+			if(this.items[i].isTouched()) {
+				return i;
 			}
-			return null;
 		}
-
-		touchItemAt(index) {
-			this.items[index].pulse();
-		}
-
-		selectItemAt(index, isSelect) {
-			this.items[index].setSelected(isSelect);
-		}
-
-		disableItemAt(index, isDisable) {
-			this.items[index].setDisabled(isDisable);
-		}
-
-		setIconAt(index, iconIndex) {
-			this.items[index].setIcon(iconIndex);
-		}
-
-		setKeyAt(index, symbol) {
-			this.items[index].setKey(symbol);
-		}
-
-		addItem() {
-			this.items.push(new Sprite_ControlItemABS());
-			var item = this.items.last();
-			item.y = this._getY(this.items.count() - 1);
-			this.addChild(item);
-			return item;
-		}
-
-		refreshWeaponIconAt(index) {
-			var t = $gamePlayer.battler().weapons().first();
-			if(t && (t.iconIndex > 0)) {
-				this.setIconAt(index, t.iconIndex);
-			} else {
-				this.setIconAt(index, 'noWeapon');
-			}
-			this.items[index].setSkill($gamePlayer.battler().skillABS_attack());
-		}
-
-		getLastItemIndex() {
-			return this.items.count() - 1;
-		}
-
-		createBaseItems() {
-			//Attack
-			var item = this.addItem();
-			var index = this.getLastItemIndex();
-			this.refreshWeaponIconAt(index);
-			item.setKey("A");
-			//Follow
-			item = this.addItem();
-			item.setIcon('follow'); 
-			item.setKey("W");
-			//Jump
-			item = this.addItem();
-			item.setIcon('jump');
-			item.setKey("S");
-			//Rotate
-			item = this.addItem();
-			item.setIcon('toMouse');
-			item.setKey("D");
-		}
-
-		//PRIVATE
-		_getY(index) {
-			return 38 * index;
-		}
-
+		return null;
 	}
+
+	UIObject_ControlPanel.prototype.setEditMode = function() {
+		this.items.forEach(function(item) {
+			item.setEditMode();
+		});
+	};
+
+	UIObject_ControlPanel.prototype.touchItemAt = function(index) {
+		this.items[index].pulse();
+	}
+
+	UIObject_ControlPanel.prototype.selectItemAt = function(index, isSelect) {
+		this.items[index].setSelected(isSelect);
+	}
+
+	UIObject_ControlPanel.prototype.disableItemAt = function(index, isDisable) {
+		this.items[index].setDisabled(isDisable);
+	}
+
+	UIObject_ControlPanel.prototype.setIconAt = function(index, iconIndex) {
+		this.items[index].setIcon(iconIndex);
+	}
+
+	UIObject_ControlPanel.prototype.setKeyAt = function(index, symbol) {
+		this.items[index].setKey(symbol);
+	}
+
+	UIObject_ControlPanel.prototype.addItem = function() {
+		this.items.push(new UIObject_ControlPanelItem());
+		var item = this.items.last();
+		item.y = this._getY(this.items.count() - 1);
+		this.addChild(item);
+		return item;
+	}
+
+	UIObject_ControlPanel.prototype.refreshWeaponIconAt = function(index) {
+		if(!$gamePlayer.battler()) {
+            this.setIconAt(index, 'noWeapon');
+            return;
+        }
+        var t = $gamePlayer.battler().weapons().first();
+        if(t && (t.iconIndex > 0)) {
+            this.setIconAt(index, t.iconIndex);
+        } else {
+            this.setIconAt(index, 'noWeapon');
+        }
+        this.items[index].setSkill($gamePlayer.battler().skillABS_attack());
+	}
+
+	UIObject_ControlPanel.prototype.getLastItemIndex = function() {
+		return this.items.count() - 1;
+	}
+
+	UIObject_ControlPanel.prototype.createBaseItems = function() {
+		//Attack
+		var item = this.addItem();
+		var index = this.getLastItemIndex();
+		this.refreshWeaponIconAt(index);
+		item.setKey('cpA');
+		//Follow
+		item = this.addItem();
+		item.setIcon('follow'); 
+		item.setKey('cpW');
+		//Jump
+		item = this.addItem();
+		item.setIcon('jump');
+		item.setKey('cpS');
+		//Rotate
+		item = this.addItem();
+		item.setIcon('toMouse');
+		item.setKey('cpD');
+
+		//SwitchWeapon
+        item = this.addItem();
+        item.setIcon('switchWeapon');
+        item.setKey('wC');
+
+		this._setFrame();
+	}
+
+	UIObject_ControlPanel.prototype.refresh = function() {
+		for(var i = 0; i<this.items.length; i++) {
+            this.items[i].refresh();
+        }
+	};
+
+	UIObject_ControlPanel.prototype.transfer = function() {
+		if(this._transfered) {
+			this._transferOut();
+		} else {
+			this._transferIn();
+		}
+	}
+
+	UIObject_ControlPanel.prototype.isHorizontal = function() {
+		return (this._transfered == true);
+	}
+
+	//PRIVATE
+	UIObject_ControlPanel.prototype._getY = function(index) {
+		return 38 * index;
+	}
+
+	UIObject_ControlPanel.prototype._setFrame = function() {
+		this.width = this._getY(1);
+		this.height = this._getY(1) * this.items.length;
+		this.setFrame(this.x,this.y,this.width,this.height);
+	};
+
+	UIObject_ControlPanel.prototype._transferIn = function() {
+		//LOG.p("Transfer IN");
+		this._transfered = true;
+		
+		this._oldWidth = this.width;
+		this._oldHeigth = this.height;
+
+		this.width = this._getY(1) * this.items.length;
+		this.height = this._getY(1);
+
+		this.setFrame(this.x,this.y,this.width,this.height);
+
+		for(var i = 0; i<this.items.length; i++) {
+			this.items[i].y = 0;
+			this.items[i].x = this._getY(i);
+		}
+	}
+
+	UIObject_ControlPanel.prototype._transferOut = function() {
+		//LOG.p("Transfer OUT");
+		this._transfered = false;
+
+		this.width = this._oldWidth;
+		this.height = this._oldHeigth;
+
+		this.setFrame(this.x,this.y,this.width, this.height);
+
+		for(var i = 0; i<this.items.length; i++) {
+			this.items[i].y = this._getY(i);
+			this.items[i].x = 0;
+		}
+	}
+
 	AlphaABS.LIB.UIObject_ControlPanel = UIObject_ControlPanel;
+	//END UIObject_ControlPanel
+//------------------------------------------------------------------------------
 
 	class Sprite_EnemyUI extends Sprite {
 		constructor() {
@@ -10672,7 +12849,7 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		update() {
-			super();
+			//super();
 			this._update_bar();
 		}
 
@@ -10719,7 +12896,7 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		update() {
-			super();
+			//super();
 			this._spriteMask.update();
 		}
 
@@ -10830,7 +13007,7 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		update() {
-			super();
+			//super();
 			this._updateABS();
 		}
 
@@ -10892,6 +13069,149 @@ DataManager.isDatabaseLoaded = function() {
 
 	}
 
+//UIObject_InputCircle_FW
+//------------------------------------------------------------------------------
+    function UIObject_InputCircle_FW() {
+        this.initialize.apply(this, arguments);
+    }
+    
+    UIObject_InputCircle_FW.prototype = Object.create(AlphaABS.LIB.UIObject_InputCircle.prototype);
+    UIObject_InputCircle_FW.prototype.constructor = UIObject_InputCircle_FW;
+    
+    UIObject_InputCircle_FW.prototype.initialize = function(battler, func) {
+        AlphaABS.LIB.UIObject_InputCircle.prototype.initialize.call(this, 0, 0, false);
+        this._battler = battler;
+        this._callHandler = func;
+        this.refresh();
+
+        SDK.times(4, function(i){
+            this.addListener(i, function() {
+                this._callHandler(i);   
+            }.bind(this))
+        }.bind(this));
+    };
+
+    UIObject_InputCircle_FW.prototype.showHelp = function() {
+        var t = AlphaABS.Key.symbol;
+        var data = [t.scW,t.scD,t.scS,t.scA];
+        this.setHelps(data.map(function(argument) {
+          return argument.toUpperCase();  
+        }));
+        AlphaABS.LIB.UIObject_InputCircle.prototype.showHelp.call(this);
+    }
+
+    UIObject_InputCircle_FW.prototype.isTouchedAny = function() {
+        if(this.visible)
+            return this.segments.some(function(i){return i.isButtonTouched()});
+        else
+            return false;
+    };
+
+    UIObject_InputCircle_FW.prototype.refresh = function() {
+        this.setIcons(this._battler.getFavWeapIcons());
+        var index = 0;
+        this._battler.ABSParams().favoriteWeapons.forEach(function(i){
+            var obj = $dataWeapons[i];
+            if(!$gameParty.hasItem(obj,true)){
+                this.disableIcon(index);
+            }
+            if(this._battler.hasWeapon(obj)) {
+                //LOG.p("I equip this weapon " + obj.name + " icon disabled " + i);
+                this.disableIcon(index);
+            }
+            index++;
+        }.bind(this));
+    };
+    //END UIObject_InputCircle_FW
+//------------------------------------------------------------------------------
+
+//Sprite_HoverIcon
+//------------------------------------------------------------------------------
+    function Sprite_HoverIcon() {
+        this.initialize.apply(this, arguments);
+    }
+    
+    Sprite_HoverIcon.prototype = Object.create(AlphaABS.LIB.Sprite_Hover.prototype);
+    Sprite_HoverIcon.prototype.constructor = Sprite_HoverIcon;
+    
+    Sprite_HoverIcon.prototype.initialize = function(w,h,fw) {
+        this._fwidth = fw || 2;
+        AlphaABS.LIB.Sprite_Hover.prototype.initialize.call(this, w, h);
+    };
+
+    Sprite_HoverIcon.prototype.standardFrameWidth = function() {
+        return this._fwidth;
+    };
+    //END Sprite_HoverIcon
+//------------------------------------------------------------------------------
+
+//UIObject_ClickIcon
+//------------------------------------------------------------------------------
+    function UIObject_ClickIcon() {
+        this.initialize.apply(this, arguments);
+    }
+    
+    UIObject_ClickIcon.prototype = Object.create(Sprite_Button.prototype);
+    UIObject_ClickIcon.prototype.constructor = UIObject_ClickIcon;
+    
+    UIObject_ClickIcon.prototype.initialize = function(iconSymbol) {
+        Sprite_Button.prototype.initialize.call(this);
+        this.bitmap = ImageManager.loadIconABS(iconSymbol);
+        this._hover = null;
+        this.bitmap.addLoadListener(function() {
+                this._hover = new Sprite_HoverIcon(this.width, this.height, 18);
+                this.addChild(this._hover);
+        }.bind(this));
+
+        this._clicked = false;
+        this._keySymbol = null;
+    };
+
+    UIObject_ClickIcon.prototype.setClickHandler = function(handler) {
+        this._handlerX = handler;
+        Sprite_Button.prototype.setClickHandler.call(this, function(){
+            //LOG.p("Clicked");
+            if(this.isClicked()) {
+                this._clicked = false;
+                this._hover.free();
+                this._handlerX();
+            }
+            else {
+                this._clicked = true;
+                this._hover.freeze();
+                this._handlerX();
+            }
+        });
+    };
+
+    UIObject_ClickIcon.prototype.update = function() {
+        Sprite_Button.prototype.update.call(this);
+        if(this._keySymbol != null) {
+            if(this.visible && Input.isTriggered(this._keySymbol)) {
+                this.callClickHandler();
+            }
+        }
+    }
+
+    UIObject_ClickIcon.prototype.drawIconText = function(text) {
+        var spr = new Sprite();
+        spr.bitmap = new Bitmap(this.width, this.height);
+        spr.bitmap.fontSize = 22;
+        spr.bitmap.drawText(text,0,0,this.width - 2,this.height,'right');
+        this.addChild(spr);
+    };
+
+    UIObject_ClickIcon.prototype.setKeyHandler = function(symbol) {
+        this._keySymbol = symbol;
+        this.drawIconText(symbol.toUpperCase());
+    };
+
+    UIObject_ClickIcon.prototype.isClicked = function() {
+        return (this._clicked == true);
+    };
+    //END UIObject_ClickIcon
+//------------------------------------------------------------------------------
+
 	class Sprite_Mask extends Sprite {
 		constructor(args) {
 			super(args);
@@ -10928,7 +13248,7 @@ DataManager.isDatabaseLoaded = function() {
 		}
 
 		update() {
-			super();
+			//super();
 			if(this._show) {
 				if(!this._toD) {
 					this.opacity += this._time;
@@ -11382,364 +13702,1078 @@ DataManager.isDatabaseLoaded = function() {
    //END Window_ItemList
 //------------------------------------------------------------------------------
 
+//Window_Options
+//------------------------------------------------------------------------------    
+	var _Window_Options_makeCommandList = Window_Options.prototype.makeCommandList;
+	Window_Options.prototype.makeCommandList = function() {
+	    _Window_Options_makeCommandList.call(this);
+	    this._addUIOptions();
+	    if(AlphaABS.SYSTEM.PARAMS.ALLOW_KB) 
+	    	this._addBindingOptions();
+	};
+
+	Window_Options.prototype._addUIOptions = function() {
+		if($gameMap.isABS()) {
+			//LOG.p("CONFIG!");
+			var p = AlphaABS.SYSTEM.PARAMS;
+			if(p.ALLOW_UI_VIS == true) this.addCommand(AlphaABS.SYSTEM.STRING_MENU_UIVIS[SDK.isRU()], 'absUI');
+			if(p.ALLOW_UI_POS == true) this.addCommand(AlphaABS.SYSTEM.STRING_MENU_UIPOS[SDK.isRU()], 'absEditUI');
+		}
+	}
+
+	Window_Options.prototype._addBindingOptions = function() {
+		this.addCommand(AlphaABS.SYSTEM.STRING_MENU_KEYBIND[SDK.isRU()], 'absEditKeys');
+	}
+
+	Window_Options.prototype._isABSSymbol = function(symbol) {
+		return symbol.contains('abs');
+	}
+
+	Window_Options.prototype._isABSSymbol2 = function(symbol) {
+		return symbol.contains('absEdit');
+	}
+
+	var _Window_Options_statusText = Window_Options.prototype.statusText;
+	Window_Options.prototype.statusText = function(index) {
+	    var symbol = this.commandSymbol(index);
+	    if(this._isABSSymbol2(symbol)) {
+	    	return '';
+	    } else {
+	    	return _Window_Options_statusText.call(this, index);
+	    }
+	};
+
+	var _Window_Options_changeValue = Window_Options.prototype.changeValue;
+	Window_Options.prototype.changeValue = function(symbol, value) {
+		if(this._isABSSymbol(symbol)) {
+			if(this._isABSSymbol2(symbol)) {
+				SoundManager.playCursor();
+				if(symbol.contains('UI')) {
+					if(!AlphaABS.BattleManagerABS.UI().isVisible()){
+						SoundManager.playBuzzer();
+					} else
+						SceneManager.push(Scene_InterfaceEdit);
+					return;
+				}
+				if(symbol.contains('Keys')) {
+            		SceneManager.push(AlphaABS.LIB.EXT.Scene_KeyBinder);
+            		return;
+				}
+			} else {
+				var lastValue = this.getConfigValue(symbol);
+				if (lastValue !== value) {
+					AlphaABS.BattleManagerABS.UI().setShowUI(value);
+					this.redrawItem(this.findSymbol(symbol));
+	        		SoundManager.playCursor();
+				}
+			}
+		} else {
+			_Window_Options_changeValue.call(this, symbol, value);
+		}
+	};
+
+	var _Window_Options_getConfigValue = Window_Options.prototype.getConfigValue;
+	Window_Options.prototype.getConfigValue = function(symbol) {
+	    if(this._isABSSymbol(symbol)) {
+	    	if(this._isABSSymbol2(symbol)) {
+	    		return true;
+	    	} else {
+	    		return AlphaABS.BattleManagerABS.UI().isVisible();
+	    	}
+	    } else {
+	    	return _Window_Options_getConfigValue.call(this, symbol);
+	    }
+	};
+	//END Window_Options
+//------------------------------------------------------------------------------
+
+//Window_EquipItem
+//------------------------------------------------------------------------------
+    Window_EquipItem.prototype.onTouch = function(triggered) {
+        if(this._sCircle) {
+            if(this._sCircle.isOpen() && this._sCircle.isTouchedAny()) {
+                return;
+            }
+        } 
+        Window_ItemList.prototype.onTouch.call(this, triggered);
+    };
+
+    var _Window_EquipItem_setActor = Window_EquipItem.prototype.setActor;
+    Window_EquipItem.prototype.setActor = function(actor) {
+        _Window_EquipItem_setActor.call(this, actor);
+        if(this._actor != null) {
+            this._createFavWeapCircle();
+            this._createFavWeapButton();
+        }
+    }
+
+    Window_EquipItem.prototype.update = function() {
+        Window_ItemList.prototype.update.call(this);
+        if(this._sCircle && this._sCircle.isOpen()) {
+            var index = AlphaABS.Key.isTriggeredWS();
+            if(index != null) {
+                this.touchWeaponAt(index);
+                this.refresh();
+                return;
+            }
+        }
+    };
+
+    Window_EquipItem.prototype.drawItemNumber = function(item, x, y, width) {
+        Window_ItemList.prototype.drawItemNumber.call(this, item, x, y ,width);
+        if(!this._actor) {
+            return;
+        }
+        if(!DataManager.isWeapon(item))
+            return;
+
+        var index = this._actor.getFavWeapIndex(item);
+        if(index !== null) {
+            var symbol = null;
+            for(var key in AlphaABS.Key.indexSchemeC) {
+                if(AlphaABS.Key.indexSchemeC[key] == index) {
+                    symbol =  key;
+                    break;
+                }
+            }
+            if(symbol != null) {
+                symbol = AlphaABS.Key.symbol[symbol];
+                this.changeTextColor(Color.ORANGE.CSS);
+                this.drawText('[' + symbol.toUpperCase() +']', x, y, width - this.textWidth('0000'), 'right');
+            }
+
+        }
+    };
+
+    //NEW
+    Window_EquipItem.prototype.touchWeaponAt = function(index) {
+        if(this._sCircle) {
+            if(DataManager.isWeapon(this.item())) {
+                this._sCircle.click(index);
+                this._actor.setFavWeap(this.item(), index);
+                SoundManager.playEquip();
+                this._sCircle.refresh();
+                this.refresh();
+            } else 
+                SoundManager.playBuzzer();
+        }
+    };
+
+
+    Window_EquipItem.prototype.refresh = function() {
+        Window_ItemList.prototype.refresh.call(this);
+        
+    };
+
+    Window_EquipItem.prototype.activate = function() {
+        Window_ItemList.prototype.activate.call(this);
+        if(this._sCircleButton) {
+            this._sCircleButton.visible = true;
+        }
+    }
+
+    Window_EquipItem.prototype.deactivate = function() {
+        Window_ItemList.prototype.deactivate.call(this);
+        if(this._sCircleButton) {
+            this._sCircleButton.visible = false;
+            if(this._sCircle.isOpen())
+                this._sCircleButton.callClickHandler();
+        }
+    }
+
+    Window_EquipItem.prototype._createFavWeapCircle = function() {
+        this._sCircleBackSprite = new Sprite(new Bitmap((this.width/2) - 4,this.height - 8));
+        this._sCircleBackSprite.bitmap.addLoadListener(function(){
+            this._sCircleBackSprite.bitmap.fillAll(Color.BLACK.reAlpha(200).CSS);
+        }.bind(this));
+        this._sCircleBackSprite.visible = false;
+        this.addChild(this._sCircleBackSprite);
+        this._sCircle = new UIObject_InputCircle_FW(this._actor, function(index){this.touchWeaponAt(index)}.bind(this));
+        this._sCircle.move(this._sCircleBackSprite.width/2,this._sCircleBackSprite.height/2);
+        this._sCircle.showHelp();
+        this._sCircleBackSprite.addChild(this._sCircle);
+    };
+
+    Window_EquipItem.prototype._createFavWeapButton = function() {
+        this._sCircleButton = new UIObject_ClickIcon('switchWeapon');
+        this._sCircleButton.move(this.width - 36, this.height - 36);
+        this._sCircleButton.visible = false;
+        this._sCircleButton.setClickHandler(function() {
+            if(this._sCircleButton.isClicked()) {
+                this._onEquipMode();
+            } else {
+                this._offEquipMode();
+            }
+        }.bind(this));
+        this._sCircleButton.setKeyHandler(AlphaABS.Key.symbol.wC);
+        this.addChild(this._sCircleButton);
+    };
+
+    Window_EquipItem.prototype.select = function(index) {
+        Window_ItemList.prototype.select.call(this, index);
+        if(!this._sCircle) return;
+        if(this.maxCols() > 1) {
+            this._placeFavWeapCircle(index % this.maxCols());
+        } else {
+            this._placeFavWeapCircle(0);
+        }
+
+        if(this._sCircleButton) {
+            this._sCircleButton.visible = DataManager.isWeapon(this.item());
+        
+        }
+    }
+
+    Window_EquipItem.prototype._onEquipMode = function() {
+        this._sCircle.open();
+        this._sCircleBackSprite.visible = true;
+    };
+
+    Window_EquipItem.prototype._offEquipMode = function() {
+        this._sCircle.close();
+        this._sCircleBackSprite.visible = false;
+    }
+
+    Window_EquipItem.prototype._placeFavWeapCircle = function(place) {
+        if(place <= 0) { //RIGHT
+            this._sCircleBackSprite.move(this.width - 6, this.height - 4);
+            this._sCircleBackSprite.setStaticAnchor(1,1);
+        } else { //LEFT
+            this._sCircleBackSprite.move(6,this.height - 4);
+            this._sCircleBackSprite.setStaticAnchor(0,1);
+        }
+    };
+    //END Window_EquipItem
+//------------------------------------------------------------------------------
+
 })();
 
 //==========================================================================================================================================================
 // Alpha ABS EXTENSION Audio
 //==========================================================================================================================================================
 
-(function() {
-
-	AlphaABS.SYSTEM.EXTENSIONS.AUDIO = true;
-
-	var LOG = new PLATFORM.DevLog("AAudio");
-	var Point = AlphaABS.UTILS.Point;
-
-
-//WebAudio
 //------------------------------------------------------------------------------
-	WebAudio._contextABS = null;
+	(function() {
 
-	WebAudio.updateListenerPosition = function(point) {
-		//LOG.p("Update audio position " + point.toString());
-		WebAudio._contextABS.listener.setPosition(point.x,point.y,0);
-	} 
+		AlphaABS.SYSTEM.EXTENSIONS.AUDIO = true;
 
-	var _WebAudio_clear = WebAudio.prototype.clear;
-	WebAudio.prototype.clear = function() {
-    	_WebAudio_clear.call(this);
-    	this._positionABS = null;
-	}
-
-	var _WebAudio_createContext = WebAudio._createContext;
-	WebAudio._createContext = function() {
-		WebAudio._contextABS = new (window.AudioContext || window.webkitAudioContext)();
-	    _WebAudio_createContext.call(this);
-	};
-
-	//NEW
-	WebAudio.prototype.setPosition = function(point) {
-		this._positionABS = point;
-	}
-
-	var _WebAudio_createNodes = WebAudio.prototype._createNodes;
-	WebAudio.prototype._createNodes = function() {
-		if(this._positionABS) {	
-	    	var context = WebAudio._contextABS;
-		    this._sourceNode = context.createBufferSource();
-		    this._sourceNode.buffer = this._buffer;
-		    this._sourceNode.loopStart = this._loopStart;
-		    this._sourceNode.loopEnd = this._loopStart + this._loopLength;
-		    this._sourceNode.playbackRate.value = this._pitch;
-		    this._gainNode = context.createGain();
-		    this._gainNode.gain.value = this._volume;
-		    this._pannerNode = context.createPanner();
-			this._pannerNode = context.createPanner();
-			this._pannerNode.refDistance = 20;
-			this._pannerNode.maxDistance = 400;
-			this._pannerNode.rolloffFactor = 0.2;
-			this._pannerNode.setPosition(this._positionABS.x, this._positionABS.y, 0);
-			this._sourceNode.connect(this._gainNode);
-    		this._gainNode.connect(this._pannerNode);
-			this._pannerNode.connect(context.destination);
-	    } else {
-	    	_WebAudio_createNodes.call(this);
-	    }
-	};
-
-	var _WebAudio_connectNodes = WebAudio.prototype._connectNodes;
-	WebAudio.prototype._connectNodes = function() {
-	    if(!this._positionABS) {
-	    	_WebAudio_connectNodes.call(this);
-	    } 
-	};
-	//END WebAudio
-//------------------------------------------------------------------------------
+		var LOG = new PLATFORM.DevLog("AAudio");
+		var Point = AlphaABS.UTILS.Point;
 
 
-//AudioManager
-//------------------------------------------------------------------------------
+	//WebAudio
+	//------------------------------------------------------------------------------
+		WebAudio._contextABS = null;
 
-	//NEW
-	AudioManager.playSeAt = function(se, point) {
-		//LOG.p("Play SE at pos " + point.toString());
-	    if (se.name) {
-	        this._seBuffers = this._seBuffers.filter(function(audio) {
-	            return audio.isPlaying();
-	        });
-	        var buffer = this.createBuffer('se', se.name);
-	        this.updateSeParameters(buffer, se);
-	        buffer.setPosition(point);
-	        buffer.play(false);
-	        this._seBuffers.push(buffer);
-	    }
-	};
+		WebAudio.updateListenerPosition = function(point) {
+			//LOG.p("Update audio position " + point.toString());
+			WebAudio._contextABS.listener.setPosition(point.x,point.y,0);
+		} 
 
-	//NEW
-	AudioManager.playSeLoopAt = function(se, point) {
-		if(se.name) {
-			 this._seBuffers = this._seBuffers.filter(function(audio) {
-	            return audio.isPlaying();
-	        });
-			var buffer = this.createBuffer('se', se.name);
-	        this.updateSeParameters(buffer, se);
-	        buffer.setPosition(point);
-	        buffer.play(true);
-	        this._seBuffers.push(buffer);
-	        return buffer;
+		var _WebAudio_clear = WebAudio.prototype.clear;
+		WebAudio.prototype.clear = function() {
+	    	_WebAudio_clear.call(this);
+	    	this._positionABS = null;
 		}
 
-		return null;
-	}
-	//END AudioManager
+		var _WebAudio_createContext = WebAudio._createContext;
+		WebAudio._createContext = function() {
+			WebAudio._contextABS = new (window.AudioContext || window.webkitAudioContext)();
+		    _WebAudio_createContext.call(this);
+		};
+
+		//NEW
+		WebAudio.prototype.setPosition = function(point) {
+			this._positionABS = point;
+		}
+
+		var _WebAudio_createNodes = WebAudio.prototype._createNodes;
+		WebAudio.prototype._createNodes = function() {
+			if(this._positionABS) {	
+		    	var context = WebAudio._contextABS;
+			    this._sourceNode = context.createBufferSource();
+			    this._sourceNode.buffer = this._buffer;
+			    this._sourceNode.loopStart = this._loopStart;
+			    this._sourceNode.loopEnd = this._loopStart + this._loopLength;
+			    this._sourceNode.playbackRate.value = this._pitch;
+			    this._gainNode = context.createGain();
+			    this._gainNode.gain.value = this._volume;
+			    this._pannerNode = context.createPanner();
+				this._pannerNode = context.createPanner();
+				this._pannerNode.refDistance = 20;
+				this._pannerNode.maxDistance = 400;
+				this._pannerNode.rolloffFactor = 0.2;
+				this._pannerNode.setPosition(this._positionABS.x, this._positionABS.y, 0);
+				this._sourceNode.connect(this._gainNode);
+	    		this._gainNode.connect(this._pannerNode);
+				this._pannerNode.connect(context.destination);
+		    } else {
+		    	_WebAudio_createNodes.call(this);
+		    }
+		};
+
+		var _WebAudio_connectNodes = WebAudio.prototype._connectNodes;
+		WebAudio.prototype._connectNodes = function() {
+		    if(!this._positionABS) {
+		    	_WebAudio_connectNodes.call(this);
+		    } 
+		};
+		//END WebAudio
+	//------------------------------------------------------------------------------
+
+	//AudioManager
+	//------------------------------------------------------------------------------
+		//NEW
+		AudioManager.playSeAt = function(se, point) {
+			//LOG.p("Play SE at pos " + point.toString());
+		    if (se.name) {
+		        this._seBuffers = this._seBuffers.filter(function(audio) {
+		            return audio.isPlaying();
+		        });
+		        var buffer = this.createBuffer('se', se.name);
+		        this.updateSeParameters(buffer, se);
+		        buffer.setPosition(point);
+		        buffer.play(false);
+		        this._seBuffers.push(buffer);
+		    }
+		};
+
+		//NEW
+		AudioManager.playSeLoopAt = function(se, point) {
+			if(se.name) {
+				 this._seBuffers = this._seBuffers.filter(function(audio) {
+		            return audio.isPlaying();
+		        });
+				var buffer = this.createBuffer('se', se.name);
+		        this.updateSeParameters(buffer, se);
+		        buffer.setPosition(point);
+		        buffer.play(true);
+		        this._seBuffers.push(buffer);
+		        return buffer;
+			}
+
+			return null;
+		}
+		//END AudioManager
+	//------------------------------------------------------------------------------
+
+	//SoundManager
+	//------------------------------------------------------------------------------
+		//OVER
+		SoundManager.playSystemSound = function(n,point) {
+		    if ($dataSystem) {
+		    	if(point === undefined)
+		        	AudioManager.playStaticSe($dataSystem.sounds[n]);
+		        else {
+		        	if(point != null) {
+		        		//LOG.p("System sound " + n);
+		        		AudioManager.playSeAt($dataSystem.sounds[n],point);
+		        	}
+		        }
+		    }
+		};
+
+		SoundManager.playEnemyAttackAt = function(point) {
+			this.playSystemSound(9,point);
+		};
+
+		SoundManager.playEnemyDamageAt = function(point) {
+		    this.playSystemSound(10,point);
+		};
+
+		SoundManager.playEnemyCollapseAt = function(point) {
+		    this.playSystemSound(11, point);
+		};
+
+		SoundManager.playBossCollapse1At = function(point) {
+		    this.playSystemSound(12, point);
+		};
+
+		SoundManager.playBossCollapse2At = function(point) {
+		    this.playSystemSound(13, point);
+		};
+
+		SoundManager.playActorDamageAt = function(point) {
+		    this.playSystemSound(14, point);
+		};
+
+		SoundManager.playActorCollapseAt = function(point) {
+		    this.playSystemSound(15, point);
+		};
+
+		SoundManager.playRecoveryAt = function(point) {
+		    this.playSystemSound(16, point);
+		};
+
+		SoundManager.playMissAt = function(point) {
+		    this.playSystemSound(17, point);
+		};
+
+		SoundManager.playEvasionAt = function(point) {
+		    this.playSystemSound(18, point);
+		};
+
+		//END SoundManager
+	//------------------------------------------------------------------------------
+
+	//Game_Player
+	//------------------------------------------------------------------------------
+		Game_Player.prototype.updateMove = function() {
+		    Game_Character.prototype.updateMove.call(this);
+		    if (!this.isMoving()) {
+		    	this._updateAudioABS();
+		    }
+		};
+
+		var _Game_Player_refresh = Game_Player.prototype.refresh;
+		Game_Player.prototype.refresh = function() {
+			_Game_Player_refresh.call(this);
+			this._updateAudioABS();
+		}
+
+		//NEW
+		Game_Player.prototype._updateAudioABS = function() {
+			var t = new Point(this._realX, this._realY).mapPointOnScreen();
+		    WebAudio.updateListenerPosition(t);
+		}
+		//END Game_Player
+	//------------------------------------------------------------------------------
+
+	//Sprite_Animation
+	//------------------------------------------------------------------------------
+		//OVER
+		Sprite_Animation.prototype.processTimingData = function(timing) {
+		    var duration = timing.flashDuration * this._rate;
+		    switch (timing.flashScope) {
+		    case 1:
+		        this.startFlash(timing.flashColor, duration);
+		        break;
+		    case 2:
+		        this.startScreenFlash(timing.flashColor, duration);
+		        break;
+		    case 3:
+		        this.startHiding(duration);
+		        break;
+		    }
+		    if (!this._duplicated && timing.se) {
+		        //AudioManager.playSe(timing.se);
+		        var p = new Point(this.x,this.y);
+		        p.convertToMap();
+		        AudioManager.playSeAt(timing.se, p.mapPointOnScreen());
+		    }
+		};
+		//END Sprite_Animation
+	//------------------------------------------------------------------------------
+
+	})();
 //------------------------------------------------------------------------------
-
-
-//SoundManager
-//------------------------------------------------------------------------------
-
-	//OVER
-	SoundManager.playSystemSound = function(n,point) {
-	    if ($dataSystem) {
-	    	if(point === undefined)
-	        	AudioManager.playStaticSe($dataSystem.sounds[n]);
-	        else {
-	        	if(point != null) {
-	        		//LOG.p("System sound " + n);
-	        		AudioManager.playSeAt($dataSystem.sounds[n],point);
-	        	}
-	        }
-	    }
-	};
-
-	SoundManager.playEnemyAttackAt = function(point) {
-		this.playSystemSound(9,point);
-	};
-
-	SoundManager.playEnemyDamageAt = function(point) {
-	    this.playSystemSound(10,point);
-	};
-
-	SoundManager.playEnemyCollapseAt = function(point) {
-	    this.playSystemSound(11, point);
-	};
-
-	SoundManager.playBossCollapse1At = function(point) {
-	    this.playSystemSound(12, point);
-	};
-
-	SoundManager.playBossCollapse2At = function(point) {
-	    this.playSystemSound(13, point);
-	};
-
-	SoundManager.playActorDamageAt = function(point) {
-	    this.playSystemSound(14, point);
-	};
-
-	SoundManager.playActorCollapseAt = function(point) {
-	    this.playSystemSound(15, point);
-	};
-
-	SoundManager.playRecoveryAt = function(point) {
-	    this.playSystemSound(16, point);
-	};
-
-	SoundManager.playMissAt = function(point) {
-	    this.playSystemSound(17, point);
-	};
-
-	SoundManager.playEvasionAt = function(point) {
-	    this.playSystemSound(18, point);
-	};
-
-	//END SoundManager
-//------------------------------------------------------------------------------
-
-//Game_Player
-//------------------------------------------------------------------------------
-	Game_Player.prototype.updateMove = function() {
-	    Game_Character.prototype.updateMove.call(this);
-	    if (!this.isMoving()) {
-	    	this._updateAudioABS();
-	    }
-	};
-
-	var _Game_Player_refresh = Game_Player.prototype.refresh;
-	Game_Player.prototype.refresh = function() {
-		_Game_Player_refresh.call(this);
-		this._updateAudioABS();
-	}
-
-	//NEW
-	Game_Player.prototype._updateAudioABS = function() {
-		var t = new Point(this._realX, this._realY).mapPointOnScreen();
-	    WebAudio.updateListenerPosition(t);
-	}
-	//END Game_Player
-//------------------------------------------------------------------------------
-
-//Sprite_Animation
-//------------------------------------------------------------------------------
-	//OVER
-	Sprite_Animation.prototype.processTimingData = function(timing) {
-	    var duration = timing.flashDuration * this._rate;
-	    switch (timing.flashScope) {
-	    case 1:
-	        this.startFlash(timing.flashColor, duration);
-	        break;
-	    case 2:
-	        this.startScreenFlash(timing.flashColor, duration);
-	        break;
-	    case 3:
-	        this.startHiding(duration);
-	        break;
-	    }
-	    if (!this._duplicated && timing.se) {
-	        //AudioManager.playSe(timing.se);
-	        var p = new Point(this.x,this.y);
-	        p.convertToMap();
-	        AudioManager.playSeAt(timing.se, p.mapPointOnScreen());
-	    }
-	};
-	//END Sprite_Animation
-//------------------------------------------------------------------------------
-
-})();
 
 //==========================================================================================================================================================
 // Alpha ABS EXTENSION Lighting
 //==========================================================================================================================================================
 
-(function() {
+//------------------------------------------------------------------------------
+	(function() {
 
-	if(Imported.TerraxLighting)
- 		AlphaABS.SYSTEM.EXTENSIONS.LIGHT = true;
+		if(Imported.TerraxLighting)
+	 		AlphaABS.SYSTEM.EXTENSIONS.LIGHT = true;
 
-	var xyLightArray = [];
-	
-	var _setLightAt = function(tiletype, x, y, radius, color, isOn, bright, isFlicker) {
-		bright = PLATFORM.SDK.check(bright, 0.0);
-		var isValidColor  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
-		if (!isValidColor) {
- 			color = '#FFFFFF';
-		}
-
-		var tilefound = false;
-		for (var i = 0; i < xyLightArray.length; i++) {
-			var tilestr = xyLightArray[i];
-			var tileargs = tilestr.split(";");
-			if (tileargs[0] == tiletype && tileargs[1] == x && tileargs[2] == y) {
-				tilefound = true;
-				if(isOn)
-					xyLightArray[i] = tiletype + ";" + x + ";" + y + ";" + radius + ";" + color + ";" + isOn + ";" + bright + ";" + isFlicker;
-				else 
-					xyLightArray.delete(tilestr);
-				break;
-			}
-		}
+		var xyLightArray = [];
 		
-		if (tilefound === false) {
-			var tiletag = tiletype + ";" + x + ";" + y + ";" + radius + ";" + color + ";" + isOn + ";" + bright + ";" + isFlicker;
-			xyLightArray.push(tiletag);			
-		}	
-
-		$gameVariables.setXYArrayABS(xyLightArray);
-	}
-
-	var _updateABS = function() {
-
-		var canvas = this._maskBitmap.canvas;
-		var ctx = canvas.getContext("2d");
-		ctx.globalCompositeOperation = 'lighter';
-
-		var pw = $gameMap.tileWidth()
-	    var ph = $gameMap.tileHeight();
-		var dx = $gameMap.displayX();
-		var dy = $gameMap.displayY();
-
-		for(var i = 0; i<xyLightArray.length; i++) {
-			var tilestr = xyLightArray[i];
-			var tileargs = tilestr.split(";");
-			var tile_type = tileargs[0];
-			var x = tileargs[1];
-			var y = tileargs[2];
-			var radius = parseInt(tileargs[3]);
-			var color = tileargs[4];
-			var isOn = (tileargs[5] === 'true');
-			var bright = Number(tileargs[6]);
-			var isFlicker = (tileargs[7] === 'true');
-
-			if(tile_type == 700 && isOn) {
-	 			var x1 =(pw/2)+(x-dx)*pw;
-				var y1 =(ph/2)+(y-dy)*ph;
-
-				if ($dataMap.scrollType === 2 || $dataMap.scrollType === 3) {	
-				if (dx-5>x) {
-						var lxjump = $gameMap.width() - (dx-x);
-						x1 = (pw/2)+(lxjump*pw);
-					} 
-				}
-				if ($dataMap.scrollType === 1 || $dataMap.scrollType === 3) {
-					if (dy-5>y) {
-						var lyjump = $gameMap.height() -(dy-y);
-						y1 = (ph/2)+(lyjump*ph);
-					}
-				}	
-				this._maskBitmap.radialgradientFillRect(x1,y1, 0, radius , color, 'black', isFlicker, bright);
+		var _setLightAt = function(tiletype, x, y, radius, color, isOn, bright, isFlicker) {
+			bright = PLATFORM.SDK.check(bright, 0.0);
+			var isValidColor  = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
+			if (!isValidColor) {
+	 			color = '#FFFFFF';
 			}
+
+			var tilefound = false;
+			for (var i = 0; i < xyLightArray.length; i++) {
+				var tilestr = xyLightArray[i];
+				var tileargs = tilestr.split(";");
+				if (tileargs[0] == tiletype && tileargs[1] == x && tileargs[2] == y) {
+					tilefound = true;
+					if(isOn)
+						xyLightArray[i] = tiletype + ";" + x + ";" + y + ";" + radius + ";" + color + ";" + isOn + ";" + bright + ";" + isFlicker;
+					else 
+						xyLightArray.delete(tilestr);
+					break;
+				}
+			}
+			
+			if (tilefound === false) {
+				var tiletag = tiletype + ";" + x + ";" + y + ";" + radius + ";" + color + ";" + isOn + ";" + bright + ";" + isFlicker;
+				xyLightArray.push(tiletag);			
+			}	
+
+			$gameVariables.setXYArrayABS(xyLightArray);
 		}
-		ctx.globalCompositeOperation =  'source-over';
-	}
 
-	var _Spriteset_Map_createLightmask_Terrax = Spriteset_Map.prototype.createLightmask;
-	Spriteset_Map.prototype.createLightmask = function() {
-	    _Spriteset_Map_createLightmask_Terrax.call(this);
-	    var temp = this._lightmask.__proto__.update;
-	    this._lightmask.__proto__.update = function() {
-	    	temp.call(this);
-	    	_updateABS.call(this);
-	    };
-	};
+		var _updateABS = function() {
 
-	/*Game_Map.prototype.setFireAt = function(x, y, radius, color, isOn, bright) {
-		_setLightAt(700, x, y, radius, color, isOn, bright, true);
-	}
+			var canvas = this._maskBitmap.canvas;
+			var ctx = canvas.getContext("2d");
+			ctx.globalCompositeOperation = 'lighter';
 
-	Game_Map.prototype.setLightAt = function(x, y, radius, color, isOn, bright) {
-		_setLightAt(700, x, y, radius, color, isOn, bright, false);
-	}*/
+			var pw = $gameMap.tileWidth()
+		    var ph = $gameMap.tileHeight();
+			var dx = $gameMap.displayX();
+			var dy = $gameMap.displayY();
 
-	Game_Map.prototype.setLight = function(x,y, radius, color, bright, isFlicker) {
-		bright = PLATFORM.SDK.check(bright, 0.0);
-		isFlicker = PLATFORM.SDK.check(isFlicker, false);
-		_setLightAt(700, x, y, radius, color, true, bright, isFlicker);
-	}
+			for(var i = 0; i<xyLightArray.length; i++) {
+				var tilestr = xyLightArray[i];
+				var tileargs = tilestr.split(";");
+				var tile_type = tileargs[0];
+				var x = tileargs[1];
+				var y = tileargs[2];
+				var radius = parseInt(tileargs[3]);
+				var color = tileargs[4];
+				var isOn = (tileargs[5] === 'true');
+				var bright = Number(tileargs[6]);
+				var isFlicker = (tileargs[7] === 'true');
 
-	Game_Map.prototype.deleteLight = function(x,y) {
-		_setLightAt(700, x, y, 0, '#FFFFFF', false, 0.0, false);
-	}
+				if(tile_type == 700 && isOn) {
+		 			var x1 =(pw/2)+(x-dx)*pw;
+					var y1 =(ph/2)+(y-dy)*ph;
 
-	Game_Variables.prototype.valueXYArrayABS = function() {
-	   	var default_TA = [];
-    	return this._xyArrayABS || default_TA;
-	};
+					if ($dataMap.scrollType === 2 || $dataMap.scrollType === 3) {	
+					if (dx-5>x) {
+							var lxjump = $gameMap.width() - (dx-x);
+							x1 = (pw/2)+(lxjump*pw);
+						} 
+					}
+					if ($dataMap.scrollType === 1 || $dataMap.scrollType === 3) {
+						if (dy-5>y) {
+							var lyjump = $gameMap.height() -(dy-y);
+							y1 = (ph/2)+(lyjump*ph);
+						}
+					}	
+					this._maskBitmap.radialgradientFillRect(x1,y1, 0, radius , color, 'black', isFlicker, bright);
+				}
+			}
+			ctx.globalCompositeOperation =  'source-over';
+		}
 
-	Game_Variables.prototype.setXYArrayABS = function(value) {
-    	this._xyArrayABS = value;
-	};	
+		var _Spriteset_Map_createLightmask_Terrax = Spriteset_Map.prototype.createLightmask;
+		Spriteset_Map.prototype.createLightmask = function() {
+		    _Spriteset_Map_createLightmask_Terrax.call(this);
+		    var temp = this._lightmask.__proto__.update;
+		    this._lightmask.__proto__.update = function() {
+		    	temp.call(this);
+		    	_updateABS.call(this);
+		    };
+		};
 
-	function SaveLightingVariablesABS() {
-		xyLightArray = $gameVariables.valueXYArrayABS();
-	}
+		/*Game_Map.prototype.setFireAt = function(x, y, radius, color, isOn, bright) {
+			_setLightAt(700, x, y, radius, color, isOn, bright, true);
+		}
 
-	var _Scene_load_onSavefileOk = Scene_Load.prototype.onSavefileOk;
-	Scene_Load.prototype.onSavefileOk = function() {
-		_Scene_load_onSavefileOk.call(this);
-	    if(AlphaABS.SYSTEM.EXTENSIONS.LIGHT) {
-	    	if(this._loadSuccess) {
-	    		SaveLightingVariablesABS();
-	    	}	
+		Game_Map.prototype.setLightAt = function(x, y, radius, color, isOn, bright) {
+			_setLightAt(700, x, y, radius, color, isOn, bright, false);
+		}*/
+
+		Game_Map.prototype.setLight = function(x,y, radius, color, bright, isFlicker) {
+			bright = PLATFORM.SDK.check(bright, 0.0);
+			isFlicker = PLATFORM.SDK.check(isFlicker, false);
+			_setLightAt(700, x, y, radius, color, true, bright, isFlicker);
+		}
+
+		Game_Map.prototype.deleteLight = function(x,y) {
+			_setLightAt(700, x, y, 0, '#FFFFFF', false, 0.0, false);
+		}
+
+		Game_Variables.prototype.valueXYArrayABS = function() {
+		   	var default_TA = [];
+	    	return this._xyArrayABS || default_TA;
+		};
+
+		Game_Variables.prototype.setXYArrayABS = function(value) {
+	    	this._xyArrayABS = value;
+		};	
+
+		function SaveLightingVariablesABS() {
+			xyLightArray = $gameVariables.valueXYArrayABS();
+		}
+
+		var _Scene_load_onSavefileOk = Scene_Load.prototype.onSavefileOk;
+		Scene_Load.prototype.onSavefileOk = function() {
+			_Scene_load_onSavefileOk.call(this);
+		    if(AlphaABS.SYSTEM.EXTENSIONS.LIGHT) {
+		    	if(this._loadSuccess) {
+		    		SaveLightingVariablesABS();
+		    	}	
+		    }
+		}
+	})();	
+//------------------------------------------------------------------------------
+
+//==========================================================================================================================================================
+// Alpha ABS EXTENSION KeyBinding
+//==========================================================================================================================================================
+
+//------------------------------------------------------------------------------
+	(function() {
+	AlphaABS.SYSTEM.EXTENSIONS.KEY_BINDING = true;
+
+	var ABSKey = AlphaABS.Key;
+	var ABSUtils = AlphaABS.UTILS;
+	var Point = ABSUtils.Point;
+	var Consts = AlphaABS.SYSTEM;
+
+	//Scene_KeyBinder
+	//------------------------------------------------------------------------------
+	    function Scene_KeyBinder() {
+	        this.initialize.apply(this, arguments);
 	    }
-	}
-})();	
 
+	    Scene_KeyBinder.prototype = Object.create(Scene_MenuBase.prototype);
+	    Scene_KeyBinder.prototype.constructor = Scene_KeyBinder;
+
+	    Scene_KeyBinder.prototype.initialize = function() {
+	        Scene_MenuBase.prototype.initialize.call(this);
+	    };
+
+	    Scene_KeyBinder.prototype.create = function() {
+	        Scene_MenuBase.prototype.create.call(this);
+	        this.createOptionsWindow();
+	    };
+
+	    Scene_KeyBinder.prototype.terminate = function() {
+	        Scene_MenuBase.prototype.terminate.call(this);
+	        Input.saveSchemeABS();
+	    };
+
+	    Scene_KeyBinder.prototype.createOptionsWindow = function() {
+	        this._optionsWindow = new Window_KeyBinderMain();
+	        this._optionsWindow.setHandler('cancel', this.popScene.bind(this));
+	        this.addWindow(this._optionsWindow);
+
+	        this._helpWindowB = new Window_KeyBinderHelp(this._optionsWindow.x,this._optionsWindow.y + this._optionsWindow.height,this._optionsWindow.width,60);
+	        this.addWindow(this._helpWindowB);
+	        this._optionsWindow.setHelpWindow(this._helpWindowB);
+	    };
+
+	    AlphaABS.LIB.EXT.Scene_KeyBinder = Scene_KeyBinder;
+	    //END Scene_KeyBinder
+	//------------------------------------------------------------------------------
+
+	//Scene_KeyBinderComplex
+	//------------------------------------------------------------------------------
+	    function Scene_KeyBinderComplex() {
+	        this.initialize.apply(this, arguments);
+	    }
+
+	    Scene_KeyBinderComplex.prototype = Object.create(Scene_MenuBase.prototype);
+	    Scene_KeyBinderComplex.prototype.constructor = Scene_KeyBinderComplex;
+
+	    Scene_KeyBinderComplex.prototype.initialize = function() {
+	        Scene_MenuBase.prototype.initialize.call(this);
+	    };
+
+	    Scene_KeyBinderComplex.prototype.bindMode = function() {
+	        return 'controlPanel';
+	    }
+
+	    Scene_KeyBinderComplex.prototype.create = function() {
+	        Scene_MenuBase.prototype.create.call(this);
+	        this.createOptionsWindow();
+	    };
+
+	    Scene_KeyBinderComplex.prototype.createOptionsWindow = function() {
+	        this._optionsWindow = new Window_KeyBinderComplex(this.bindMode());
+	        this._optionsWindow.setHandler('cancel', this.popScene.bind(this));
+	        this.addWindow(this._optionsWindow);
+
+	        var h = 120;
+	        this._viewWindow = new Window_KeyBinderView(this._optionsWindow.x, this._optionsWindow.y - h, this._optionsWindow.width, h, this.bindMode());
+	        this.addWindow(this._viewWindow);
+
+	        this._optionsWindow.setViewWindow(this._viewWindow);
+
+	        this._helpWindowB = new Window_KeyBinderHelp(this._optionsWindow.x,this._optionsWindow.y + this._optionsWindow.height,this._optionsWindow.width,60);
+	        this.addWindow(this._helpWindowB);
+	        this._optionsWindow.setHelpWindow(this._helpWindowB);
+	    };
+	    //END Scene_KeyBinderComplex
+	//------------------------------------------------------------------------------
+
+	//Scene_KeyBinderComplexSkills
+	//------------------------------------------------------------------------------
+	    function Scene_KeyBinderComplexSkills() {
+	        this.initialize.apply(this, arguments);
+	    }
+
+	    Scene_KeyBinderComplexSkills.prototype = Object.create(Scene_KeyBinderComplex.prototype);
+	    Scene_KeyBinderComplexSkills.prototype.constructor = Scene_KeyBinderComplexSkills;
+
+
+	    Scene_KeyBinderComplexSkills.prototype.bindMode = function() {
+	        return 'skillsPanel';
+	    }
+	    //END Scene_KeyBinderComplexSkills
+	//------------------------------------------------------------------------------
+
+	//Scene_KeyBinderComplexWeapons
+	//------------------------------------------------------------------------------
+	    function Scene_KeyBinderComplexWeapons() {
+	        this.initialize.apply(this, arguments);
+	    }
+	    
+	    Scene_KeyBinderComplexWeapons.prototype = Object.create(Scene_KeyBinderComplex.prototype);
+	    Scene_KeyBinderComplexWeapons.prototype.constructor = Scene_KeyBinderComplexWeapons;
+	    
+	    Scene_KeyBinderComplexWeapons.prototype.bindMode = function() {
+	        return 'weaponCircle';
+	    }
+	    //END Scene_KeyBinderComplexWeapons
+	//------------------------------------------------------------------------------
+
+	//Window_KeyBinderMain
+	//------------------------------------------------------------------------------
+	    function Window_KeyBinderMain() {
+	        this.initialize.apply(this, arguments);
+	    }
+
+	    Window_KeyBinderMain.prototype = Object.create(Window_Options.prototype);
+	    Window_KeyBinderMain.prototype.constructor = Window_KeyBinderMain;
+
+	    //OVER
+	    Window_KeyBinderMain.prototype.makeCommandList = function() {
+	        this.addGeneralBind();
+	        this.addComplexBind();
+	        this.addDefalutCommand();
+	    }
+
+	    //OVER
+	    Window_KeyBinderMain.prototype.update = function() {
+	        Window_Options.prototype.update.call(this);
+	        if(this._keyChangeMode == true) {
+	            ABSKey.checkTabPress();
+	        }
+	    }
+
+	    //NEW
+	    Window_KeyBinderMain.prototype.addGeneralBind = function() {
+	         this.addCommand(Consts.STRING_MENU_KB_TAB[SDK.isRU()], 'tS');
+	    }
+
+	    //NEW
+	    Window_KeyBinderMain.prototype.addComplexBind = function() {
+	        this.addCommand(Consts.STRING_MENU_KB_SKILLS[SDK.isRU()], 'complex_bind_1');
+	        this.addCommand(Consts.STRING_MENU_KB_CONTRL[SDK.isRU()], 'complex_bind_2');
+	        this.addCommand(Consts.STRING_MENU_KB_WEAPON[SDK.isRU()], 'complex_bind_3');
+	    }
+
+	    //NEW
+	    Window_KeyBinderMain.prototype.addDefalutCommand = function() {
+	        this.addCommand(Consts.STRING_MENU_KB_DEF[SDK.isRU()], 'complex_default');
+	        this.addCommand(Consts.STRING_MENU_KB_BACK[SDK.isRU()],'complex_back');
+	    }
+
+	    Window_KeyBinderMain.prototype.commandName = function(index) {
+	        var name = Window_Command.prototype.commandName.call(this, index);
+	        var symbol = this.commandSymbol(index);
+	        if(symbol == 'complex_default')
+	            this.changeTextColor(Color.YELLOW.CSS);
+	        return name;
+	    };
+
+	    //OVER
+	    Window_KeyBinderMain.prototype.statusText = function(index) {
+	        this.resetTextColor();
+	        var symbol = this.commandSymbol(index);
+	        if(this.isComplexCommand(symbol)) {
+	            if(this.isComplexBind(symbol)) {
+	                this.changeTextColor(Color.GREEN.CSS);
+	                return '[...]';
+	            } else 
+	                return '';
+	        } else {
+	           this.changeTextColor(Color.ORANGE.CSS);
+	           return ABSKey.symbol[symbol].toUpperCase();     
+	        }
+	    };
+
+	    //OVER
+	    Window_KeyBinderMain.prototype.processOk = function() {
+	        SoundManager.playCursor();
+	        var index = this.index();
+	        var symbol = this.commandSymbol(index);
+	        if(this.isComplexCommand(symbol)) {
+	            if(this.isComplexBind(symbol)) {
+	                if(symbol.contains("2")) {
+	                    SceneManager.push(Scene_KeyBinderComplex);
+	                }
+	                if(symbol.contains("1")) {
+	                    SceneManager.push(Scene_KeyBinderComplexSkills);
+	                }
+
+	                if(symbol.contains("3")) {
+	                    SceneManager.push(Scene_KeyBinderComplexWeapons);
+	                }
+	            } else {
+	                if(symbol.contains("_back")){
+	                    this.processCancel();
+	                } else {
+	                    SoundManager.playOk();
+	                    Input.toDefaultABS();
+	                    this.refresh();
+	                    LOGW.p("Keys binding reset to DEFAULT");
+	                }
+	            }
+	        } else {
+	            ABSKey.setKeyToChange(symbol, this);
+	            this._keyChangeMode = true;
+	            document.addEventListener('keypress', ABSKey.onKeyPress);
+	            this.activateHelp();
+	            this.deactivate();
+	        }
+	    }
+
+	    //NEW
+	    Window_KeyBinderMain.prototype.onKeyOk = function(isKey) {
+	        if(isKey) {
+	            this._keyChangeMode = false;
+	            SoundManager.playOk();
+	            document.removeEventListener('keypress', ABSKey.onKeyPress);
+	            this.activate();
+	            this.refresh();
+	            this.deactivateHelp();
+	        } else {
+	            SoundManager.playBuzzer();
+	        }
+	    }
+
+	    //NEW
+	    Window_KeyBinderMain.prototype.isComplexCommand = function(symbol) {
+	        return symbol.contains('complex');
+	    }
+
+	    //NEW
+	    Window_KeyBinderMain.prototype.isComplexBind = function(symbol) {
+	        return this.isComplexCommand(symbol) && symbol.contains('bind');
+	    }
+
+	    //NEW
+	    Window_KeyBinderMain.prototype.activateHelp = function() {
+	        if (this._helpWindow) {
+	            this._helpWindow.show();
+	            this._helpWindow.open();
+	        }
+	    }
+
+	    //NEW
+	    Window_KeyBinderMain.prototype.deactivateHelp = function() {
+	        if (this._helpWindow) {
+	            this._helpWindow.close();
+	        }
+	    }
+	    //END Window_KeyBinderMain
+	//------------------------------------------------------------------------------
+
+	//Window_KeyBinderComplex
+	//------------------------------------------------------------------------------
+	    function Window_KeyBinderComplex() {
+	        this.initialize.apply(this, arguments);
+	    }
+
+	    Window_KeyBinderComplex.prototype = Object.create(Window_KeyBinderMain.prototype);
+	    Window_KeyBinderComplex.prototype.constructor = Window_KeyBinderComplex;
+
+	    Window_KeyBinderComplex.prototype.initialize = function(mode) {
+	        this._mode = mode;
+	        Window_KeyBinderMain.prototype.initialize.call(this);
+	    };
+
+	    Window_KeyBinderComplex.prototype.setViewWindow = function(viewWindow) {
+	        this._viewWindow = viewWindow;
+	    }
+
+	    //NEW
+	    Window_KeyBinderComplex.prototype.addGeneralBind = function() {
+	        switch(this._mode) {
+	            case 'controlPanel':
+	                this.addCommand(Consts.STRING_MENU_KB_ATTACK[SDK.isRU()], 'cpA');
+	                this.addCommand(Consts.STRING_MENU_KB_FOLLOW[SDK.isRU()], 'cpW');
+	                this.addCommand(Consts.STRING_MENU_KB_JUMP[SDK.isRU()], 'cpS');
+	                this.addCommand(Consts.STRING_MENU_KB_ROTATE[SDK.isRU()], 'cpD');
+	                this.addCommand(Consts.STRING_MENU_KB_WEAP[SDK.isRU()], 'wC');
+	                break;
+	            case 'skillsPanel':
+	            	var t = Consts.STRING_MENU_KB_SLOT[SDK.isRU()];
+	                this.addCommand(t + ' 1', 'sp1');
+	                this.addCommand(t + ' 2', 'sp2');
+	                this.addCommand(t + ' 3', 'sp3');
+	                this.addCommand(t + ' 4', 'sp4');
+	                this.addCommand(t + ' 5', 'sp5');
+	                this.addCommand(t + ' 6', 'sp6');
+	                this.addCommand(t + ' 7', 'sp7');
+	                this.addCommand(t + ' 8', 'sp8');
+	                break;
+	            case 'weaponCircle':
+	                this.addCommand(Consts.STRING_MENU_KB_TOP[SDK.isRU()],'scW');
+	                this.addCommand(Consts.STRING_MENU_KB_RIGHT[SDK.isRU()],'scD');
+	                this.addCommand(Consts.STRING_MENU_KB_BOTTOM[SDK.isRU()], 'scS');
+	                this.addCommand(Consts.STRING_MENU_KB_LEFT[SDK.isRU()],'scA');
+	                break;
+	        }
+	    }
+
+	    //OVER
+	    Window_KeyBinderComplex.prototype.refresh = function() {
+	        Window_KeyBinderMain.prototype.refresh.call(this);
+	        if(this._viewWindow) this._viewWindow.refresh();
+	    }
+
+	    //NEW
+	    Window_KeyBinderComplex.prototype.addComplexBind = function() {
+	        //EMPTY
+	    }
+
+	    //NEW
+	    Window_KeyBinderComplex.prototype.addDefalutCommand = function() {
+	        this.addCommand(Consts.STRING_MENU_KB_BACK[SDK.isRU()],'complex_back');
+	    }
+
+	    //END Window_KeyBinderComplex
+	//------------------------------------------------------------------------------
+
+	//Window_KeyBinderHelp
+	//------------------------------------------------------------------------------
+	    function Window_KeyBinderHelp() {
+	         this.initialize.apply(this, arguments);
+	    }
+
+	    Window_KeyBinderHelp.prototype = Object.create(Window_Base.prototype);
+	    Window_KeyBinderHelp.prototype.constructor = Window_KeyBinderHelp;
+
+	    Window_KeyBinderHelp.prototype.initialize = function(x, y, width, height) {
+	        Window_Base.prototype.initialize.call(this, x, y, width, height);
+	        this._timer = new Game_TimerABS();
+	        this._tSprite = new Sprite(new Bitmap(width - 6,height - 6));
+	        this._tSprite.y = 0;//this._tSprite.height/2;
+	        //this._tSprite.opacity = 0;
+	        //this._tSprite.bitmap.fillRect(0,0,this._tSprite.bitmap.width,this._tSprite.bitmap.height, Color.RED.CSS);
+	        this._tSprite.bitmap.textColor = Color.RED.getLightestColor(200).CSS;
+	        this._tSprite.bitmap.drawText(Consts.STRING_MENU_KB_KEY[SDK.isRU()],0,
+	        	this._tSprite.bitmap.height/2,
+	        	this._tSprite.bitmap.width, 1, 'center');
+	        this.addChild(this._tSprite);
+
+	        this.swing = new AlphaABS.LIB.UIObject_OpacitySwing(this._tSprite, 70);
+	        this.swing.setRepeat();
+
+	        this.hide();
+	        this.close();
+	    }
+
+	    Window_KeyBinderHelp.prototype.close = function() {
+	        this.swing.stop();
+	        this.swing.reset();
+	        this._tSprite.visible = false;
+	        Window_Base.prototype.close.call(this);
+	    }
+
+	    Window_KeyBinderHelp.prototype.update = function() {
+	        Window_Base.prototype.update.call(this);
+	        this.refresh();
+	    }
+
+	    Window_KeyBinderHelp.prototype.refresh = function() {
+	        if(this.isOpen()) {
+	            if(!this.swing.isStarted()) {
+	                this._tSprite.visible = true;
+	                this.swing.start();
+	            }
+	            this.swing.update();
+	        }
+	    }
+
+	    Window_KeyBinderHelp.prototype.clear = function() {
+	    }
+	//------------------------------------------------------------------------------
+
+	//Window_KeyBinderView
+	//------------------------------------------------------------------------------
+	    function Window_KeyBinderView() {
+	        this.initialize.apply(this, arguments);
+	    }
+
+	    Window_KeyBinderView.prototype = Object.create(Window_Base.prototype);
+	    Window_KeyBinderView.prototype.constructor = Window_KeyBinderView;
+
+	    Window_KeyBinderView.prototype.initialize = function(x, y, width, height, mode) {
+	        this._mode = mode;
+	        Window_Base.prototype.initialize.call(this, x, y, width, height);
+	        this._configMode();
+	    }
+
+	    Window_KeyBinderView.prototype.setViewNode = function(viewNode) {
+	        this._viewNode = viewNode;
+	        if(this._mode != 'weaponCircle') {
+	            this._viewNode.x = SDK.toCX(viewNode.width || 341, this.width);
+	            this._viewNode.y = SDK.toCX(viewNode.height || 48, this.height);
+	        } else {
+	            this._viewNode.x = SDK.toCX(viewNode._radius_max() * 0.15, this.width);
+	            this._viewNode.y = SDK.toCX(viewNode._radius_max() * 0.06, this.height);
+	        }
+	        this.addChild(this._viewNode);
+	    }
+
+	    Window_KeyBinderView.prototype.refresh = function() {
+	        if(this._viewNode) {
+	            this._viewNode.refresh();
+	        }
+	    }
+
+	    Window_KeyBinderView.prototype._configMode = function() {
+	        switch(this._mode) {
+	            case 'controlPanel':
+	                var t = new AlphaABS.LIB.UIObject_ControlPanel(46,160);
+	                t.createBaseItems();
+	                t.transfer();
+	                t.setEditMode();
+	                this.setViewNode(t); //SHIT НЕ нужно размеры задавать, их надо считать
+	             break;
+	            case 'skillsPanel':
+	                var tt = new AlphaABS.LIB.Sprite_SkillPanelABS_L();
+	                tt.refresh(null);
+	                this.setViewNode(tt);
+	            break;
+	            case 'weaponCircle':
+	                var tt = new UIObject_InputCircleConfig();
+	                tt.refresh();
+	                tt.scale.x = 0.8;
+	                tt.scale.y = 0.8;
+	                this.height = this.height + 50;
+	                this.y = this.y - 50;
+	                this.setViewNode(tt);
+	            break;
+	        }
+	    }
+	    //END Window_KeyBinderView
+	//------------------------------------------------------------------------------
+
+	//UIObject_InputCircleConfig
+	//------------------------------------------------------------------------------
+	    function UIObject_InputCircleConfig() {
+	        this.initialize.apply(this, arguments);
+	    }
+	    
+	    UIObject_InputCircleConfig.prototype = Object.create(AlphaABS.LIB.UIObject_InputCircle.prototype);
+	    UIObject_InputCircleConfig.prototype.constructor = UIObject_InputCircleConfig;
+	    
+	    UIObject_InputCircleConfig.prototype.refresh = function() {
+	        var t = AlphaABS.Key.symbol;
+	        var data = [t.scW,t.scD,t.scS,t.scA];
+	        this.setHelps(data.map(function(argument) {
+	          return argument.toUpperCase();  
+	        }));
+	        this.showHelp();
+	    }
+	    AlphaABS.LIB.UIObject_InputCircleConfig = UIObject_InputCircleConfig;
+	    //END UIObject_InputCircleConfig
+	//------------------------------------------------------------------------------
+
+	})();
+//------------------------------------------------------------------------------
