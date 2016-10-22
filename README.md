@@ -8,7 +8,7 @@ Active battle system "Alpha" for RPG Maker MV.
 
 > **If you update from 1.0 to 1.1 you must complete [full plugin installation](https://www.youtube.com/watch?v=1wXL39bwx0g), because version 1.1 has some new graphic files.**
 
-> [Update 1.1 video](https://www.youtube.com/watch?v=o0ZeevT3oXQ)
+> [Update 1.1 video overview](https://www.youtube.com/watch?v=o0ZeevT3oXQ)
 
 ###Downloading:  
 *Как скачать:*  
