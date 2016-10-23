@@ -4,7 +4,7 @@
 > - support `YEP_EquipCore` plugin *
 > - support `YEP_ItemCore` plugin
 > - the weapon slot is now visible on equipped weapon
-![image](https://dl.dropboxusercontent.com/u/88841876/2016-10-23_19-05-59.png)
+![image](https://github.com/KageDesu/TestRepo/blob/master/build484_favWeapEquip.png)
 
 **YEP plugins must be below Alpha_ABS plugin in Plugin Manager*
 
