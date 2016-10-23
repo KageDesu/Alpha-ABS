@@ -10,7 +10,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 110; 
-AlphaABS.build = 458; 
+AlphaABS.build = 484; 
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -2972,7 +2972,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	 	throw new Error('This is a static class');
 	}
 
-	BattleManagerABS.init = function() {		
+	BattleManagerABS.init = function() {	
+		this._setupPlugins();	
 		this.timer = new Game_TimerABS();
 		this._ready = false;
 		this._ui = null;
@@ -3231,6 +3232,35 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    ImageManager.loadPictureABS('CircleSegment_small_down');
 	    ImageManager.loadPictureABS('CircleSegment_small_L');
 	    ImageManager.loadPictureABS('CircleSegment_small_R');
+	}
+
+	BattleManagerABS._setupPlugins = function() {
+		if(Imported.YEP_ItemCore == true) {
+			var _Game_Party_gainIndependentItem_YEP = Game_Party.prototype.gainIndependentItem;
+			Game_Party.prototype.gainIndependentItem = function(item, amount, includeEquip) {
+				_Game_Party_gainIndependentItem_YEP.call(this, item, amount, includeEquip);
+				if($gameMap.isABS()) {
+					if(amount > 0 && !this._noNotifyABS) {
+						AudioManager.playSe({name:'Equip2',pan:0,pitch:140,volume:90});
+						BattleManagerABS.UI().pushOnItemPanel('item', item);
+					}
+
+					if(DataManager.isWeapon(item)) {
+			            if(AlphaABS.BattleManagerABS.UI()) {
+			                AlphaABS.BattleManagerABS.UI().weapCircleRefresh();
+			            }
+		        	}
+	        	}
+			}
+		}
+
+		if(Imported.YEP_EquipCore == true) {
+			var _Window_EquipSlot_drawItem_YEP = Window_EquipSlot.prototype.drawItem;
+			Window_EquipSlot.prototype.drawItem = function(index) {
+				_Window_EquipSlot_drawItem_YEP.call(this, index);
+				this._drawFavWeapSymbol(index);
+			}
+		}
 	}
 
 	SDK.setConstant(BattleManagerABS, 'TURN', AlphaABS.SYSTEM.FRAMES_PER_SECOND);
@@ -7128,7 +7158,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		}
 	}
 
-
 	Game_Party.prototype.inBattle = function() {
 		return $gamePlayer.inBattle();
 	}
@@ -7513,6 +7542,26 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
     };
 
     //NEW
+    Game_Actor.prototype.getFavWeapSymbol = function(item) {
+    	if(!DataManager.isWeapon(item)) return null;
+    	var index = this.getFavWeapIndex(item);
+        if(index !== null) {
+        	var symbol = null;
+            for(var key in AlphaABS.Key.indexSchemeC) {
+                if(AlphaABS.Key.indexSchemeC[key] == index) {
+                    symbol =  key;
+                    break;
+                }
+            }
+            if(symbol != null) {
+                symbol = AlphaABS.Key.symbol[symbol];
+                return symbol;
+            }
+        }
+        return null;
+    };
+
+    //NEW
     Game_Actor.prototype.removeFavWeap = function(index) {
         this._absParams.favoriteWeapons[index] = null;
     };
@@ -7527,8 +7576,15 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
                     return false;
                 }
                 if($gameParty.hasItem(fvItemX, false)) {
-                    this.changeEquipById(fvItemX.etypeId, fvItemX.id);
-                    return true;
+                	if(Imported.YEP_ItemCore == true) {
+                		var slotId = fvItemX.etypeId - 1;
+                		this.changeEquip(slotId, fvItemX);
+                		return true;
+                	}
+                	else {
+                    	this.changeEquipById(fvItemX.etypeId, fvItemX.id);
+                    	return true;
+                    }
                 } 
             }
         }
@@ -13827,21 +13883,14 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
         if(!DataManager.isWeapon(item))
             return;
 
-        var index = this._actor.getFavWeapIndex(item);
-        if(index !== null) {
-            var symbol = null;
-            for(var key in AlphaABS.Key.indexSchemeC) {
-                if(AlphaABS.Key.indexSchemeC[key] == index) {
-                    symbol =  key;
-                    break;
-                }
-            }
-            if(symbol != null) {
-                symbol = AlphaABS.Key.symbol[symbol];
-                this.changeTextColor(Color.ORANGE.CSS);
-                this.drawText('[' + symbol.toUpperCase() +']', x, y, width - this.textWidth('0000'), 'right');
-            }
-
+        var symbol = this._actor.getFavWeapSymbol(item);
+        if(symbol != null) {
+        	this.changeTextColor(Color.ORANGE.CSS);
+        	var spacer = '0000';
+        	if(Imported.YEP_ItemCore == true) {
+        		spacer += '00';
+        	}
+        	this.drawText('[' + symbol.toUpperCase() +']', x, y, width - this.textWidth(spacer), 'right');
         }
     };
 
@@ -13944,6 +13993,36 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
         }
     };
     //END Window_EquipItem
+//------------------------------------------------------------------------------
+
+//Window_EquipSlot
+//------------------------------------------------------------------------------
+	var _Window_EquipSlot_drawItem = Window_EquipSlot.prototype.drawItem;
+	Window_EquipSlot.prototype.drawItem = function(index) {
+	    _Window_EquipSlot_drawItem.call(this, index);
+	    this._drawFavWeapSymbol(index);
+	};
+
+	//NEW
+	Window_EquipSlot.prototype._drawFavWeapSymbol = function(index) {
+		if(this._actor) {
+	    	var item = this._actor.equips()[index];
+	    	if(item) {
+	    		var symbol = this._actor.getFavWeapSymbol(item);
+		        if(symbol != null) {
+		        	this.changeTextColor(Color.ORANGE.CSS);
+			        var rect = this.itemRectForText(index);
+			        if(Imported.YEP_EquipCore == true) {
+			        	this.contents.drawText('[' + symbol.toUpperCase() +']', rect.x + this._nameWidth, rect.y, rect.width - this._nameWidth, this.lineHeight(), 'right');
+			        } else {
+		    			var iconBowWidth = Window_Base._iconWidth + 8;
+		    			this.contents.drawText('[' + symbol.toUpperCase() +']', rect.x + 138 + iconBowWidth, rect.y, 312 - iconBowWidth, this.lineHeight(), 'right');
+		        	}
+		        }
+	    	}
+	    }
+	};
+	//END Window_EquipSlot
 //------------------------------------------------------------------------------
 
 })();

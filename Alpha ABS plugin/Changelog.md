@@ -1,6 +1,14 @@
 #Version 1.1  
 ##Builds:  
-**458** - initial build (21.09.2016)  
+**484** - (23.10.2016)
+> - support `YEP_EquipCore` plugin *
+> - support `YEP_ItemCore` plugin
+> - the weapon slot is now visible on equipped weapon
+![image](https://dl.dropboxusercontent.com/u/88841876/2016-10-23_19-05-59.png)
+
+**YEP plugins must be below Alpha_ABS plugin in Plugin Manager*
+
+**458** - initial build (21.10.2016)  
 > - supports deployment for web browsers  
 > - new UI editing scene
 > - UI: You can disable visibility for any UI element
@@ -13,6 +21,8 @@
 > - fixed bug: it was impossible to use skills that have added by equipment
 > - support `YEP_SmartJump` plugin
 > - *a lot of small changes and fixes...*
+
+ ***
 
 #Version 1
 ##Builds:  
