@@ -2,7 +2,7 @@
 Active battle system "Alpha" for RPG Maker MV.
 
 >State: **Beta**  
->Version: 1.1
+>Version: 1.1  
 >Last build: 484 (23.10.2016)  
 >[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Changelog.md)  
 
