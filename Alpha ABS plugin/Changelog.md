@@ -1,5 +1,15 @@
 #Version 1.1  
 ##Builds:  
+**500** - (31.10.2016)  
+> - new plugin parameter: `Dash on ABS map`  
+> - fixed bug: the description of the attack skill was blocked by a description of the weapon
+> - fixed bug: Z and X key not working  
+> - *test* support `YEP_SaveCore` plugin  
+> - *test* support Yanfly `KeyboardConfig` plugin
+> - added script call for bind weapon to slot `$gamePlayer.setFavWeapForce(weaponId, position)`  
+![image](https://github.com/KageDesu/TestRepo/blob/master/build500_bind_weap_script.png)
+
+
 **484** - (23.10.2016)
 > - support `YEP_EquipCore` plugin *
 > - support `YEP_ItemCore` plugin

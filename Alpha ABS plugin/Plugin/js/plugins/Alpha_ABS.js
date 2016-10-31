@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 // Alpha_ABS.js
 //=============================================================================
 //Version 1.1 (21.10.2016) 
@@ -10,7 +10,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 110; 
-AlphaABS.build = 484; 
+AlphaABS.build = 500;
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -60,6 +60,11 @@ AlphaABS.build = 484;
  * @param Key binding
  * @desc Allow user change control keys from Option menu
  * @default true
+ *
+ *
+ * @param Dash on ABS map
+ * @desc Allows dashing on ABS maps. If 'true' you also can change option 'Always Dash' in option menu.
+ * @default false
  *
  * @param Force English
  * @desc Use english language (if not work automatically)
@@ -267,6 +272,10 @@ AlphaABS.build = 484;
  * @param Key binding
  * @desc Можно ли менять настройки управления (назначение клавишь) 
  * @default true
+ *
+ * @param Dash on ABS map
+ * @desc Можно ли ускорятся при помощи клавиши Shift (мыши) на ABS картах.
+ * @default false
  *
  * @param Force English
  * @desc Использовать английский язык? (true - да, false - нет) 
@@ -480,20 +489,50 @@ AlphaABS.build = 484;
 	//------------------------------------------------------------------------------
 		var pkd_Input_onKeyDown_9323 = Input._onKeyDown;
 		Input._onKeyDown = function(event) {
-			pkd_Input_onKeyDown_9323.call(this, event);
-			var bn = this.KeyMapperPKD[event.keyCode];
-			if(bn) {
-				this._currentState[bn] = true;
+			//console.log(event.keyCode + ' down');
+			//TODO Temp solution
+			if(event.keyCode == 87) { 
+				this._currentState['w'] = true;
+				return;
+			}
+			//TODO Temp solution
+			if(event.keyCode == 81) { 
+				this._currentState['q'] = true;
+				return;
+			}
+			var buttonName = this.keyMapper[event.keyCode];
+			if(buttonName)
+				pkd_Input_onKeyDown_9323.call(this, event);
+			else {
+				var bn = this.KeyMapperPKD[event.keyCode];
+				if(bn) {
+					this._currentState[bn] = true;
+				}
 			}
 		}
 
 		var pkd_Input_onKeyUp_9090 = Input._onKeyUp;
 		Input._onKeyUp = function(event) {
-			pkd_Input_onKeyUp_9090.call(this, event);
-		    var bn = this.KeyMapperPKD[event.keyCode];
-		    if (bn) {
-		        this._currentState[bn] = false;
-		    }
+			//console.log(event.keyCode + ' up');
+			//TODO Temp solution
+			if(event.keyCode == 87) { 
+				this._currentState['w'] = false;
+				return;
+			}
+			//TODO Temp solution
+			if(event.keyCode == 81) { 
+				this._currentState['q'] = false;
+				return;
+			}
+			var buttonName = this.keyMapper[event.keyCode];
+			if(buttonName)
+				pkd_Input_onKeyUp_9090.call(this, event);
+			else {
+			    var bn = this.KeyMapperPKD[event.keyCode];
+			    if (bn) {
+			        this._currentState[bn] = false;
+			    }
+			}
 		};
 
 		Input._isGamepad = undefined; //Don't use this
@@ -1240,6 +1279,12 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 			$.ALLOW_KB = true;
 		} else 
 			$.ALLOW_KB = false;
+
+		var pAllowDashOption = String(parameters['Dash on ABS map'] || 'false');
+		if(eval(pAllowDashOption)) {
+			$.ALLOW_DASH = true;
+		} else 
+			$.ALLOW_DASH = false;
 
 	})(PARAMS);
 
@@ -3261,6 +3306,16 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				this._drawFavWeapSymbol(index);
 			}
 		}
+
+		if(Imported.YEP_SaveCore == true) {
+			var _Scene_File_performActionLoad_YEP = Scene_File.prototype.performActionLoad;
+			Scene_File.prototype.performActionLoad = function() {
+				if(BattleManagerABS._isABSMap == true) {
+					BattleManagerABS.stopABS();
+				}
+			    _Scene_File_performActionLoad_YEP.call(this);
+			};
+		}
 	}
 
 	SDK.setConstant(BattleManagerABS, 'TURN', AlphaABS.SYSTEM.FRAMES_PER_SECOND);
@@ -3289,7 +3344,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	Game_SkillABS.prototype.update = function() {
 			this.timer.update();
-		}
+	}
 
 	Game_SkillABS.prototype.getReloadTime = function() {
 		return this.reloadTimeA;
@@ -5980,7 +6035,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//NEW
 	Game_Map.prototype.stopPlayerTargetCircle = function() {
 		LOG.p("Map : Target Circle stop!");
-		this._absParams.targetCircle = null;
+ 		this._absParams.targetCircle = null;
 		this._absParams.targetCircleNeedLock = false;
 	}
 
@@ -6424,15 +6479,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		}
 	}
 
-	/*var _Game_Player_refresh = Game_Player.prototype.refresh;
-	Game_Player.prototype.refresh = function() {
-		if(this._absParams.dead === true) {
-
-		} else {
-			_Game_Player_refresh.call(this);
-		}
-	}*/
-
 	var _Game_Player_update = Game_Player.prototype.update;
 	Game_Player.prototype.update = function(sceneActive) {
 		_Game_Player_update.call(this, sceneActive);
@@ -6441,10 +6487,13 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	var _Game_Player_updateDashing = Game_Player.prototype.updateDashing;
 	Game_Player.prototype.updateDashing = function() {
-		if($gameMap.isABS()) {
-			this._dashing = false;
-		} else
-			_Game_Player_updateDashing.call(this);
+		if(AlphaABS.SYSTEM.PARAMS.ALLOW_DASH == false) {
+			if($gameMap.isABS()) {
+				this._dashing = false;
+				return;
+			} 
+		}
+		_Game_Player_updateDashing.call(this);
 	}
 
 	//NEW
@@ -6466,6 +6515,33 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			this._changeState('free');
 		}
 	}
+
+	Game_Player.prototype.setFavWeapForce = function(itemId, segmentSymbol) {
+		var index = 0;
+		segmentSymbol = SDK.check(segmentSymbol, 'top');
+		switch(segmentSymbol) {
+			case 'left':
+				index = 3;
+				break;
+			case 'top':
+				index = 0;
+				break;
+			case 'bottom':
+				index = 2;
+				break;
+			case 'right':
+				index = 1;
+				break;
+		}
+		var item = $dataWeapons[itemId];
+		var owner = this.battler();
+		if(owner == null) {
+			owner = $gameParty.leader();
+		}
+		owner.setFavWeap(item, index);
+		if (BattleManagerABS.UI())
+	        BattleManagerABS.UI().weapCircleRefresh();
+	};
 	//RPIVATE
 
 	Game_Player.prototype._deactivate = function() {
@@ -10850,7 +10926,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
     UIObject_ABSSkillInfo.prototype._drawDescription = function() {
         var descriptionText = this._skill.skill().description;
-        if(this._skill.skillId == $gamePlayer.battler().attackSkillId()) {
+        if(this._skill.skillId == $gamePlayer.battler().attackSkillId() && descriptionText =="") {
             if($gamePlayer.battler().weapons().length > 0)
                 descriptionText = $gamePlayer.battler().weapons()[0].description;
         }
@@ -12749,17 +12825,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			this.spriteInfo_Battle.y = 12;
 			this.spriteInfo_Battle.visible = false;
 			
-			/*this.spriteCircle = new Sprite(ImageManager.loadPicture("Circle"));
-			this.spriteCircle.x = this.infoWidth() - 24;
-			this.spriteCircle.y = -10;
-			this.spriteCircle.scale.x = 0.8;
-			this.spriteCircle.scale.y = 0.8;
-
-			this.spriteCircleText = new Sprite(new Bitmap(30,30));
-			this.spriteCircleText.x = -2;
-			this.spriteCircleText.y = 14;
-			this.spriteCircle.addChild(this.spriteCircleText);*/
-
 			this.castBar = new Sprite_CastProgress(this.infoWidth() - 20, 14);
 			this.castBar.x = 10;
 			this.castBar.y = 48;
@@ -13804,7 +13869,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		if(this._isABSSymbol(symbol)) {
 			if(this._isABSSymbol2(symbol)) {
 				SoundManager.playCursor();
-				if(symbol.contains('UI')) {
+				if(symbol.contains('UI')) { 
 					if(!AlphaABS.BattleManagerABS.UI().isVisible()){
 						SoundManager.playBuzzer();
 					} else
@@ -14329,7 +14394,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 					}	
 					this._maskBitmap.radialgradientFillRect(x1,y1, 0, radius , color, 'black', isFlicker, bright);
 				}
-			}
+			}	
 			ctx.globalCompositeOperation =  'source-over';
 		}
 
