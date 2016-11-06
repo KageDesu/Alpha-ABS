@@ -1,5 +1,15 @@
 #Version 1.1  
-##Builds:  
+##Builds:   
+**568** - (6.11.2016)  
+> - new plugin parameter: `Show XP bar`  
+![image](https://github.com/KageDesu/TestRepo/blob/master/build568_xpbar.png)  
+> - added plugin parameters for configuration the control panel  
+![image](https://github.com/KageDesu/TestRepo/blob/master/build568_control_panel_params.png)  
+> - new: ABS parameter for skills and weapons `<noDescription:1>` - disables the display of the description on skill information popup.
+> - fixed bug: wrong ABS map notify (exp, gold, ect.) position in 1.3.2  
+> - fixed bug: wrong the target select circle overlay    
+
+
 **500** - (31.10.2016)  
 > - new plugin parameter: `Dash on ABS map`  
 > - fixed bug: the description of the attack skill was blocked by a description of the weapon

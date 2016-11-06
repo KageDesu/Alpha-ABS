@@ -3,7 +3,7 @@ Active battle system "Alpha" for RPG Maker MV.
 
 >State: **Beta**  
 >Version: 1.1  
->Last build: 500 (31.10.2016)    
+>Last build: 568 (06.11.2016)    
 >[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Changelog.md)  
 
 > **If you update from 1.0 to 1.1 you must complete [full plugin installation](https://www.youtube.com/watch?v=1wXL39bwx0g), because version 1.1 has some new graphic files.**
@@ -40,7 +40,13 @@ Video guide on [YouTube](https://www.youtube.com/watch?v=1wXL39bwx0g)
 [rpgmakerweb.com](http://forums.rpgmakerweb.com/index.php?/topic/66713-abs-alpha-preview/)
 
 ###TERMS OF USE FOR NON-COMMERCIAL AND COMMERCIAL:
-See in the documentation file [AlphaABS.pdf](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Manual/Alpha%20ABS.pdf)
+
+`Creative Commons 4.0 Attribution, Share Alike, Non-Commercial`     
+(Attribution Non-Commercial Share Alike, cc by-nc-sa)   
+
+More info see in the documentation file [AlphaABS.pdf](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Manual/Alpha%20ABS.pdf)
+
+You can use plugin in your commercial project, but if you sold >=50 copies, you need purchase commercial license for 12$.  
 
 ###If you like it
 You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6).

@@ -10,7 +10,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 110; 
-AlphaABS.build = 500;
+AlphaABS.build = 568;
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -61,6 +61,9 @@ AlphaABS.build = 500;
  * @desc Allow user change control keys from Option menu
  * @default true
  *
+ * @param Show XP bar
+ * @desc Show (true) or hide (false) XP bar on interface
+ * @default false
  *
  * @param Dash on ABS map
  * @desc Allows dashing on ABS maps. If 'true' you also can change option 'Always Dash' in option menu.
@@ -69,6 +72,26 @@ AlphaABS.build = 500;
  * @param Force English
  * @desc Use english language (if not work automatically)
  * @default false
+ *
+ * @param ---Control Panel Settings---
+ * @desc
+ * @default
+ *
+ * @param Follow allowed
+ * @desc Enable or disable follow mode for player and icon on the control panel
+ * @default true
+ *
+ * @param Jump allowed
+ * @desc Enable or disable jumps for palyer and icon on the control panel
+ * @default true
+ *
+ * @param Rotate allowed
+ * @desc Enable or disable player rotate and icon on the control panel
+ * @default true
+ *
+ * @param Favorite weapons allowed
+ * @desc Enable or disable favorite weapon system and icon on the control panel
+ * @default true
  *
  * @help 
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
@@ -169,7 +192,8 @@ AlphaABS.build = 500;
  *    <ammo:X> - X is # of item that is the ammo.
  *	  <cEonStart:X> - call CommonEvent with id X when trigger the skill.
  *	  <cEonUse:X> - call CommonEvent with id X when using the skill.
- *     
+ *	  <noDescription:1> - hide description on popup info on ABS map.     
+ *
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  *  Weapon Notetags:
  *   <ABS: 0>
@@ -181,7 +205,7 @@ AlphaABS.build = 500;
  *   
  *   <stack:X> - Charges count, minimum is 2. (For making items with charges.)
  *   <stackTime:X> - All charges reload time (in frames), cannot be 0.
- *   
+ *   * also includes skill notetags
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  *  State Notetags:
  *    <speed:X> - change current movement speed (if X < 0, value will be substracted)
@@ -273,6 +297,10 @@ AlphaABS.build = 500;
  * @desc Можно ли менять настройки управления (назначение клавишь) 
  * @default true
  *
+ * @param Show XP bar
+ * @desc Показывать (true) или спрятать (false) полосу опыта на интерфейсе
+ * @default false
+ *
  * @param Dash on ABS map
  * @desc Можно ли ускорятся при помощи клавиши Shift (мыши) на ABS картах.
  * @default false
@@ -280,6 +308,26 @@ AlphaABS.build = 500;
  * @param Force English
  * @desc Использовать английский язык? (true - да, false - нет) 
  * @default false
+ *
+ * @param ---Настройка панели управления---
+ * @desc
+ * @default
+ *
+ * @param Follow allowed
+ * @desc Включить (true) или выключить (false) режим следования для игрока 
+ * @default true
+ *
+ * @param Jump allowed
+ * @desc Включить (true) или выключить (false) возможность прыгать для игрока
+ * @default true
+ *
+ * @param Rotate allowed
+ * @desc Включить (true) или выключить (false) поворот к цели (мыши)
+ * @default true
+ *
+ * @param Favorite weapons allowed
+ * @desc Включить (true) или выключить (false) систему любимого оружия
+ * @default true
  *
  * @help 
  * Инструкцию к боевой системе смотрите в файле 'Alpha ABS RUS.pdf'
@@ -1285,6 +1333,21 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 			$.ALLOW_DASH = true;
 		} else 
 			$.ALLOW_DASH = false;
+
+		var temp = String(parameters['Follow allowed'] || 'true');
+		$.CONTROL_PANEL_ALLOW_FOLLOW = eval(temp);
+
+		temp = String(parameters['Jump allowed'] || 'true');
+		$.CONTROL_PANEL_ALLOW_JUMP = eval(temp);
+
+		temp = String(parameters['Rotate allowed'] || 'true');
+		$.CONTROL_PANEL_ALLOW_ROTATE = eval(temp);
+
+		temp = String(parameters['Favorite weapons allowed'] || 'true');
+		$.CONTROL_PANEL_ALLOW_FAVWEAP = eval(temp);
+
+		temp = String(parameters['Show XP bar'] || 'false');
+		$.ALLOW_XPBAR = eval(temp);
 
 	})(PARAMS);
 
@@ -3667,6 +3730,10 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		if(this.directionFix > 0)
 			this.directionFix = true;
 
+		if(this.noDescription > 0) {
+			this.noDescription = true;
+		}
+
 		if(this.stack == 1) {
 			this.stack = 2;
 			LOGW.p("Skill " + this.name() + " stack minimum 2!");
@@ -3790,7 +3857,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		]
 	);
 
-	SDK.setConstant(Game_SkillABS, 'PARAMS', ['reloadParam','pType', 'img','light','startSound','reloadSound', 'vSpeed', 'range','reloadTime','castTime', 'needTarget', 'radius', 'castAnim', 'lightSize','stack','stackTime','directionFix','ammo','cEonUse','cEonStart']);
+	SDK.setConstant(Game_SkillABS, 'PARAMS', ['reloadParam','pType', 'img','light','startSound','reloadSound', 'vSpeed', 'range','reloadTime','castTime', 'needTarget', 'radius', 'castAnim', 'lightSize','stack','stackTime','directionFix','ammo','cEonUse','cEonStart','noDescription']);
 	SDK.setConstant(Game_SkillABS, 'PARAMS2', ['pData','pMinSize','pMaxSize','pPower','pLife', 'pAlpha','pCount']); //PARTICLES params
 
 	//END Game_SkillABS
@@ -5106,6 +5173,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			var t = this._checkVision($gamePlayer);
 			if(!t) {
 				this._regenerateValues();
+			} else {
+				if(this._absParams.escapeOnBattle == true) {
+					LOG.p("AI : Run away from Player");
+					this._runAwayFromTarget();
+				}
 			}
 			return;
 		}
@@ -5321,13 +5393,26 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		var t = ABSUtils.distanceTo(this, this._absParams.target);
 		if(!this.isMoving()) {
 			if(t < escapeRange) {
-					//this.moveAwayFromPlayer();
 					this.moveFromPoint($gamePlayer);
 					this.turnTowardPlayer();
 			} else if(t > escapeRange + 1) {
 				this.moveTowardCharacter($gamePlayer);
 			} else 
 				this.turnTowardPlayer();
+		}
+	}
+
+	Game_AIBot.prototype._runAwayFromTarget = function() {
+		var realRange = this._absParams.viewRadius / 2;
+		var escapeRange = (realRange >= 2) ? realRange : 2;
+		var t = ABSUtils.distanceTo(this, $gamePlayer);
+		if(!this.isMoving()) {
+			if(t < escapeRange) {
+				this._applyAproachSpeed();
+				this.moveFromPoint($gamePlayer);
+			} else {
+				this._changeState('free');
+			}
 		}
 	}
 
@@ -5697,7 +5782,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			t.anchor.y = 0.5;
 			t.setBlendColor(Color.RED.ARR);
 			t.opacity = 200;
-			t.z = 0; 
+			t.z = 9; 
 			this.parent.addChild(t);
 		}
 
@@ -6406,7 +6491,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				}
 			break;
 			case 1: //Follow Mode
-				if(this.target()) {
+				if(this.target() && AlphaABS.SYSTEM.PARAMS.CONTROL_PANEL_ALLOW_FOLLOW == true) {
 					if(!this._absParams.autoAttackMode)
 						this._onNewSkillActivate();
 					this._absParams.targetFollowMode = !this._absParams.targetFollowMode;
@@ -6419,38 +6504,44 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				}
 			break;
 			case 2:
-				if(Imported.YEP_SmartJump == true) {
-					if(this._absParams.state == 'free' && !this.isJumping())
-						$gamePlayer.smartJump(1);
-				} else {
-					if(this._absParams.state == 'free' && !this.isJumping() && this.canPass(this.x, this.y, this.direction())) {
-						switch(ABSUtils.getDirKey(this)){
-							case 'u' : this.jump(0,-1); break;
-							case 'd' : this.jump(0, 1); break;
-							case 'l' : this.jump(-1,0); break;
-							case 'r' : this.jump( 1,0); break;
+				if(AlphaABS.SYSTEM.PARAMS.CONTROL_PANEL_ALLOW_JUMP == true) {
+					if(Imported.YEP_SmartJump == true) {
+						if(this._absParams.state == 'free' && !this.isJumping())
+							$gamePlayer.smartJump(1);
+					} else {
+						if(this._absParams.state == 'free' && !this.isJumping() && this.canPass(this.x, this.y, this.direction())) {
+							switch(ABSUtils.getDirKey(this)){
+								case 'u' : this.jump(0,-1); break;
+								case 'd' : this.jump(0, 1); break;
+								case 'l' : this.jump(-1,0); break;
+								case 'r' : this.jump( 1,0); break;
+							}
 						}
 					}
+					BattleManagerABS.UI().controlPanel().touchItemAt(index);
 				}
-				BattleManagerABS.UI().controlPanel().touchItemAt(index);
 			break;
 			case 3:
-				if(this._absParams.state == 'free' && !this._absParams.targetFollowMode) {
-					if(this.target()) {
-						this.turnTowardCharacter(this.target());
-					} else
-						this.turnTowardCharacter(SMouse.getMousePosition().convertToMap());
+				if(AlphaABS.SYSTEM.PARAMS.CONTROL_PANEL_ALLOW_ROTATE == true) {
+					if(this._absParams.state == 'free' && !this._absParams.targetFollowMode) {
+						if(this.target()) {
+							this.turnTowardCharacter(this.target());
+						} else
+							this.turnTowardCharacter(SMouse.getMousePosition().convertToMap());
+					}
+					BattleManagerABS.UI().controlPanel().touchItemAt(index);
 				}
-				BattleManagerABS.UI().controlPanel().touchItemAt(index);
 			break;
 			case 4:
-				if(!this.battler().isFavWeapExists()) return;
-	            BattleManagerABS.UI().controlPanel().touchItemAt(index);
-	            if(this._absParams.inputMode == 0) {
-	                this.changeInputMode(1);
-	            }
-	            else {
-	                this.changeInputMode(0);               
+				if(AlphaABS.SYSTEM.PARAMS.CONTROL_PANEL_ALLOW_FAVWEAP == true) {
+					if(!this.battler().isFavWeapExists()) return;
+		            BattleManagerABS.UI().controlPanel().touchItemAt(index);
+		            if(this._absParams.inputMode == 0) {
+		                this.changeInputMode(1);
+		            }
+		            else {
+		                this.changeInputMode(0);               
+		            }
 	            }
 			break;
 		}
@@ -9836,7 +9927,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
     class ItemLineSprite extends Sprite {
         constructor(text, iconSymbol, textColor) {
             super();
-            this.setFrame(this.width(),this.height());
             this._text = text || '';
             this._textColor = textColor || Color.WHITE;
             this._iconSymbol = iconSymbol || null;
@@ -10932,6 +11022,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
         }
 
         if(descriptionText == "") return;
+        if(this._skill.noDescription == true) return;
 
         this._deltaX = 0;
         this._drawLine(4,2);
@@ -11898,6 +11989,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				if(this.tpBar) {
 					this.tpBar.update();
 				}
+				if(this.xpBar)
+					this.xpBar.update();
 			}
 
 			//@opt Можно проверять, вызван ли был показ, а не постоянно обновлять
@@ -11905,12 +11998,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		}
 
 		_createPlayerFace() {
-
-			/*this.spriteBackground = new Sprite(new Bitmap(this.bitmap.width,this.bitmap.height));
-			this.spriteBackground.bitmap.fillRect(0,0,this.bitmap.width, this.bitmap.height, Color.BLACK.CSS);
-			this.spriteBackground.opacity = 120;
-			this.addChild(this.spriteBackground);*/
-
 			this.spriteFace = new Sprite(new Bitmap(this.faceSize,this.faceSize));
 			this._drawPlayerFace();
 			this.spriteFace.x = this.faceX + this.faceSize;
@@ -11975,27 +12062,60 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			this.hpBar = null;
 			bitmap.addLoadListener(function()
 			{
-				//bitmap.fillRect(0,0,bitmap.width,bitmap.height, Color.RED.CSS);
-				this.hpBar = new UIObject_BarHP(bitmap, $gamePlayer.battler());
-				this.hpBar.setPosition(4, 8, 120, 24);
-				this.hpBar.refresh();
+				var barsCount = 2; //HP and MP
+				if($dataSystem.optDisplayTp) barsCount += 1;
+				if(AlphaABS.SYSTEM.PARAMS.ALLOW_XPBAR == true) barsCount += 1;
 
-				this.mpBar = new UIObject_BarMP(bitmap, $gamePlayer.battler());
-				this.mpBar.setPosition(4, 34, 120, 22);
-				this.mpBar.refresh();
+				if(barsCount == 4) {
+					this._createSmallBars(bitmap);
+				} else {
+					//LOG.p("NORMAL BARS");
+					this.hpBar = new UIObject_BarHP(bitmap, $gamePlayer.battler());
+					this.hpBar.setPosition(4, 8, 120, 24);
+					this.hpBar.refresh();
 
-				if($dataSystem.optDisplayTp) {
-					this.tpBar = new UIObject_BarTP(bitmap, $gamePlayer.battler());
-					this.tpBar.setPosition(4, 58, 120, 22);
-					this.tpBar.refresh();
+					this.mpBar = new UIObject_BarMP(bitmap, $gamePlayer.battler());
+					this.mpBar.setPosition(4, 34, 120, 22);
+					this.mpBar.refresh();
+
+					if($dataSystem.optDisplayTp) {
+						this.tpBar = new UIObject_BarTP(bitmap, $gamePlayer.battler());
+						this.tpBar.setPosition(4, 58, 120, 22);
+						this.tpBar.refresh();
+					}
+					//OR
+					if(AlphaABS.SYSTEM.PARAMS.ALLOW_XPBAR == true) {
+						this.xpBar = new UIObject_BarXP(bitmap, $gamePlayer.battler());
+						this.xpBar.setPosition(4, 70, 120, 18);
+						this.xpBar.refresh();
+					}
 				}
-
 			}.bind(this));
 			this.spriteParams = new Sprite(bitmap);
 			this.spriteParams.x = this.x + this.faceSize;
 			this.spriteParams.y = this.y;
 			this.spriteParams.opacity = 200;
 			this.addChild(this.spriteParams);
+		}
+
+		_createSmallBars(bitmap) {
+			//LOG.p("SMALL BARS");
+
+			this.hpBar = new UIObject_BarHP(bitmap, $gamePlayer.battler());
+			this.hpBar.setPosition(4, 6, 120, 20);
+			this.hpBar.refresh();
+
+			this.mpBar = new UIObject_BarMP(bitmap, $gamePlayer.battler());
+			this.mpBar.setPosition(4, 28, 120, 20);
+			this.mpBar.refresh();
+
+			this.tpBar = new UIObject_BarTP(bitmap, $gamePlayer.battler());
+			this.tpBar.setPosition(4, 50, 120, 18);
+			this.tpBar.refresh();
+
+			this.xpBar = new UIObject_BarXP(bitmap, $gamePlayer.battler());
+			this.xpBar.setPosition(4, 72, 120, 16);
+			this.xpBar.refresh();
 		}
 
 		_createInBattleInfo() {
@@ -12006,6 +12126,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			this.addChild(this.spriteBattleMask);
 		}
 	}
+	AlphaABS.LIB.Sprite_UserUI = Sprite_UserUI;
 
 	class Sprite_SkillPanelABS extends Sprite 
 	{
@@ -12546,6 +12667,66 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//END UIObject_ControlPanelItem
 //------------------------------------------------------------------------------
 
+//UIObject_ControlPanelItemDummy
+//------------------------------------------------------------------------------
+	function UIObject_ControlPanelItemDummy() {
+    	this.initialize.apply(this, arguments);
+	}
+
+	UIObject_ControlPanelItemDummy.prototype = Object.create(UIObject_ControlPanelItem.prototype);
+	UIObject_ControlPanelItemDummy.prototype.constructor = UIObject_ControlPanelItemDummy;
+
+	UIObject_ControlPanelItemDummy.prototype.initialize = function() {
+	    Sprite.prototype.initialize.call(this);
+
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.setEditMode = function() {
+		//EMPTY
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.setIcon = function(index) {
+		//EMPTY
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.setKey = function(symbol) {
+		//EMPTY
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.setSkill = function(absSkill) {
+		//EMPTY
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.refresh = function() {
+		//EMPTY
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.pulse = function() {
+		//EMPTY
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.isEmpty = function() {
+		return true;
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.setSelected = function(isSelect) {
+		//EMPTY
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.setDisabled = function(isDisabled) {
+		//EMPTY
+	}
+
+	UIObject_ControlPanelItemDummy.prototype.isTouched = function() {
+		return false;
+	};
+
+	UIObject_ControlPanelItemDummy.prototype.terminate = function() {
+		//EMPTY
+	};
+	//END UIObject_ControlPanelItemDummy
+//------------------------------------------------------------------------------
+
 //UIObject_ControlPanel
 //------------------------------------------------------------------------------
 	function UIObject_ControlPanel() {
@@ -12616,6 +12797,18 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		return item;
 	}
 
+	UIObject_ControlPanel.prototype.addEmptyItem = function() {
+		this.items.push(new UIObject_ControlPanelItemDummy());
+		var item = this.items.last();
+		if(this.items.length > 1) {
+			var prevItem = this.getPrevItem();
+			item.y = this.getPrevItem().y;
+		}
+		this._emptyItems += 1;
+		this.addChild(item);
+		return item;
+	}
+
 	UIObject_ControlPanel.prototype.refreshWeaponIconAt = function(index) {
 		if(!$gamePlayer.battler()) {
             this.setIconAt(index, 'noWeapon');
@@ -12635,30 +12828,34 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	}
 
 	UIObject_ControlPanel.prototype.createBaseItems = function() {
+		this._emptyItems = 0;
+		var params = AlphaABS.SYSTEM.PARAMS;
+
 		//Attack
 		var item = this.addItem();
 		var index = this.getLastItemIndex();
 		this.refreshWeaponIconAt(index);
 		item.setKey('cpA');
 		//Follow
-		item = this.addItem();
+		item = (params.CONTROL_PANEL_ALLOW_FOLLOW == true) ? this.addItem() : this.addEmptyItem();
 		item.setIcon('follow'); 
 		item.setKey('cpW');
 		//Jump
-		item = this.addItem();
+		item = (params.CONTROL_PANEL_ALLOW_JUMP == true) ? this.addItem() : this.addEmptyItem();
 		item.setIcon('jump');
 		item.setKey('cpS');
 		//Rotate
-		item = this.addItem();
+		item = (params.CONTROL_PANEL_ALLOW_ROTATE == true) ? this.addItem() : this.addEmptyItem();
 		item.setIcon('toMouse');
 		item.setKey('cpD');
 
 		//SwitchWeapon
-        item = this.addItem();
-        item.setIcon('switchWeapon');
-        item.setKey('wC');
+	    item = (params.CONTROL_PANEL_ALLOW_FAVWEAP == true) ? this.addItem() : this.addEmptyItem();
+	    item.setIcon('switchWeapon');
+	    item.setKey('wC');
 
 		this._setFrame();
+		this._rearangeInVertical();
 	}
 
 	UIObject_ControlPanel.prototype.refresh = function() {
@@ -12679,6 +12876,15 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		return (this._transfered == true);
 	}
 
+	UIObject_ControlPanel.prototype.getRealCount = function() {
+		return (this.items.length - this._emptyItems);
+	};
+
+
+	UIObject_ControlPanel.prototype.getPrevItem = function() {
+		return this.items[this.items.length - 2];
+	};
+
 	//PRIVATE
 	UIObject_ControlPanel.prototype._getY = function(index) {
 		return 38 * index;
@@ -12686,26 +12892,22 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	UIObject_ControlPanel.prototype._setFrame = function() {
 		this.width = this._getY(1);
-		this.height = this._getY(1) * this.items.length;
+		this.height = this._getY(1) * this.getRealCount();
 		this.setFrame(this.x,this.y,this.width,this.height);
 	};
 
 	UIObject_ControlPanel.prototype._transferIn = function() {
 		//LOG.p("Transfer IN");
 		this._transfered = true;
-		
+	
 		this._oldWidth = this.width;
 		this._oldHeigth = this.height;
 
-		this.width = this._getY(1) * this.items.length;
+		this.width = this._getY(1) * this.getRealCount();
 		this.height = this._getY(1);
 
 		this.setFrame(this.x,this.y,this.width,this.height);
-
-		for(var i = 0; i<this.items.length; i++) {
-			this.items[i].y = 0;
-			this.items[i].x = this._getY(i);
-		}
+		this._rearangeInHorizontal();
 	}
 
 	UIObject_ControlPanel.prototype._transferOut = function() {
@@ -12716,12 +12918,38 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		this.height = this._oldHeigth;
 
 		this.setFrame(this.x,this.y,this.width, this.height);
-
-		for(var i = 0; i<this.items.length; i++) {
-			this.items[i].y = this._getY(i);
-			this.items[i].x = 0;
-		}
+		this._rearangeInVertical();
 	}
+
+	UIObject_ControlPanel.prototype._rearangeInHorizontal = function() {
+		for(var i = 0; i<this.items.length; i++) {
+			var item = this.items[i];
+			item.y = 0;
+			if(i > 0) {
+				if(item.isEmpty()) {
+					item.x = this.items[i-1].x;
+				} else
+					item.x = this.items[i-1].x + this._getY(1);
+			} else {
+				item.x = 0;
+			}
+		}
+	};
+
+	UIObject_ControlPanel.prototype._rearangeInVertical = function() {
+		for(var i = 0; i<this.items.length; i++) {
+			var item = this.items[i];
+			item.x = 0;
+			if(i > 0) {
+				if(item.isEmpty()) {
+					item.y = this.items[i-1].y;
+				} else
+					item.y = this.items[i-1].y + this._getY(1);
+			} else {
+				item.y = 0;
+			}
+		}
+	};
 
 	AlphaABS.LIB.UIObject_ControlPanel = UIObject_ControlPanel;
 	//END UIObject_ControlPanel
@@ -13719,6 +13947,48 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
  		}
  	}
 
+ 	class UIObject_BarXP extends AlphaABS.LIB.Bar
+	{
+		constructor(bitmap, battler)
+		{
+			super(bitmap); 
+			this._battler = battler;
+			this._color = Color.YELLOW;
+			this._text_l = TextManager.expA;
+
+			this._oldLevel = -1;
+			this.update();
+		}
+
+		update()
+		{
+			if(this._oldLevel != this._battler.level)
+			{
+				this._lValue = -1;
+				this._oldLevel = this._battler.level;
+				this._nextLevelExp = this._battler.nextLevelExp();
+				this._currentLevelExp = this._battler.currentLevelExp();
+				this._mValue = this._nextLevelExp;
+			}
+
+			this._value = this.gerRealCurrentExp();
+			this._text_r = this._get_value();
+			AlphaABS.LIB.Bar.prototype.update.call(this); 			
+		}
+
+		gerRealCurrentExp() {
+			return Math.abs(this._battler.currentExp() - this._currentLevelExp);
+		}
+
+		//PRIVATE
+		_get_value()
+		{
+			var temp = Math.floor((this._value * 100)/this._mValue);
+			if(temp <= 0) temp = 0;
+			return (temp + '%');
+		}
+	}
+
 	var _Scene_Map_createSpriteset = Scene_Map.prototype.createSpriteset;
 	Scene_Map.prototype.createSpriteset = function() {
 	    _Scene_Map_createSpriteset.call(this);
@@ -13922,7 +14192,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
     var _Window_EquipItem_setActor = Window_EquipItem.prototype.setActor;
     Window_EquipItem.prototype.setActor = function(actor) {
         _Window_EquipItem_setActor.call(this, actor);
-        if(this._actor != null) {
+        if(this._actor != null && AlphaABS.SYSTEM.PARAMS.CONTROL_PANEL_ALLOW_FAVWEAP == true) {
             this._createFavWeapCircle();
             this._createFavWeapButton();
         }
@@ -14605,7 +14875,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    Window_KeyBinderMain.prototype.addComplexBind = function() {
 	        this.addCommand(Consts.STRING_MENU_KB_SKILLS[SDK.isRU()], 'complex_bind_1');
 	        this.addCommand(Consts.STRING_MENU_KB_CONTRL[SDK.isRU()], 'complex_bind_2');
-	        this.addCommand(Consts.STRING_MENU_KB_WEAPON[SDK.isRU()], 'complex_bind_3');
+	        if(AlphaABS.SYSTEM.PARAMS.CONTROL_PANEL_ALLOW_FAVWEAP == true)
+	        	this.addCommand(Consts.STRING_MENU_KB_WEAPON[SDK.isRU()], 'complex_bind_3');
 	    }
 
 	    //NEW
@@ -14738,10 +15009,15 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	        switch(this._mode) {
 	            case 'controlPanel':
 	                this.addCommand(Consts.STRING_MENU_KB_ATTACK[SDK.isRU()], 'cpA');
-	                this.addCommand(Consts.STRING_MENU_KB_FOLLOW[SDK.isRU()], 'cpW');
-	                this.addCommand(Consts.STRING_MENU_KB_JUMP[SDK.isRU()], 'cpS');
-	                this.addCommand(Consts.STRING_MENU_KB_ROTATE[SDK.isRU()], 'cpD');
-	                this.addCommand(Consts.STRING_MENU_KB_WEAP[SDK.isRU()], 'wC');
+	                var params = AlphaABS.SYSTEM.PARAMS;
+	                if(params.CONTROL_PANEL_ALLOW_FOLLOW == true)
+	                	this.addCommand(Consts.STRING_MENU_KB_FOLLOW[SDK.isRU()], 'cpW');
+	                if(params.CONTROL_PANEL_ALLOW_JUMP == true)
+	                	this.addCommand(Consts.STRING_MENU_KB_JUMP[SDK.isRU()], 'cpS');
+	                if(params.CONTROL_PANEL_ALLOW_ROTATE == true)
+	                	this.addCommand(Consts.STRING_MENU_KB_ROTATE[SDK.isRU()], 'cpD');
+	                if(params.CONTROL_PANEL_ALLOW_FAVWEAP == true)
+	                	this.addCommand(Consts.STRING_MENU_KB_WEAP[SDK.isRU()], 'wC');
 	                break;
 	            case 'skillsPanel':
 	            	var t = Consts.STRING_MENU_KB_SLOT[SDK.isRU()];
