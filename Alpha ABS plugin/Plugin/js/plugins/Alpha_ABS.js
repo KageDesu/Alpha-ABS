@@ -5782,7 +5782,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			t.anchor.y = 0.5;
 			t.setBlendColor(Color.RED.ARR);
 			t.opacity = 200;
-			t.z = 9; 
+			t.z = 0; 
 			this.parent.addChild(t);
 		}
 
