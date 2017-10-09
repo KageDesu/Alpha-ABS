@@ -9240,7 +9240,6 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			if(!Utils.RPGMAKER_VERSION) {
 				throw new Error(Consts.STRING_ERROR_OLDDATA[SDK.isRU()]);	
 			}
-			return true;
 			var v = Utils.RPGMAKER_VERSION.split('.');
 			if(v[0] < 1) {
 				throw new Error(Utils.RPGMAKER_VERSION+Consts.STRING_ERROR_VERSION[SDK.isRU()]);
