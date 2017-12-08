@@ -1245,7 +1245,7 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
 
 
  	$.STRING_ERROR_VERSION = 
- 	["ABS: Support only RPG Maker MV 1.3.1 and above",'ABS: Обновите версию RPG Maker MV до 1.3.1 или выше'];
+ 	["Running on Rpg Maker MV "+Utils.RPGMAKER_VERSION+" ABS: Support only RPG Maker MV 1.3.1 and above",'ABS: Обновите версию RPG Maker MV до 1.3.1 или выше'];
  	$.STRING_ERROR_SKILLNAN =
  	["You need config you project for ABS first!",'Необходимо настроить проект под ABS!'];
  	$.STRING_ERROR_OLDDATA = 
@@ -8185,6 +8185,13 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
             	break;
             case 'activate':
             	var name = args[1] || null;
+				if (name == null)//if no name was supplied by the user, automatically grab the name of the event that runs it 
+				{
+					name = $dataMap.events[this.eventId()].name
+					//name = $gameMap.event(this.eventId())
+				}
+				console.log(name);
+				//
             	if(name) {
             		var x = $gameMap.events().filter(function(ev) {
             			return (ev.event().name == name); 
@@ -9235,13 +9242,13 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			}
 			var v = Utils.RPGMAKER_VERSION.split('.');
 			if(v[0] < 1) {
-				throw new Error(Consts.STRING_ERROR_VERSION[SDK.isRU()]);
+				throw new Error(Utils.RPGMAKER_VERSION+Consts.STRING_ERROR_VERSION[SDK.isRU()]);
 			} else {
 				if(v[1] < 3) {
-					throw new Error(Consts.STRING_ERROR_VERSION[SDK.isRU()]);
+					throw new Error(Utils.RPGMAKER_VERSION+Consts.STRING_ERROR_VERSION[SDK.isRU()]);
 				} else {
-					if(v[1] == 3 && v[2] < 1)
-						throw new Error(Consts.STRING_ERROR_VERSION[SDK.isRU()]);
+					if(v[1] == 3 && v[2] < 1){
+					throw new Error(Utils.RPGMAKER_VERSION+Consts.STRING_ERROR_VERSION[SDK.isRU()]);}
 				}
 			}
 			return true;
