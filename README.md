@@ -10,15 +10,15 @@ Active battle system "Alpha" for RPG Maker MV.
 
 > [Update 1.1 video overview](https://www.youtube.com/watch?v=o0ZeevT3oXQ)
 
-###Downloading:  
+### Downloading:  
 *Как скачать:*  
 ![image](https://github.com/KageDesu/TestRepo/blob/master/Download.png)
 
-###Documentation:
+### Documentation:
 See in the [Manual folder](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Manual)  
 Документация: [Папка Manual](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Manual)
 
-###How install:
+### How install:
 >You need RPG Maker MV 1.3.1 or above.  
 
 Copy contents  of the [Plugin folder](https://github.com/KageDesu/Alpha-ABS/tree/master/Alpha%20ABS%20plugin/Plugin) in your project.  
@@ -28,7 +28,7 @@ Copy contents  of the [Plugin folder](https://github.com/KageDesu/Alpha-ABS/tree
 
 Video guide on [YouTube](https://www.youtube.com/watch?v=1wXL39bwx0g)
 
-###Plugin only:
+### Plugin only:
 >If need update, not include images   
 >Если надо обновить только .js файл плагина
 
@@ -36,10 +36,10 @@ Video guide on [YouTube](https://www.youtube.com/watch?v=1wXL39bwx0g)
 >Save file as `Alpha_ABS.js`  
 >Сохраните файл как `Alpha_ABS.js`  
 
-###Reporting Bugs / Issues:
+### Reporting Bugs / Issues:
 [rpgmakerweb.com](http://forums.rpgmakerweb.com/index.php?/topic/66713-abs-alpha-preview/)
 
-###TERMS OF USE FOR NON-COMMERCIAL AND COMMERCIAL:
+### TERMS OF USE FOR NON-COMMERCIAL AND COMMERCIAL:
 
 `Creative Commons 4.0 Attribution, Share Alike, Non-Commercial`     
 (Attribution Non-Commercial Share Alike, cc by-nc-sa)   
@@ -48,5 +48,5 @@ More info see in the documentation file [AlphaABS.pdf](https://github.com/KageDe
 
 You can use plugin in your commercial project, but if you sold >=50 copies, you need purchase commercial license for 12$.  
 
-###If you like it
+### If you like it
 You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6).
