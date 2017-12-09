@@ -10,8 +10,6 @@
 > - some fixes with `<noDescription:1>` parameter
 > - improvements with `ABS Activate` plugin command
 > - performance improvements where many enemies on ABS maps  
-![image](https://github.com/KageDesu/TestRepo/blob/master/build625_basFPS.png)  
-![image](https://github.com/KageDesu/TestRepo/blob/master/build625_goodFPS.png)  
 
 **568** - (6.11.2016)  
 > - new plugin parameter: `Show XP bar`  
