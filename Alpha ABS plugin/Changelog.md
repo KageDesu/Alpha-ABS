@@ -1,5 +1,18 @@
-#Version 1.1  
-##Builds:   
+# Version 1.1  
+## Builds:   
+**625** - (8.12.2017)
+> - fixed bug: error when running project in browser
+> - fixed bug: wrong percent of experience in XP bar
+> - fixed bug: game crash after exit to main menu and start new game
+> - fixed bug: favorite weapon circle active on non-abs maps
+> - fixed bug: the player could jump and change direction while message process
+> - the message about the outdated RPG Maker MV version will no longer be an error, just a warning in console
+> - some fixes with `<noDescription:1>` parameter
+> - improvements with `ABS Activate` plugin command
+> - performance improvements where many enemies on ABS maps  
+![image](https://github.com/KageDesu/TestRepo/blob/master/build625_basFPS.png)  
+![image](https://github.com/KageDesu/TestRepo/blob/master/build625_goodFPS.png)  
+
 **568** - (6.11.2016)  
 > - new plugin parameter: `Show XP bar`  
 ![image](https://github.com/KageDesu/TestRepo/blob/master/build568_xpbar.png)  
@@ -43,8 +56,8 @@
 
  ***
 
-#Version 1
-##Builds:  
+# Version 1
+## Builds:  
 **300** - (19.09.2016)
 > - minor improvements and fixes  
 > - added ammo count indicator for weapons and skills    
