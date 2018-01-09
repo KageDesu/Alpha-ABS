@@ -1,5 +1,15 @@
 # Version 1.1  
-## Builds:   
+## Builds:  
+
+**756** - (09.01.2018)
+> - fixed bug: ammunition was lost in the transition to the map
+> - fixed bug: stupid AI movement
+> - fixed bug: the game time depends on the amount of FPS
+> - new: new ABS param for enemies: `<returnType:X>`. Where X: 0 - enemy fast return on start place, 1 - enemy normal speed return, 2 - enemy not return at all (stay)
+> - new plugin parameter: `Allow Transfer`. If you set this parameter true, you can transfer between game maps during battle (but on you risk)
+
+The Assembly prepares the plugin to version 1.2 with support of the party, so the code structure changed a lot. Now the plugin code is creates automatically from the set of many .js files (parts of the plugin). This is an `experimental build`, perhaps there are bugs where they were not.
+
 **625** - (8.12.2017)
 > - fixed bug: error when running project in browser
 > - fixed bug: wrong percent of experience in XP bar

@@ -1,16 +1,7 @@
-﻿//=============================================================================
+//=============================================================================
 // Alpha_ABS.js
 //=============================================================================
 //Version 1.1 (21.10.2016)
-
-"use strict";
-
-var Imported = Imported || {};
-Imported.AlphaABS = true;
-
-var AlphaABS = {};
-AlphaABS.version = 110;
-AlphaABS.build = 625; //(8.12.2017)
 
 /*:
  * @plugindesc ABS "Alpha"
@@ -69,6 +60,10 @@ AlphaABS.build = 625; //(8.12.2017)
  * @desc Allows dashing on ABS maps. If 'true' you also can change option 'Always Dash' in option menu.
  * @default false
  *
+ * @param Allow Transfrer
+ * @desc Allows the transition between locations during the battle (on you risk)
+ * @default false
+ *
  * @param Force English
  * @desc Use english language (if not work automatically)
  * @default false
@@ -97,6 +92,11 @@ AlphaABS.build = 625; //(8.12.2017)
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  * User manual see in file 'Alpha ABS.pdf'
  *
+ * X - integer
+ * Z - 0 or 1 (boolean)
+ * Y - string
+ *
+ *
  * Plugin Commands:
  *  ABS loot       # Looting enemy (if enemy is dead and 'Auto loot enemies'
  *  turn off). Work on dead enemy map event.
@@ -109,10 +109,10 @@ AlphaABS.build = 625; //(8.12.2017)
  *
  *  ABS activate Y # Activate enemy with name Y (event name).
  *   (if enemy been deactivated on start)
- *		If Y not specified, then the current enemy
+ *    If Y not specified, then the current enemy
  *
  *
- *	For UI control use plugin commands:
+ *  For UI control use plugin commands:
  *   ABS showUI     Show user interface on ABS map
  *   ABS hideUI     Hide user interface on ABS map
  *   ABS saveUI     Save user interface (positions of elements) to file
@@ -142,14 +142,21 @@ AlphaABS.build = 625; //(8.12.2017)
  *
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  *   Enemy Notetags: (by defult)
- *	<viewRadius: X> - how long (map cells) enemy will see you (5)
- *	<returnRadius : X> - how many cells maximum enemy can escape from the last position where he fought  (12)
- *	<escapeOnBattle: Z> - whether to escape from player during a battle when there is no available actions or waiting for attack cool down (0)
- *	<canSearch: Z> - can enemy hear everything happening around him (the reaction to the battle near (in the area of viewRadius param)) (1)
- *	<noFight: Z> - no fight at all (0) (like dummy in demo game)
- *	<reviveTime: X> - time (in seconds) to reborn after death (0) (0 – not reborn after death)
- *	<regen: Z> - health regeneration (not in battle mode) (1)
- *	<slow: Z>  - not accelerating in pursuit (0)
+ *  <viewRadius: X> - how long (map cells) enemy will see you (5)
+ *  <returnRadius : X> - how many cells maximum enemy can escape from the last position where he fought  (12)
+ *  <escapeOnBattle: Z> - whether to escape from player during a battle when there is no available actions or waiting for attack cool down (0)
+ *  <canSearch: Z> - can enemy hear everything happening around him (the reaction to the battle near (in the area of viewRadius param)) (1)
+ *  <noFight: Z> - no fight at all (0) (like dummy in demo game)
+ *  <reviveTime: X> - time (in seconds) to reborn after death (0) (0 – not reborn after death)
+ *  <regen: Z> - health regeneration (not in battle mode) (1)
+ *  <slow: Z>  - not accelerating in pursuit (0)
+ *  <returnType: X>  - 0 - fast, 1 - normal, 2 - stay (not return at all)
+ *  <agressive: Z> - is agressive? (always approach the palyer) (1)
+ *  <noMove: Z> - can't moving during battle (0)
+ *  <noEmote: Z> - no ballon animation (0)
+ *  <cEonStart: X> - call common Event with ID (X) when start battle (see player)
+ *  <cEonEnd: X> - call common Event with ID (X) when stop battle (after start)
+ *  <cEonDeath: X> - call Common Event with ID (X) on Death
  *
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  *   Skill Notetags:
@@ -192,9 +199,9 @@ AlphaABS.build = 625; //(8.12.2017)
  *    <startSound:w> Sound when used.
  *    <castAnim:x> Animation when casting. (ID# of animation from in database)
  *    <ammo:X> - X is # of item that is the ammo.
- *	  <cEonStart:X> - call CommonEvent with id X when trigger the skill.
- *	  <cEonUse:X> - call CommonEvent with id X when using the skill.
- *	  <noDescription:1> - hide description on popup info on ABS map.
+ *    <cEonStart:X> - call CommonEvent with id X when trigger the skill.
+ *    <cEonUse:X> - call CommonEvent with id X when using the skill.
+ *    <noDescription:1> - hide description on popup info on ABS map.
  *
  * ~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
  *  Weapon Notetags:
@@ -307,6 +314,10 @@ AlphaABS.build = 625; //(8.12.2017)
  * @desc Можно ли ускорятся при помощи клавиши Shift (мыши) на ABS картах.
  * @default false
  *
+ * @param Allow Transfrer
+ * @desc Можно ли переходить между локациями во время боя? (на ваш риск)
+ * @default false
+ *
  * @param Force English
  * @desc Использовать английский язык? (true - да, false - нет)
  * @default false
@@ -380,769 +391,773 @@ AlphaABS.build = 625; //(8.12.2017)
  * @requiredAssets img/animations/StateDown1
  */
 
+"use strict"
+
+
+
+var Imported = Imported || {};
+Imported.AlphaABS = true;
+
+var AlphaABS = {};
+AlphaABS.version = 110;
+AlphaABS.build = 756; //(9.01.2018)
+
+AlphaABS.LIBS = {};
+
+AlphaABS.register = function(library) {
+  this.LIBS[library.name] = library;
+};
+
+//var DEV = DEV || {}; //For detailed console log
+
+
 //==========================================================================================================================================================
 // JSPlatform
 //==========================================================================================================================================================
+var PLATFORM = PLATFORM || {};
 
+  if(!PLATFORM.Version) {
+  (function($) {
+  $.Version = 141;
+
+  //==============================================================================
+  //Расширение стандартных классов JS
+  //==============================================================================
+
+  //Array
+  //------------------------------------------------------------------------------
+    Array.prototype.delete = function() {
+        var what, a = arguments, L = a.length, ax;
+        while (L && this.length) {
+            what = a[--L];
+            while ((ax = this.indexOf(what)) !== -1) {
+                this.splice(ax, 1);
+            }
+        }
+        return this;
+    };
+
+    Array.prototype.include = function(value) {
+      return (this.indexOf(value) != -1);
+    }
+
+    Array.prototype.max = function() {
+      return Math.max.apply(null, this);
+    };
+
+    Array.prototype.min = function() {
+      return Math.min.apply(null, this);
+    };
+
+    //1.1
+    Array.prototype.sample = function() {
+      if(this.length == 0) {
+        return null;
+      } else {
+        return this[SDK.rand(0,this.length-1)];
+      }
+    }
+
+    Array.prototype.first = function() {
+      return this[0];
+    }
+
+    Array.prototype.last = function() {
+      return this[this.length - 1];
+    }
+
+    Array.prototype.shuffle = function() {
+      var n = this.length;
+      while(n > 1) {
+        n--;
+        var k = SDK.rand(0,n+1);
+        var v = this[k];
+        this[k] = this[n];
+        this[n] = v;
+      }
+    }
+
+
+    Array.prototype.count = function() {
+      return this.length;
+    }
+
+    Array.prototype.diff = function(a) {
+        return this.filter(function(i) {return a.indexOf(i) < 0;});
+    };
+    //END Array
+  //------------------------------------------------------------------------------
+
+  //==============================================================================
+  //Расширение стандартных классов MV
+  //==============================================================================
+
+  //Rectangle
+  //------------------------------------------------------------------------------
+    Rectangle.prototype.toArr = function() {
+      return [this.x, this.y, this.width, this.height];
+    }
+    //END Rectangle
+  //------------------------------------------------------------------------------
+
+  //Bitmap
+  //------------------------------------------------------------------------------
+    Object.defineProperty(Bitmap.prototype, 'paintOpacity', {
+        get: function() {
+            return this._paintOpacity;
+        },
+        set: function(value) {
+          this._paintOpacity = value;
+          this._context.globalAlpha = this._paintOpacity / 255;
+        },
+        configurable: true
+    });
+
+    Bitmap.prototype.fillAll = function(color) {
+        this.fillRect(0,0,this.width,this.height, color);
+      }
+    //END Bitmap
+  //------------------------------------------------------------------------------
+
+  //Sprite
+  //------------------------------------------------------------------------------
+    var pkd_Sprite_setBlendColor_98978 = Sprite.prototype.setBlendColor;
+    Sprite.prototype.setBlendColor = function(color) {
+      if(color instanceof PLATFORM.Color) {
+        pkd_Sprite_setBlendColor_98978.call(this, color.ARR);
+      }
+      else  {
+        pkd_Sprite_setBlendColor_98978.call(this, color);
+      }
+    };
+
+    Sprite.prototype.setStaticAnchor = function(valueX, valueY) {
+        this.x -= Math.round(this.width * valueX);
+        this.y -= Math.round(this.height * valueY);
+    }
+    //END Sprite
+  //------------------------------------------------------------------------------
+
+  //Sprite_Button
+  //------------------------------------------------------------------------------
+    //NEW
+    Sprite_Button.prototype.isHoverByMouse = function() {
+          var x = this.canvasToLocalX(TouchInput.mX);
+          var y = this.canvasToLocalY(TouchInput.mY);
+          return x >= 0 && y >= 0 && x < this.width && y < this.height;
+      };
+    //END Sprite_Button
+  //------------------------------------------------------------------------------
+
+  //TouchInput
+  //------------------------------------------------------------------------------
+    var _JSPlatform_3442_TouchInput_onMouseMove = TouchInput._onMouseMove;
+      TouchInput._onMouseMove = function(event) {
+          _JSPlatform_3442_TouchInput_onMouseMove.call(this, event);
+          if (!this._mousePressed) {
+            this.mX = Graphics.pageToCanvasX(event.pageX);
+            this.mY = Graphics.pageToCanvasY(event.pageY);
+          } else {
+            this.mX = this._x;
+            this.mY = this._y;
+          }
+      };
+    //END TouchInput
+  //------------------------------------------------------------------------------
+
+  //Input
+  //------------------------------------------------------------------------------
+    var pkd_Input_onKeyDown_9323 = Input._onKeyDown;
+    Input._onKeyDown = function(event) {
+      //console.log(event.keyCode + ' down');
+      //TODO Temp solution
+      if(event.keyCode == 87) {
+        this._currentState['w'] = true;
+        return;
+      }
+      //TODO Temp solution
+      if(event.keyCode == 81) {
+        this._currentState['q'] = true;
+        return;
+      }
+      var buttonName = this.keyMapper[event.keyCode];
+      if(buttonName)
+        pkd_Input_onKeyDown_9323.call(this, event);
+      else {
+        var bn = this.KeyMapperPKD[event.keyCode];
+        if(bn) {
+          this._currentState[bn] = true;
+        }
+      }
+    }
+
+    var pkd_Input_onKeyUp_9090 = Input._onKeyUp;
+    Input._onKeyUp = function(event) {
+      //console.log(event.keyCode + ' up');
+      //TODO Temp solution
+      if(event.keyCode == 87) {
+        this._currentState['w'] = false;
+        return;
+      }
+      //TODO Temp solution
+      if(event.keyCode == 81) {
+        this._currentState['q'] = false;
+        return;
+      }
+      var buttonName = this.keyMapper[event.keyCode];
+      if(buttonName)
+        pkd_Input_onKeyUp_9090.call(this, event);
+      else {
+          var bn = this.KeyMapperPKD[event.keyCode];
+          if (bn) {
+              this._currentState[bn] = false;
+          }
+      }
+    };
+
+    Input._isGamepad = undefined; //Don't use this
+    Input.isGamepad = function()
+    {
+      if(this._isGamepad !== undefined) { return this._isGamepad; }
+
+      this._isGamepad = false;
+      if(navigator.getGamepads) {
+         var gamepads = navigator.getGamepads();
+         if(gamepads) {
+          for(var i = 0; i<gamepads.length; i++) {
+            if(gamepads[i] !== undefined) {
+              this._isGamepad = true;
+              break;
+            }
+          }
+         }
+      }
+      return this._isGamepad;
+    }
+
+    Input.IsCancel = function() {
+      if(Input.isGamepad()) {
+        return Input.isTriggered('pageup'); //GP LB
+      } else {
+        return (Input.isTriggered('cancel') || TouchInput.isCancelled());
+      }
+    }
+
+    //Settings
+      Input.KeyMapperPKD = {};
+      Input.KeyMapperPKD[9] = 'tab';
+      Input.KeyMapperPKD[32] = 'space';
+      for(var i = 48; i<127; i++) {
+          Input.KeyMapperPKD[i] = String.fromCharCode(i).toLowerCase();
+      }
+    //END Input
+  //------------------------------------------------------------------------------
+
+  //ImageManager
+  //------------------------------------------------------------------------------
+    ImageManager.ICON_PATH = 'img/icons/';
+    ImageManager._iconCache = {};
+
+    ImageManager.loadIcon = function(path, filename) {
+        return this.loadBitmap(path, filename, 0, false);
+    }
+
+    //path - (string) папка где хранится иконка (напрмер 'img/icons/')
+    //iconSymbol - (string/int) символ (либо имя файла (строка), либо номер в IconSet (цифра))
+    //size - (int) размер в пикселях (стандартные 24 (ACE) и 32 (MV))
+    //forceCopy - (bool) отдельная копия, даже если такая иконка уже была загружена ранее в буфер _iconCache
+    //  RETURN (Bitmap) Возвращяет Bitmap (если forceCopy == false, то ссылку на Bitmap из буфера _iconCache)
+    ImageManager.getIcon = function(path, iconSymbol, size, forceCopy) {
+      if(iconSymbol == null)
+        iconSymbol = 'null';
+      var key = iconSymbol + ':' + size;
+      if(!this._iconCache[key])
+        {
+        if(typeof iconSymbol == 'string')
+        {
+          var bitmap = this.loadIcon(path, 'icon_' + iconSymbol);
+          var icon_bitmap = new Bitmap(size, size);
+          bitmap.addLoadListener(function() {
+            icon_bitmap.blt(bitmap, 0,0,bitmap.width, bitmap.height,0,0,size,size);
+          });
+          this._iconCache[key] = icon_bitmap;
+        }
+        else
+        {
+          var bitmap = ImageManager.loadSystem('IconSet');
+            var pw = Window_Base._iconWidth;
+            var ph = Window_Base._iconHeight;
+            var sx = iconSymbol % 16 * pw;
+            var sy = Math.floor(iconSymbol / 16) * ph;
+            var icon_bitmap = new Bitmap(size, size);
+            icon_bitmap.addLoadListener(function() {
+              icon_bitmap.blt(bitmap, sx, sy, pw, ph, 0, 0, size, size);
+            });
+            if(forceCopy) //Force new bitmap
+              return icon_bitmap;
+            this._iconCache[key] = icon_bitmap;
+        }
+      }
+      return this._iconCache[key];
+    }
+
+    ImageManager.getIcon24 = function(iconSymbol) {
+      return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, 24, false);
+    }
+
+    ImageManager.getIcon32 = function(iconSymbol) {
+      return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, 32, false);
+    }
+    //END ImageManager
+  //------------------------------------------------------------------------------
+
+  //==============================================================================
+  //Новые классы
+  //==============================================================================
+
+  //SDK
+  //------------------------------------------------------------------------------
+    function SDK() {
+      throw new Error('This is a static class, you baka...');
+    }
+
+    SDK.times = function(n, method) {
+      for(var i = 0; i<n; i++) {
+        method(i);
+      }
+    }
+
+    SDK._isRu = null; //Don't use this
+    SDK.isRU = function()
+    {
+      if(this._isRu == null)
+      {
+        this._isRu = 0;
+        var language = window.navigator.userLanguage || window.navigator.language;
+        if(language){
+          if(language == 'ru')
+            this._isRu = 1;
+        }
+      }
+      return this._isRu;
+    }
+
+    SDK.check = function(value, base)
+    {
+      if(base === undefined)
+        base = true;
+
+      if(value === undefined)
+        return base;
+      else
+        return value;
+    }
+
+    SDK.rand = function(min, max)
+    {
+      return Math.round(Math.random() * (max - min)) + min;
+    }
+
+    SDK.smartRand = function(n,s,r) { //1.2
+        n = SDK.check(n,1);
+        s = SDK.check(s,0);
+        r = SDK.check(r,true);
+        if(r)
+         return Math.round((Math.random() * n) - s);
+        else
+         return (Math.random() * n) - s;
+    }
+
+    SDK.drawIcon = function(x, y, iconSymbol, bitmap, size)
+    {
+      size = SDK.check(size, 24);
+      var icon = ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, size);
+      icon.addLoadListener(function(){
+        bitmap.blt(icon, 0, 0, size, size, x, y);
+      });
+    }
+
+    SDK.checkSwitch = function(value) {
+      if(value == 'A' || value == 'B' || value == 'C' || value == 'D') {
+        return true;
+      } else
+        return false;
+    }
+
+    SDK.toCX = function(width, sourceWidth)
+    {
+      sourceWidth = SDK.check(sourceWidth, Graphics.width);
+      return ((sourceWidth / 2) - (width / 2));
+    }
+
+    SDK.getSpriteRect = function(sprite) {
+          var x = SDK.toGlobalCoord(sprite, 'x');
+          var y = SDK.toGlobalCoord(sprite, 'y');
+          return new Rectangle(x,y,sprite.width, sprite.height);
+      }
+
+    SDK.toGlobalCoord = function(layer, coordSymbol) {
+      var t = layer[coordSymbol];
+      var node = layer;
+      while(node) {
+        t -= node[coordSymbol];
+        node = node.parent;
+      }
+      return (t * (-1)) + layer[coordSymbol];
+    }
+
+    SDK._pkd_time = null;
+    SDK.setTime = function()
+    {
+      this._pkd_time = new Date();
+    }
+
+    SDK.stampTime = function()
+    {
+      var end = new Date();
+      var time = 'Time ' + (end.getTime()-this._pkd_time.getTime()) + ' мс';
+      console.log(time);
+      return time;
+    }
+
+    SDK.isPC = function() {
+      if (Utils.isMobileDevice()) return false;
+      if (Utils.isMobileSafari()) return false;
+      if (Utils.isAndroidChrome()) return false;
+      return true;
+    }
+
+    SDK.isInt = function(n) {
+      return Number(n) === n && n % 1 === 0;
+    }
+
+    SDK.isFloat = function(n) {
+      return n === Number(n) && n % 1 !== 0;
+    }
+
+    //Процент P от числа N
+    SDK.percent = function(n, p) {
+      return Math.round((n/100) * p);
+    }
+
+     /**
+     * Корректировка округления десятичных дробей.
+     * (https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/floor)
+     *
+     * @param {String}  type  Тип корректировки.
+     * @param {Number}  value Число.
+     * @param {Integer} exp   Показатель степени (десятичный логарифм основания корректировки).
+     * @returns {Number} Скорректированное значение.
+     */
+    SDK.decimalAdjust = function(type, value, exp) {
+        // Если степень не определена, либо равна нулю...
+        if (typeof exp === 'undefined' || +exp === 0) {
+          return Math[type](value);
+        }
+        value = +value;
+        exp = +exp;
+        // Если значение не является числом, либо степень не является целым числом...
+        if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+          return NaN;
+        }
+        // Сдвиг разрядов
+        value = value.toString().split('e');
+        value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+        // Обратный сдвиг
+        value = value.toString().split('e');
+        return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+    }
+
+
+    //File work
+    SDK._fs = null;
+    SDK._path = null;
+    SDK._lastPath = null;
+    SDK._filePrepare = function() {
+      if(SDK._fs == null) {
+        SDK._fs = require('fs');
+      }
+      if(SDK._path == null) {
+        SDK._path = require('path');
+      }
+    }
+
+    SDK.isFile = function(filename) { //Существует ли файл?
+      SDK._filePrepare();
+      return SDK._fs.existsSync(SDK.filePath(filename));
+    }
+
+    SDK.readFile = function(filename) { //Прочитать файл
+      if(SDK.isFile(filename)) {
+        return JSON.parse(LZString.decompressFromBase64(SDK._fs.readFileSync(SDK._lastPath, { encoding: 'utf8' })));
+      } else {
+        console.log("SDK file " + filename + " not found!");
+        return null;
+      }
+    }
+
+    SDK.writeFile = function(filename, data) { //Сохранить в файл
+      SDK._filePrepare();
+      var t = LZString.compressToBase64(JsonEx.stringify(data));
+      SDK._fs.writeFileSync(SDK.filePath(filename), t);
+    }
+
+    SDK.filePath = function(filename) { //Создать путь path к файлу
+      SDK._filePrepare();
+      var base = SDK._path.dirname(process.mainModule.filename);
+      var dir = SDK._path.join(base, 'data/');
+      var filePath = dir + filename;
+      SDK._lastPath = filePath;
+      return filePath;
+    }
+
+    SDK.loadDataFileWeb = function(filename, onLoad, onErr) {
+      var xhr = new XMLHttpRequest();
+        var url = 'data/' + filename;
+        xhr.open('GET', url);
+        xhr.overrideMimeType('application/json');
+        xhr.onload = function() {
+            if (xhr.status < 400) {
+                onLoad(JSON.parse(LZString.decompressFromBase64(xhr.responseText)));
+            }
+        };
+        xhr.onerror = function() {
+            if(onErr)
+              onErr();
+        };
+        xhr.send();
+    }
+
+    SDK.readFileWeb = function(filename) {
+      var data = localStorage.getItem(filename);
+      var jData = {};
+      try {
+        jData = JSON.parse(LZString.decompressFromBase64(data));
+      } catch(ex) {
+        console.log(ex);
+        jData = {};
+      }
+      return jData;
+    }
+
+    SDK.writeFileWeb = function(filename, data) {
+      localStorage.setItem(filename, LZString.compressToBase64(JsonEx.stringify(data)));
+    }
+
+    //Определить константу у Объекта
+    SDK.setConstant = function(object, name, value) {
+      object[name] = value;
+      if(typeof(object[name]) == "object")
+        Object.freeze(object[name]); //freeze - замораживает все поля объекта (но не ссылку на объект)
+      Object.defineProperty(object, name, {writable: false}); //ссылка на объект теперь тоже заморожена
+    }
+    //END SDK
+  //------------------------------------------------------------------------------
+
+  //Color
+  //------------------------------------------------------------------------------
+    class Color {
+      constructor(r, g, b, a) {
+        if(r === undefined) r = 255;
+        if(g === undefined) g = 255;
+        if(b === undefined) b = 255;
+        if(a === undefined) a = 255;
+        this._color = [r,g,b,a];
+        this._css = "rgba("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+","+(a/255)+")";
+      }
+
+      getLightestColor(lightLevel) //Получить цвет на оттенок lightLevel светлее из текущего (новый Color объект)
+      {
+        var bf = 0.3 * this.R + 0.59 * this.G + 0.11 * this.B;
+        var p = 0;
+        var newColor = [0,0,0,0];
+        if ((bf - lightLevel) >= 0) {
+          if (bf >= 0)
+            p = Math.abs(bf - lightLevel)/lightLevel;
+          newColor = this._color.map(function(c){ return (c - p * c);  });
+        }
+        else
+        {
+          if(bf >= 0)
+            p = (lightLevel - bf)/(255 - bf);
+          newColor = this._color.map(function(c){ return [(255 - c)*p+c,255].min();  });
+        }
+
+        return new Color(newColor[0],newColor[1],newColor[2],newColor[3]);
+      }
+
+      clone() { //Возвращяет копию цвета (новый Color объект)
+        return reAlpha(this.A);
+      }
+
+      reAlpha(a) { //Изменить значение Aplha (новый Color объект)
+        return new Color(this.R, this.G, this.B, a);
+      }
+
+      hex() {
+        var r = Math.floor(this.R).toString(16).padZero(2);
+            var g = Math.floor(this.G).toString(16).padZero(2);
+            var b = Math.floor(this.B).toString(16).padZero(2);
+            return '#' + r + g + b;
+      }
+
+      //Добавить статический цвет (его нельзя изменить)
+      static AssignStaticColor(name, color) {
+        SDK.setConstant(Color, name, color);
+      }
+
+      //Создать Color из HEX строки. exmpl. '#FFFFFF'
+      static FromHex(hexString) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexString);
+          var color = result ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16)
+          } : null;
+          if(color) {
+            return new Color(color.r,color.g,color.b, 255);
+          }
+          return Color.NONE; //NULL Color
+      }
+
+      static RAND() {
+        return Color.FromHex(Color._makeRandomHexColor());
+      }
+
+      static _makeRandomHexColor() {
+        var colR = Color._makeRandomHexCode();
+        var colG = Color._makeRandomHexCode();
+        var colB = Color._makeRandomHexCode();
+
+        return "#" + colR + colG + colB;
+      }
+
+      static _makeRandomHexCode() {
+        var randVal = Math.floor( Math.random() * 10 ) + 4;
+        switch( randVal ) {
+          case 0: return "00";
+          case 1: return "11";
+          case 2: return "22";
+          case 3: return "33";
+          case 4: return "44";
+          case 5: return "55";
+          case 6: return "66";
+          case 7: return "77";
+          case 8: return "88";
+          case 9: return "99";
+          case 10: return "AA";
+          case 11: return "BB";
+          case 12: return "CC";
+          case 13: return "DD";
+          case 14: return "EE";
+          case 15: return "FF";
+        }
+      }
+    }
+
+    Object.defineProperties(Color.prototype, {
+      R: {get: function() {return this._color[0]; }, configurable: true },
+      G: {get: function() {return this._color[1]; }, configurable: true },
+      B: {get: function() {return this._color[2]; }, configurable: true },
+      A: {get: function() {return this._color[3]; }, configurable: true },
+      ARR: {get: function() {return this._color; }, configurable: true },
+      CSS: {get: function() {return this._css; }, configurable: true }
+    });
+
+    //Создание стандартной палитры
+    Color.AssignStaticColor('NONE', new Color(0,0,0,0));
+    Color.AssignStaticColor('BLACK', new Color(0,0,0,255));
+    Color.AssignStaticColor('WHITE', new Color(255,255,255,255));
+    Color.AssignStaticColor('RED', new Color(255,0,0,255));
+    Color.AssignStaticColor('GREEN', new Color(0,255,0,255));
+    Color.AssignStaticColor('BLUE', new Color(0,0,255,255));
+
+    Color.AssignStaticColor('AQUA', new Color(128,255,255,255));
+    Color.AssignStaticColor('MAGENTA', new Color(128,0,128,255));
+    Color.AssignStaticColor('YELLOW', new Color(255,255,0,255));
+    Color.AssignStaticColor('ORANGE', new Color(255,128,0,255));
+    //END Color
+  //------------------------------------------------------------------------------
+
+  //DevLog
+  //------------------------------------------------------------------------------
+    class DevLog {
+      constructor(prefix) {
+        this._prefix = prefix;
+        this._extended = false;
+        this._canUseColor = this._canUseColors();
+        if (typeof DEV === 'undefined') {
+          this._show = false;
+        } else
+          this._show = true;
+      }
+
+      setColors(color, backColor) {
+        this._extend();
+        color = SDK.check(color, '#000000');
+        backColor = SDK.check(backColor, '#FFFFFF');
+        this._args[1] = 'color: ' +color + '; background: ' + backColor +';';
+      }
+      p(text) {
+        if(this._show) {
+          if(text === undefined) {
+            console.log("");
+          } else {
+            if(this._extended && this._canUseColor) {
+              this._args[0] = '%c' + this._prefix + ": " + text;
+              window.console.log.apply(console, this._args);
+            } else
+              console.log(this._prefix + ": " + text);
+          }
+        }
+      }
+
+      applyPresetLib() {
+        this.setColors(new Color(22,120,138,0).hex(), Color.WHITE.hex());
+      }
+
+      on() {
+        this._show = true;
+      }
+
+      off() {
+        this._show = false;
+      }
+
+      _extend() {
+        this._extended = true;
+        this._args = this._args || [null,'color: #000000; background: #FFFFFF;'];
+      }
+
+      _canUseColors() {
+        return (navigator.userAgent.toLowerCase().indexOf('chrome') > -1);
+      }
+    }
+    //END DevLog
+  //------------------------------------------------------------------------------
+
+  //==============================================================================
+  //Общие настройки
+  //==============================================================================
+  //Настройка версий
+  $.Versions = {};
+
+  //Расширение
+  $.extendMe = function(obj) {
+    obj.Color = Color;
+    obj.SDK = SDK;
+    obj.DevLog = DevLog;
+  }
+
+  $.extendMe($);
+
+  })(PLATFORM);
 //------------------------------------------------------------------------------
-	var PLATFORM = PLATFORM || {};
-	if(!PLATFORM.Version) {
-	(function($) {
-	$.Version = 140;
-
-	//==============================================================================
-	//Расширение стандартных классов JS
-	//==============================================================================
-
-	//Array
-	//------------------------------------------------------------------------------
-		Array.prototype.delete = function() {
-		    var what, a = arguments, L = a.length, ax;
-		    while (L && this.length) {
-		        what = a[--L];
-		        while ((ax = this.indexOf(what)) !== -1) {
-		            this.splice(ax, 1);
-		        }
-		    }
-		    return this;
-		};
-
-		Array.prototype.include = function(value) {
-			return (this.indexOf(value) != -1);
-		}
-
-		Array.prototype.max = function() {
-		  return Math.max.apply(null, this);
-		};
-
-		Array.prototype.min = function() {
-		  return Math.min.apply(null, this);
-		};
-
-		//1.1
-		Array.prototype.sample = function() {
-			if(this.length == 0) {
-				return null;
-			} else {
-				return this[SDK.rand(0,this.length-1)];
-			}
-		}
-
-		Array.prototype.first = function() {
-			return this[0];
-		}
-
-		Array.prototype.last = function() {
-			return this[this.length - 1];
-		}
-
-		Array.prototype.shuffle = function() {
-			var n = this.length;
-			while(n > 1) {
-				n--;
-				var k = SDK.rand(0,n+1);
-				var v = this[k];
-				this[k] = this[n];
-				this[n] = v;
-			}
-		}
-
-
-		Array.prototype.count = function() {
-			return this.length;
-		}
-
-		Array.prototype.diff = function(a) {
-	    	return this.filter(function(i) {return a.indexOf(i) < 0;});
-		};
-		//END Array
-	//------------------------------------------------------------------------------
-
-	//==============================================================================
-	//Расширение стандартных классов MV
-	//==============================================================================
-
-	//Rectangle
-	//------------------------------------------------------------------------------
-		Rectangle.prototype.toArr = function() {
-			return [this.x, this.y, this.width, this.height];
-		}
-		//END Rectangle
-	//------------------------------------------------------------------------------
-
-	//Bitmap
-	//------------------------------------------------------------------------------
-		Object.defineProperty(Bitmap.prototype, 'paintOpacity', {
-		    get: function() {
-		        return this._paintOpacity;
-		    },
-		    set: function(value) {
-		      this._paintOpacity = value;
-		      this._context.globalAlpha = this._paintOpacity / 255;
-		    },
-		    configurable: true
-		});
-
-		Bitmap.prototype.fillAll = function(color) {
-	    	this.fillRect(0,0,this.width,this.height, color);
-	    }
-		//END Bitmap
-	//------------------------------------------------------------------------------
-
-	//Sprite
-	//------------------------------------------------------------------------------
-		var pkd_Sprite_setBlendColor_98978 = Sprite.prototype.setBlendColor;
-		Sprite.prototype.setBlendColor = function(color) {
-			if(color instanceof PLATFORM.Color) {
-				pkd_Sprite_setBlendColor_98978.call(this, color.ARR);
-			}
-			else  {
-				pkd_Sprite_setBlendColor_98978.call(this, color);
-			}
-		};
-
-		Sprite.prototype.setStaticAnchor = function(valueX, valueY) {
-		    this.x -= Math.round(this.width * valueX);
-		    this.y -= Math.round(this.height * valueY);
-		}
-		//END Sprite
-	//------------------------------------------------------------------------------
-
-	//Sprite_Button
-	//------------------------------------------------------------------------------
-		//NEW
-		Sprite_Button.prototype.isHoverByMouse = function() {
-	        var x = this.canvasToLocalX(TouchInput.mX);
-	        var y = this.canvasToLocalY(TouchInput.mY);
-	        return x >= 0 && y >= 0 && x < this.width && y < this.height;
-	    };
-		//END Sprite_Button
-	//------------------------------------------------------------------------------
-
-	//TouchInput
-	//------------------------------------------------------------------------------
-		var _JSPlatform_3442_TouchInput_onMouseMove = TouchInput._onMouseMove;
-	    TouchInput._onMouseMove = function(event) {
-	        _JSPlatform_3442_TouchInput_onMouseMove.call(this, event);
-	        if (!this._mousePressed) {
-	        	this.mX = Graphics.pageToCanvasX(event.pageX);
-	        	this.mY = Graphics.pageToCanvasY(event.pageY);
-	        } else {
-	        	this.mX = this._x;
-	        	this.mY = this._y;
-	        }
-	    };
-		//END TouchInput
-	//------------------------------------------------------------------------------
-
-	//Input
-	//------------------------------------------------------------------------------
-		var pkd_Input_onKeyDown_9323 = Input._onKeyDown;
-		Input._onKeyDown = function(event) {
-			//console.log(event.keyCode + ' down');
-			//TODO Temp solution
-			if(event.keyCode == 87) {
-				this._currentState['w'] = true;
-				return;
-			}
-			//TODO Temp solution
-			if(event.keyCode == 81) {
-				this._currentState['q'] = true;
-				return;
-			}
-			var buttonName = this.keyMapper[event.keyCode];
-			if(buttonName)
-				pkd_Input_onKeyDown_9323.call(this, event);
-			else {
-				var bn = this.KeyMapperPKD[event.keyCode];
-				if(bn) {
-					this._currentState[bn] = true;
-				}
-			}
-		}
-
-		var pkd_Input_onKeyUp_9090 = Input._onKeyUp;
-		Input._onKeyUp = function(event) {
-			//console.log(event.keyCode + ' up');
-			//TODO Temp solution
-			if(event.keyCode == 87) {
-				this._currentState['w'] = false;
-				return;
-			}
-			//TODO Temp solution
-			if(event.keyCode == 81) {
-				this._currentState['q'] = false;
-				return;
-			}
-			var buttonName = this.keyMapper[event.keyCode];
-			if(buttonName)
-				pkd_Input_onKeyUp_9090.call(this, event);
-			else {
-			    var bn = this.KeyMapperPKD[event.keyCode];
-			    if (bn) {
-			        this._currentState[bn] = false;
-			    }
-			}
-		};
-
-		Input._isGamepad = undefined; //Don't use this
-		Input.isGamepad = function()
-		{
-			if(this._isGamepad !== undefined) { return this._isGamepad; }
-
-			this._isGamepad = false;
-			if(navigator.getGamepads) {
-				 var gamepads = navigator.getGamepads();
-				 if(gamepads) {
-				 	for(var i = 0; i<gamepads.length; i++) {
-				 		if(gamepads[i] !== undefined) {
-				 			this._isGamepad = true;
-				 			break;
-				 		}
-				 	}
-				 }
-			}
-			return this._isGamepad;
-		}
-
-		Input.IsCancel = function() {
-			if(Input.isGamepad()) {
-				return Input.isTriggered('pageup'); //GP LB
-			} else {
-				return (Input.isTriggered('cancel') || TouchInput.isCancelled());
-			}
-		}
-
-		//Settings
-	    Input.KeyMapperPKD = {};
-	    Input.KeyMapperPKD[9] = 'tab';
-	    Input.KeyMapperPKD[32] = 'space';
-	    for(var i = 48; i<127; i++) {
-	        Input.KeyMapperPKD[i] = String.fromCharCode(i).toLowerCase();
-	    }
-		//END Input
-	//------------------------------------------------------------------------------
-
-	//ImageManager
-	//------------------------------------------------------------------------------
-		ImageManager.ICON_PATH = 'img/icons/';
-		ImageManager._iconCache = {};
-
-		ImageManager.loadIcon = function(path, filename) {
-		 		return this.loadBitmap(path, filename, 0, false);
-		}
-
-		//path - (string) папка где хранится иконка (напрмер 'img/icons/')
-		//iconSymbol - (string/int) символ (либо имя файла (строка), либо номер в IconSet (цифра))
-		//size - (int) размер в пикселях (стандартные 24 (ACE) и 32 (MV))
-		//forceCopy - (bool) отдельная копия, даже если такая иконка уже была загружена ранее в буфер _iconCache
-		//	RETURN (Bitmap) Возвращяет Bitmap (если forceCopy == false, то ссылку на Bitmap из буфера _iconCache)
-		ImageManager.getIcon = function(path, iconSymbol, size, forceCopy) {
-			if(iconSymbol == null)
-				iconSymbol = 'null';
-			var key = iconSymbol + ':' + size;
-			if(!this._iconCache[key])
-				{
-				if(typeof iconSymbol == 'string')
-				{
-					var bitmap = this.loadIcon(path, 'icon_' + iconSymbol);
-					var icon_bitmap = new Bitmap(size, size);
-					bitmap.addLoadListener(function() {
-						icon_bitmap.blt(bitmap, 0,0,bitmap.width, bitmap.height,0,0,size,size);
-					});
-					this._iconCache[key] = icon_bitmap;
-				}
-				else
-				{
-					var bitmap = ImageManager.loadSystem('IconSet');
-				    var pw = Window_Base._iconWidth;
-				    var ph = Window_Base._iconHeight;
-				    var sx = iconSymbol % 16 * pw;
-				    var sy = Math.floor(iconSymbol / 16) * ph;
-				    var icon_bitmap = new Bitmap(size, size);
-				    icon_bitmap.addLoadListener(function() {
-				    	icon_bitmap.blt(bitmap, sx, sy, pw, ph, 0, 0, size, size);
-				    });
-				    if(forceCopy) //Force new bitmap
-				    	return icon_bitmap;
-				    this._iconCache[key] = icon_bitmap;
-				}
-			}
-			return this._iconCache[key];
-		}
-
-		ImageManager.getIcon24 = function(iconSymbol) {
-			return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, 24, false);
-		}
-
-		ImageManager.getIcon32 = function(iconSymbol) {
-			return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, 32, false);
-		}
-		//END ImageManager
-	//------------------------------------------------------------------------------
-
-	//==============================================================================
-	//Новые классы
-	//==============================================================================
-
-	//SDK
-	//------------------------------------------------------------------------------
-		function SDK() {
-			throw new Error('This is a static class, you baka...');
-		}
-
-		SDK.times = function(n, method) {
-	 		for(var i = 0; i<n; i++) {
-	 			method(i);
-	 		}
-	 	}
-
-	 	SDK._isRu = null; //Don't use this
-	 	SDK.isRU = function()
-	 	{
-	 		if(this._isRu == null)
-	 		{
-	 			this._isRu = 0;
-	 			var language = window.navigator.userLanguage || window.navigator.language;
-				if(language){
-					if(language == 'ru')
-						this._isRu = 1;
-				}
-	 		}
-	 		return this._isRu;
-	 	}
-
-	 	SDK.check = function(value, base)
-	 	{
-	 		if(base === undefined)
-	 			base = true;
-
-	 		if(value === undefined)
-	 			return base;
-	 		else
-	 			return value;
-	 	}
-
-	 	SDK.rand = function(min, max)
-	 	{
-	 		return Math.round(Math.random() * (max - min)) + min;
-	 	}
-
-	 	SDK.smartRand = function(n,s,r) { //1.2
-		    n = SDK.check(n,1);
-		    s = SDK.check(s,0);
-		    r = SDK.check(r,true);
-		    if(r)
-		     return Math.round((Math.random() * n) - s);
-		    else
-		     return (Math.random() * n) - s;
-		}
-
-	 	SDK.drawIcon = function(x, y, iconSymbol, bitmap, size)
-	 	{
-	 		size = SDK.check(size, 24);
-	 		var icon = ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, size);
-	 		icon.addLoadListener(function(){
-	 			bitmap.blt(icon, 0, 0, size, size, x, y);
-	 		});
-	 	}
-
-	 	SDK.checkSwitch = function(value) {
-	 		if(value == 'A' || value == 'B' || value == 'C' || value == 'D') {
-	 			return true;
-	 		} else
-	 			return false;
-	 	}
-
-	 	SDK.toCX = function(width, sourceWidth)
-	 	{
-	 		sourceWidth = SDK.check(sourceWidth, Graphics.width);
-	 		return ((sourceWidth / 2) - (width / 2));
-	 	}
-
-	 	SDK.getSpriteRect = function(sprite) {
-	        var x = SDK.toGlobalCoord(sprite, 'x');
-	        var y = SDK.toGlobalCoord(sprite, 'y');
-	        return new Rectangle(x,y,sprite.width, sprite.height);
-	    }
-
-	 	SDK.toGlobalCoord = function(layer, coordSymbol) {
-			var t = layer[coordSymbol];
-			var node = layer;
-			while(node) {
-				t -= node[coordSymbol];
-				node = node.parent;
-			}
-			return (t * (-1)) + layer[coordSymbol];
-		}
-
-	 	SDK._pkd_time = null;
-		SDK.setTime = function()
-		{
-			this._pkd_time = new Date();
-		}
-
-		SDK.stampTime = function()
-		{
-			var end = new Date();
-			var time = 'Time ' + (end.getTime()-this._pkd_time.getTime()) + ' мс';
-			console.log(time);
-			return time;
-		}
-
-		SDK.isPC = function() {
-			if (Utils.isMobileDevice()) return false;
-			if (Utils.isMobileSafari()) return false;
-			if (Utils.isAndroidChrome()) return false;
-			return true;
-		}
-
-		SDK.isInt = function(n) {
-			return Number(n) === n && n % 1 === 0;
-		}
-
-		SDK.isFloat = function(n) {
-			return n === Number(n) && n % 1 !== 0;
-		}
-
-		//Процент P от числа N
-		SDK.percent = function(n, p) {
-			return Math.round((n/100) * p);
-		}
-
-	   /**
-	   * Корректировка округления десятичных дробей.
-	   * (https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/floor)
-	   *
-	   * @param {String}  type  Тип корректировки.
-	   * @param {Number}  value Число.
-	   * @param {Integer} exp   Показатель степени (десятичный логарифм основания корректировки).
-	   * @returns {Number} Скорректированное значение.
-	   */
-		SDK.decimalAdjust = function(type, value, exp) {
-		    // Если степень не определена, либо равна нулю...
-		    if (typeof exp === 'undefined' || +exp === 0) {
-		      return Math[type](value);
-		    }
-		    value = +value;
-		    exp = +exp;
-		    // Если значение не является числом, либо степень не является целым числом...
-		    if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
-		      return NaN;
-		    }
-		    // Сдвиг разрядов
-		    value = value.toString().split('e');
-		    value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
-		    // Обратный сдвиг
-		    value = value.toString().split('e');
-		    return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
-		}
-
-
-		//File work
-		SDK._fs = null;
-		SDK._path = null;
-		SDK._lastPath = null;
-		SDK._filePrepare = function() {
-			if(SDK._fs == null) {
-				SDK._fs = require('fs');
-			}
-			if(SDK._path == null) {
-				SDK._path = require('path');
-			}
-		}
-
-		SDK.isFile = function(filename) { //Существует ли файл?
-			SDK._filePrepare();
-			return SDK._fs.existsSync(SDK.filePath(filename));
-		}
-
-		SDK.readFile = function(filename) { //Прочитать файл
-			if(SDK.isFile(filename)) {
-				return JSON.parse(LZString.decompressFromBase64(SDK._fs.readFileSync(SDK._lastPath, { encoding: 'utf8' })));
-			} else {
-				console.log("SDK file " + filename + " not found!");
-				return null;
-			}
-		}
-
-		SDK.writeFile = function(filename, data) { //Сохранить в файл
-			SDK._filePrepare();
-			var t = LZString.compressToBase64(JsonEx.stringify(data));
-			SDK._fs.writeFileSync(SDK.filePath(filename), t);
-		}
-
-		SDK.filePath = function(filename) { //Создать путь path к файлу
-			SDK._filePrepare();
-			var base = SDK._path.dirname(process.mainModule.filename);
-			var dir = SDK._path.join(base, 'data/');
-			var filePath = dir + filename;
-			SDK._lastPath = filePath;
-			return filePath;
-		}
-
-		SDK.loadDataFileWeb = function(filename, onLoad, onErr) {
-			var xhr = new XMLHttpRequest();
-		    var url = 'data/' + filename;
-		    xhr.open('GET', url);
-		    xhr.overrideMimeType('application/json');
-		    xhr.onload = function() {
-		        if (xhr.status < 400) {
-		            onLoad(JSON.parse(LZString.decompressFromBase64(xhr.responseText)));
-		        }
-		    };
-		    xhr.onerror = function() {
-		        if(onErr)
-		        	onErr();
-		    };
-		    xhr.send();
-		}
-
-		SDK.readFileWeb = function(filename) {
-			var data = localStorage.getItem(filename);
-			var jData = {};
-			try {
-				jData = JSON.parse(LZString.decompressFromBase64(data));
-			} catch(ex) {
-				console.log(ex);
-				jData = {};
-			}
-			return jData;
-		}
-
-		SDK.writeFileWeb = function(filename, data) {
-			localStorage.setItem(filename, LZString.compressToBase64(JsonEx.stringify(data)));
-		}
-
-		//Определить константу у Объекта
-		SDK.setConstant = function(object, name, value) {
-			object[name] = value;
-			if(typeof(object[name]) == "object")
-				Object.freeze(object[name]); //freeze - замораживает все поля объекта (но не ссылку на объект)
-			Object.defineProperty(object, name, {writable: false}); //ссылка на объект теперь тоже заморожена
-		}
-		//END SDK
-	//------------------------------------------------------------------------------
-
-	//Color
-	//------------------------------------------------------------------------------
-		class Color {
-	 		constructor(r, g, b, a) {
-	 			if(r === undefined) r = 255;
-	 			if(g === undefined) g = 255;
-	 			if(b === undefined) b = 255;
-	 			if(a === undefined) a = 255;
-	 			this._color = [r,g,b,a];
-	 			this._css = "rgba("+Math.round(r)+","+Math.round(g)+","+Math.round(b)+","+(a/255)+")";
-	 		}
-
-	 		getLightestColor(lightLevel) //Получить цвет на оттенок lightLevel светлее из текущего (новый Color объект)
-	 		{
-	 			var bf = 0.3 * this.R + 0.59 * this.G + 0.11 * this.B;
-	 			var p = 0;
-	 			var newColor = [0,0,0,0];
-	 			if ((bf - lightLevel) >= 0) {
-	 				if (bf >= 0)
-						p = Math.abs(bf - lightLevel)/lightLevel;
-					newColor = this._color.map(function(c){ return (c - p * c);  });
-	 			}
-	 			else
-	 			{
-	 				if(bf >= 0)
-	 					p = (lightLevel - bf)/(255 - bf);
-	 				newColor = this._color.map(function(c){ return [(255 - c)*p+c,255].min();  });
-	 			}
-
-	 			return new Color(newColor[0],newColor[1],newColor[2],newColor[3]);
-	 		}
-
-	 		clone() { //Возвращяет копию цвета (новый Color объект)
-	 			return reAlpha(this.A);
-	 		}
-
-	 		reAlpha(a) { //Изменить значение Aplha (новый Color объект)
-	 			return new Color(this.R, this.G, this.B, a);
-	 		}
-
-	 		hex() {
-	 			var r = Math.floor(this.R).toString(16).padZero(2);
-		        var g = Math.floor(this.G).toString(16).padZero(2);
-		        var b = Math.floor(this.B).toString(16).padZero(2);
-		        return '#' + r + g + b;
-	 		}
-
-	 		//Добавить статический цвет (его нельзя изменить)
-	 		static AssignStaticColor(name, color) {
-	 			SDK.setConstant(Color, name, color);
-	 		}
-
-	 		//Создать Color из HEX строки. exmpl. '#FFFFFF'
-	 		static FromHex(hexString) {
-	 			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hexString);
-			    var color = result ? {
-			        r: parseInt(result[1], 16),
-			        g: parseInt(result[2], 16),
-			        b: parseInt(result[3], 16)
-			    } : null;
-			    if(color) {
-			    	return new Color(color.r,color.g,color.b, 255);
-			    }
-			    return Color.NONE; //NULL Color
-	 		}
-
-	 		static RAND() {
-	 			return Color.FromHex(Color._makeRandomHexColor());
-	 		}
-
-	 		static _makeRandomHexColor() {
-	 			var colR = Color._makeRandomHexCode();
-				var colG = Color._makeRandomHexCode();
-				var colB = Color._makeRandomHexCode();
-
-				return "#" + colR + colG + colB;
-	 		}
-
-	 		static _makeRandomHexCode() {
-	 			var randVal = Math.floor( Math.random() * 10 ) + 4;
-				switch( randVal ) {
-					case 0: return "00";
-					case 1: return "11";
-					case 2: return "22";
-					case 3: return "33";
-					case 4: return "44";
-					case 5: return "55";
-					case 6: return "66";
-					case 7: return "77";
-					case 8: return "88";
-					case 9: return "99";
-					case 10: return "AA";
-					case 11: return "BB";
-					case 12: return "CC";
-					case 13: return "DD";
-					case 14: return "EE";
-					case 15: return "FF";
-				}
-	 		}
-	 	}
-
-	 	Object.defineProperties(Color.prototype, {
-	 		R: {get: function() {return this._color[0]; }, configurable: true },
-	 		G: {get: function() {return this._color[1]; }, configurable: true },
-	 		B: {get: function() {return this._color[2]; }, configurable: true },
-	 		A: {get: function() {return this._color[3]; }, configurable: true },
-	 		ARR: {get: function() {return this._color; }, configurable: true },
-	 		CSS: {get: function() {return this._css; }, configurable: true }
-	 	});
-
-	 	//Создание стандартной палитры
-		Color.AssignStaticColor('NONE', new Color(0,0,0,0));
-		Color.AssignStaticColor('BLACK', new Color(0,0,0,255));
-		Color.AssignStaticColor('WHITE', new Color(255,255,255,255));
-		Color.AssignStaticColor('RED', new Color(255,0,0,255));
-		Color.AssignStaticColor('GREEN', new Color(0,255,0,255));
-		Color.AssignStaticColor('BLUE', new Color(0,0,255,255));
-
-		Color.AssignStaticColor('AQUA', new Color(128,255,255,255));
-		Color.AssignStaticColor('MAGENTA', new Color(128,0,128,255));
-		Color.AssignStaticColor('YELLOW', new Color(255,255,0,255));
-		Color.AssignStaticColor('ORANGE', new Color(255,128,0,255));
-		//END Color
-	//------------------------------------------------------------------------------
-
-	//DevLog
-	//------------------------------------------------------------------------------
-		class DevLog {
-	 		constructor(prefix) {
-	 			this._prefix = prefix;
-	 			this._extended = false;
-	 			this._canUseColor = this._canUseColors();
-	 			if (typeof DEV === 'undefined') {
-	 				this._show = false;
-	 			} else
-	 				this._show = true;
-	 		}
-
-	 		setColors(color, backColor) {
-	 			this._extend();
-	 			color = SDK.check(color, '#000000');
-	 			backColor = SDK.check(backColor, '#FFFFFF');
-	 			this._args[1] = 'color: ' +color + '; background: ' + backColor +';';
-	 		}
-	 		p(text) {
-	 			if(this._show) {
-	 				if(text === undefined) {
-	 					console.log("");
-	 				} else {
-	 					if(this._extended && this._canUseColor) {
-	 						this._args[0] = '%c' + this._prefix + ": " + text;
-	 						window.console.log.apply(console, this._args);
-	 					} else
-	 						console.log(this._prefix + ": " + text);
-	 				}
-	 			}
-	 		}
-
-	 		on() {
-	 			this._show = true;
-	 		}
-
-	 		off() {
-	 			this._show = false;
-	 		}
-
-	 		_extend() {
-	 			this._extended = true;
-	 			this._args = this._args || [null,'color: #000000; background: #FFFFFF;'];
-	 		}
-
-	 		_canUseColors() {
-	 			return (navigator.userAgent.toLowerCase().indexOf('chrome') > -1);
-	 		}
-	 	}
-		//END DevLog
-	//------------------------------------------------------------------------------
-
-	//==============================================================================
-	//Общие настройки
-	//==============================================================================
-	//Настройка версий
-	$.Versions = {};
-
-	//Расширение
-	$.extendMe = function(obj) {
-		obj.Color = Color;
-		obj.SDK = SDK;
-		obj.DevLog = DevLog;
-	}
-
-	$.extendMe($);
-
-	})(PLATFORM);
-//------------------------------------------------------------------------------
-
-(function() {
-
-	var x = new PLATFORM.DevLog("PLATFORM");
-	var Color = PLATFORM.Color;
-	x.setColors(Color.RED.hex(), Color.BLACK.hex());
-	x.p("Load localy " + PLATFORM.Version);
-
-})();
 
 }
 
 var SDK = PLATFORM.SDK;
 var Color = PLATFORM.Color;
-
-//==========================================================================================================================================================
-// ABS Library
-//==========================================================================================================================================================
-(function() {
-	AlphaABS.LIB = {}; //Подключаем библиотеку
-	AlphaABS.LIB.EXT = {}; //Временные расширения для области видимости
-	//Object.freeze(AlphaABS.LIB);
-	//Object.defineProperty(AlphaABS, 'LIB', {writable: false});
-})();
 
 //==========================================================================================================================================================
 // Alpha ABS Main
@@ -1151,350 +1166,359 @@ AlphaABS.SYSTEM = {};
 var LOGW = new PLATFORM.DevLog("Alpha ABS");
 
 (function($) {
-	var SDK = PLATFORM.SDK;
-	var Color = PLATFORM.Color;
+  var SDK = PLATFORM.SDK;
+  var Color = PLATFORM.Color;
 
-	$.LOGW = LOGW;
-	$.LOGW.on();
-	$.LOGW.setColors(Color.ORANGE.hex(), Color.BLACK.getLightestColor(100).hex());
+  $.LOGW = LOGW;
+  $.LOGW.on();
+  $.LOGW.setColors(Color.ORANGE.hex(), Color.BLACK.getLightestColor(100).hex());
 
-	//Перейти на этот параметр заместо BattleManagerABS.TURN
-	SDK.setConstant($, 'FRAMES_PER_SECOND', 60); //Frame rate (don't chagne)
+  //Перейти на этот параметр заместо BattleManagerABS.TURN
+  SDK.setConstant($, 'FRAMES_PER_SECOND', 60); //Frame rate (don't chagne)
 
-	$.STRING_ALERT_NEEDTARGET   	= ['Need target','Нужна цель'];
-	$.STRING_ALERT_TOFAR        	= ['Target too far','Цель слишком далеко'];
-	$.STRING_ALERT_INTERRUPT        = ['Action interrupt','Действие прервано'];
-	$.STRING_ALERT_INBATTLE         = ['Battle start','Бой начинается']; //@Deprecated
-	$.STRING_ALERT_OUTBATTLE        = ['Battle end','Выход из боя']; //@Deprecated
-	$.STRING_ALERT_NOAUTOA			= ["Can't use attack now", 'Нельзя атакавать сейчас'];
-	$.STRING_ALERT_NOUSE			= ["Can't use action now",'Нельзя использовать сейчас'];
-	$.STRING_ALERT_NOCHARGES		= ["Can't use, no charges",'Нельзя использовать, нет зарядов'];
-	$.STRING_ALERT_RECHARGE 		= ['Action is not ready','Ещё не готово'];
-	$.STRING_ALERT_CASTMOVE			= ["Can't use while moving", 'Нельзя выполнить в движении'];
-	$.STRING_ALERT_NOINBATTLE		= ["Need get out of the battle", 'Необходимо выйти из боя'];
-	$.STRING_ALERT_NEWLEVEL		    = ["Level up!", 'Новый уровень!'];
+  $.STRING_ALERT_NEEDTARGET     = ['Need target','Нужна цель'];
+  $.STRING_ALERT_TOFAR          = ['Target too far','Цель слишком далеко'];
+  $.STRING_ALERT_INTERRUPT        = ['Action interrupt','Действие прервано'];
+  $.STRING_ALERT_INBATTLE         = ['Battle start','Бой начинается']; //@Deprecated
+  $.STRING_ALERT_OUTBATTLE        = ['Battle end','Выход из боя']; //@Deprecated
+  $.STRING_ALERT_NOAUTOA      = ["Can't use attack now", 'Нельзя атакавать сейчас'];
+  $.STRING_ALERT_NOUSE      = ["Can't use action now",'Нельзя использовать сейчас'];
+  $.STRING_ALERT_NOCHARGES    = ["Can't use, no charges",'Нельзя использовать, нет зарядов'];
+  $.STRING_ALERT_RECHARGE     = ['Action is not ready','Ещё не готово'];
+  $.STRING_ALERT_CASTMOVE     = ["Can't use while moving", 'Нельзя выполнить в движении'];
+  $.STRING_ALERT_NOINBATTLE   = ["Need get out of the battle", 'Необходимо выйти из боя'];
+  $.STRING_ALERT_NEWLEVEL       = ["Level up!", 'Новый уровень!'];
 
- 	$.STRING_POPUP_EVADE   = ['Evade', 'Evade'];
- 	$.STRING_POPUP_MISS    = ['Miss', 'Мимо'];
- 	$.STRING_POPUP_FAIL    = ['Fail', 'Fail'];
- 	$.STRING_POPUP_ABSORB  = ['Absorb', 'Поглощено'];
- 	$.STRING_POPUP_IMMUNE  = ['Immune', 'Иммунитет'];
- 	$.STRING_POPUP_WEAK    = ['Weak', 'Уязвимость'];
- 	$.STRING_POPUP_SKILL   = ['Ready!', 'Готов!'];
+  $.STRING_POPUP_EVADE   = ['Evade', 'Evade'];
+  $.STRING_POPUP_MISS    = ['Miss', 'Мимо'];
+  $.STRING_POPUP_FAIL    = ['Fail', 'Fail'];
+  $.STRING_POPUP_ABSORB  = ['Absorb', 'Поглощено'];
+  $.STRING_POPUP_IMMUNE  = ['Immune', 'Иммунитет'];
+  $.STRING_POPUP_WEAK    = ['Weak', 'Уязвимость'];
+  $.STRING_POPUP_SKILL   = ['Ready!', 'Готов!'];
 
- 	$.STRING_MENU_UIVIS   = ['Show UI', 'Показывать UI'];
- 	$.STRING_MENU_UIPOS   = ['Edit UI', 'Изменить UI'];
- 	$.STRING_MENU_KEYBIND = ['Controls', 'Управление'];
+  $.STRING_MENU_UIVIS   = ['Show UI', 'Показывать UI'];
+  $.STRING_MENU_UIPOS   = ['Edit UI', 'Изменить UI'];
+  $.STRING_MENU_KEYBIND = ['Controls', 'Управление'];
 
- 	$.STRING_MENU_KB_KEY        = ['Press any key', 'Нажмите кнопку'];
- 	$.STRING_MENU_KB_TAB        = ['Target select', 'Выбор цели'];
- 	$.STRING_MENU_KB_SKILLS     = ['Skills panel', 'Панель навыков'];
- 	$.STRING_MENU_KB_CONTRL     = ['Сontrol panel', 'Панель управления'];
- 	$.STRING_MENU_KB_WEAPON     = ['Weapon circle', 'Оружие'];
- 	$.STRING_MENU_KB_DEF    	= ['Reset to default', 'Сбросить'];
- 	$.STRING_MENU_KB_BACK     	= ['Back', 'Назад'];
- 	$.STRING_MENU_KB_SLOT     	= ['Item', 'Слот'];
- 	$.STRING_MENU_KB_ATTACK     = ['Attack', 'Атака'];
- 	$.STRING_MENU_KB_FOLLOW    	= ['Follow', 'Следовать'];
- 	$.STRING_MENU_KB_JUMP     	= ['Jump', 'Прыжок'];
- 	$.STRING_MENU_KB_ROTATE     = ['Rotate', 'Поворот'];
- 	$.STRING_MENU_KB_LEFT     	= ['Left', 'Левый'];
- 	$.STRING_MENU_KB_RIGHT     	= ['Right', 'Правый'];
- 	$.STRING_MENU_KB_BOTTOM     = ['Bottom', 'Нижний'];
- 	$.STRING_MENU_KB_TOP     	= ['Top', 'Верхний'];
- 	$.STRING_MENU_KB_WEAP     	= ['Weapons', 'Оружие'];
+  $.STRING_MENU_KB_KEY        = ['Press any key', 'Нажмите кнопку'];
+  $.STRING_MENU_KB_TAB        = ['Target select', 'Выбор цели'];
+  $.STRING_MENU_KB_SKILLS     = ['Skills panel', 'Панель навыков'];
+  $.STRING_MENU_KB_CONTRL     = ['Сontrol panel', 'Панель управления'];
+  $.STRING_MENU_KB_WEAPON     = ['Weapon circle', 'Оружие'];
+  $.STRING_MENU_KB_DEF      = ['Reset to default', 'Сбросить'];
+  $.STRING_MENU_KB_BACK       = ['Back', 'Назад'];
+  $.STRING_MENU_KB_SLOT       = ['Item', 'Слот'];
+  $.STRING_MENU_KB_ATTACK     = ['Attack', 'Атака'];
+  $.STRING_MENU_KB_FOLLOW     = ['Follow', 'Следовать'];
+  $.STRING_MENU_KB_JUMP       = ['Jump', 'Прыжок'];
+  $.STRING_MENU_KB_ROTATE     = ['Rotate', 'Поворот'];
+  $.STRING_MENU_KB_LEFT       = ['Left', 'Левый'];
+  $.STRING_MENU_KB_RIGHT      = ['Right', 'Правый'];
+  $.STRING_MENU_KB_BOTTOM     = ['Bottom', 'Нижний'];
+  $.STRING_MENU_KB_TOP      = ['Top', 'Верхний'];
+  $.STRING_MENU_KB_WEAP       = ['Weapons', 'Оружие'];
 
- 	$.STRING_SKILL_INFO_RADIUS		= ['Radius: ','Радиус: '];
- 	$.STRING_SKILL_INFO_RANGE		= ['Range: ','Дальность: '];
- 	$.STRING_SKILL_INFO_RANGE2		= ['Range: ','Дал-сть: '];
- 	$.STRING_SKILL_INFO_CAST		= ['Cast: ','Подготовка: '];
- 	$.STRING_SKILL_INFO_COOLDOWN	= ['Cooldown: ','Перезарядка: '];
- 	$.STRING_SKILL_INFO_DESCRIPTION	= ['Description','Описание'];
- 	$.STRING_SKILL_INFO_HAS			= ['Has: ','Есть: '];
- 	$.STRING_SKILL_INFO_USE			= ['Use: ','Исп.: '];
- 	$.STRING_SKILL_INFO_CHARGES		= ['Charges: ','Заряды: '];
- 	$.STRING_SKILL_INFO_RELOADCHR	= ['Reload charges: ','Полная перез-ка: '];
-	$.STRING_SKILL_INFO_ONTARGET 	= ['Need target', 'Нужна цель'];
-	$.STRING_SKILL_INFO_ONUSER 		= ['On user', 'На себя'];
-	$.STRING_SKILL_INFO_AREA 		= ['Area select', 'Выбор области'];
-	$.STRING_SKILL_INFO_CIRCLE 		= ['Around user', 'Вокруг себя'];
-	$.STRING_SKILL_INFO_ZONE	 	= ['Zone', 'Зона'];
-	$.STRING_SKILL_INFO_SEC	 		= [' sec.', ' сек.'];
-	$.STRING_SKILL_INFO_TARGET	 	= ['<target>', '<цель>'];
-	$.STRING_SKILL_INFO_DAMAGE	 	= ['Damage ', 'Урон '];
-	$.STRING_SKILL_INFO_RECOVER	 	= ['Recover ', 'Восст. '];
-	$.STRING_SKILL_INFO_DRAIN	 	= ['Drain ', 'Поглщ. '];
-	$.STRING_SKILL_INFO_MELEE	 	= ['Melee ', 'Ближ. бой '];
-
-
- 	$.STRING_WARNING_COMMON       =
- 	["This command can't be executed on ABS map",'Нельзя выполнить эту команду события на ABS карте'];
- 	$.STRING_WARNING_COMMON2      =
- 	["This command can't be executed while fight",'Нельзя выполнить эту команду во время боя'];
- 	$.STRING_WARNING_COMMON3      =
- 	["This command not suported with ABS",'Эта команда не поддерживается с ABS'];
- 	$.STRING_WARNING_COMMAND129   =
- 	["You can't remove party leader from party on ABS map",'Нельзя убрать лидера партии из группы на ABS карте'];
- 	$.STRING_WARNING_COMMAND321   =
- 	["You can't change actor class on ABS map",'Нельзя поменять класс персонажа на ABS карте'];
-
- 	$.STRING_WARNING_SKILLWC =
- 	["Weapon can't support casting",'castTime не поддерживается для оружия'];
- 	$.STRING_WARNING_SKILLOC =
- 	["Support only 'Battle Screen' items",'Не поддерживается для ABS'];
- 	$.STRING_WARNING_SKILLWVR =
- 	["Weapon can't support Vector with radius",'Vector с radius не поддерживается для оружия'];
+  $.STRING_SKILL_INFO_RADIUS    = ['Radius: ','Радиус: '];
+  $.STRING_SKILL_INFO_RANGE   = ['Range: ','Дальность: '];
+  $.STRING_SKILL_INFO_RANGE2    = ['Range: ','Дал-сть: '];
+  $.STRING_SKILL_INFO_CAST    = ['Cast: ','Подготовка: '];
+  $.STRING_SKILL_INFO_COOLDOWN  = ['Cooldown: ','Перезарядка: '];
+  $.STRING_SKILL_INFO_DESCRIPTION = ['Description','Описание'];
+  $.STRING_SKILL_INFO_HAS     = ['Has: ','Есть: '];
+  $.STRING_SKILL_INFO_USE     = ['Use: ','Исп.: '];
+  $.STRING_SKILL_INFO_CHARGES   = ['Charges: ','Заряды: '];
+  $.STRING_SKILL_INFO_RELOADCHR = ['Reload charges: ','Полная перез-ка: '];
+  $.STRING_SKILL_INFO_ONTARGET  = ['Need target', 'Нужна цель'];
+  $.STRING_SKILL_INFO_ONUSER    = ['On user', 'На себя'];
+  $.STRING_SKILL_INFO_AREA    = ['Area select', 'Выбор области'];
+  $.STRING_SKILL_INFO_CIRCLE    = ['Around user', 'Вокруг себя'];
+  $.STRING_SKILL_INFO_ZONE    = ['Zone', 'Зона'];
+  $.STRING_SKILL_INFO_SEC     = [' sec.', ' сек.'];
+  $.STRING_SKILL_INFO_TARGET    = ['<target>', '<цель>'];
+  $.STRING_SKILL_INFO_DAMAGE    = ['Damage ', 'Урон '];
+  $.STRING_SKILL_INFO_RECOVER   = ['Recover ', 'Восст. '];
+  $.STRING_SKILL_INFO_DRAIN   = ['Drain ', 'Поглщ. '];
+  $.STRING_SKILL_INFO_MELEE   = ['Melee ', 'Ближ. бой '];
 
 
- 	$.STRING_ERROR_VERSION =
- 	["ABS: Support only RPG Maker MV 1.3.1 and above",'ABS: Обновите версию RPG Maker MV до 1.3.1 или выше'];
- 	$.STRING_ERROR_SKILLNAN =
- 	["You need config you project for ABS first!",'Необходимо настроить проект под ABS!'];
- 	$.STRING_ERROR_OLDDATA =
- 	["Your project use old RPG Maker MV core (js/), update files to 1.3.1 or above","Необходимо обновить основные файлы проекта (папка js/) до версии 1.3.1 или выше"];
+  $.STRING_WARNING_COMMON       =
+  ["This command can't be executed on ABS map",'Нельзя выполнить эту команду события на ABS карте'];
+  $.STRING_WARNING_COMMON2      =
+  ["This command can't be executed while fight",'Нельзя выполнить эту команду во время боя'];
+  $.STRING_WARNING_COMMON3      =
+  ["This command not suported with ABS",'Эта команда не поддерживается с ABS'];
+  $.STRING_WARNING_COMMAND129   =
+  ["You can't remove party leader from party on ABS map",'Нельзя убрать лидера партии из группы на ABS карте'];
+  $.STRING_WARNING_COMMAND321   =
+  ["You can't change actor class on ABS map",'Нельзя поменять класс персонажа на ABS карте'];
 
- 	$.EXTENSIONS = {};
+  $.STRING_WARNING_SKILLWC =
+  ["Weapon can't support casting",'castTime не поддерживается для оружия'];
+  $.STRING_WARNING_SKILLOC =
+  ["Support only 'Battle Screen' items",'Не поддерживается для ABS'];
+  $.STRING_WARNING_SKILLWVR =
+  ["Weapon can't support Vector with radius",'Vector с radius не поддерживается для оружия'];
 
- 	var PARAMS = {};
- 	//Read Params
-	(function($) {
-		var parameters = PluginManager.parameters('Alpha_ABS');
 
-		var pDeadSwith = String(parameters['Enemy Dead Switch'] || 'B');
-		if(pDeadSwith == 'A' || pDeadSwith == 'B' || pDeadSwith == 'C' || pDeadSwith == 'D') {
-			$.DEAD_SWITCH = pDeadSwith;
-		} else {
-			LOGW.p("Enemy Dead Switch " + pDeadSwith + " this is not SelfSwitch (A,B,C,D)");
-			$.DEAD_SWITCH = 'B';
-		}
+  $.STRING_ERROR_VERSION =
+  ["ABS: Support only RPG Maker MV 1.3.1 and above",'ABS: Обновите версию RPG Maker MV до 1.3.1 или выше'];
+  $.STRING_ERROR_SKILLNAN =
+  ["You need config you project for ABS first!",'Необходимо настроить проект под ABS!'];
+  $.STRING_ERROR_OLDDATA =
+  ["Your project use old RPG Maker MV core (js/), update files to 1.3.1 or above","Необходимо обновить основные файлы проекта (папка js/) до версии 1.3.1 или выше"];
 
-		var pDeadMapId = parameters['After Dead Map'] || 0;
-		if(pDeadMapId > 0) {
-			$.DEAD_MAPID = pDeadMapId;
-		} else
-			$.DEAD_MAPID = 0;
+  $.EXTENSIONS = {};
 
-		var pCastAnimId = parameters['Cast Animation'] || 0;
-		if(pCastAnimId > 0) {
-				$.CAST_ANIMATION_ID = pCastAnimId;
-		} else
-			$.CAST_ANIMATION_ID = 0; //Standart ( 0 - if ABS standart)
+  var PARAMS = {};
+  //Read Params
+  (function($) {
+    var parameters = PluginManager.parameters('Alpha_ABS');
 
-		var pLevelUpAnimId = parameters['Level Up Animation'] || 49;
-		if(pLevelUpAnimId > 0) {
-				$.LEVELUP_ANIMATION_ID = pLevelUpAnimId;
-		} else
-			$.LEVELUP_ANIMATION_ID = 0; //None
+    var pDeadSwith = String(parameters['Enemy Dead Switch'] || 'B');
+    if(pDeadSwith == 'A' || pDeadSwith == 'B' || pDeadSwith == 'C' || pDeadSwith == 'D') {
+      $.DEAD_SWITCH = pDeadSwith;
+    } else {
+      LOGW.p("Enemy Dead Switch " + pDeadSwith + " this is not SelfSwitch (A,B,C,D)");
+      $.DEAD_SWITCH = 'B';
+    }
 
-		var pReviveAnimId = parameters['Revive Animation'] || 45;
-		if(pReviveAnimId > 0) {
-				$.REVIVE_ANIMATION_ID = pReviveAnimId;
-		} else
-			$.REVIVE_ANIMATION_ID = 0; //None
+    var pDeadMapId = parameters['After Dead Map'] || 0;
+    if(pDeadMapId > 0) {
+      $.DEAD_MAPID = pDeadMapId;
+    } else
+      $.DEAD_MAPID = 0;
 
-		var pCastSe = String(parameters['Use default cast SE'] || 'true');
-		if(eval(pCastSe)) {
-			$.CAST_SE = {name:'Magic3',pan:0,pitch:100,volume:90}; //null if Standart animation has own SE
-		} else {
-			$.CAST_SE = null;
-		}
+    var pCastAnimId = parameters['Cast Animation'] || 0;
+    if(pCastAnimId > 0) {
+        $.CAST_ANIMATION_ID = pCastAnimId;
+    } else
+      $.CAST_ANIMATION_ID = 0; //Standart ( 0 - if ABS standart)
 
-		var pAutoLoot = String(parameters['Auto loot enemies'] || 'false');
-		if(eval(pAutoLoot)) {
-			$.AUTO_LOOT = true;
-		} else
-			$.AUTO_LOOT = false;
+    var pLevelUpAnimId = parameters['Level Up Animation'] || 49;
+    if(pLevelUpAnimId > 0) {
+        $.LEVELUP_ANIMATION_ID = pLevelUpAnimId;
+    } else
+      $.LEVELUP_ANIMATION_ID = 0; //None
 
-		var pAllowUI = String(parameters['UI visibility control'] || 'true');
-		if(eval(pAllowUI)) {
-			$.ALLOW_UI_VIS = true;
-		} else
-			$.ALLOW_UI_VIS = false;
+    var pReviveAnimId = parameters['Revive Animation'] || 45;
+    if(pReviveAnimId > 0) {
+        $.REVIVE_ANIMATION_ID = pReviveAnimId;
+    } else
+      $.REVIVE_ANIMATION_ID = 0; //None
 
-		var pAllowUI2 = String(parameters['UI position control'] || 'true');
-		if(eval(pAllowUI2)) {
-			$.ALLOW_UI_POS = true;
-		} else
-			$.ALLOW_UI_POS = false;
+    var pCastSe = String(parameters['Use default cast SE'] || 'true');
+    if(eval(pCastSe)) {
+      $.CAST_SE = {name:'Magic3',pan:0,pitch:100,volume:90}; //null if Standart animation has own SE
+    } else {
+      $.CAST_SE = null;
+    }
 
-		var forceEnglish = String(parameters['Force English'] || 'false');
-		if(eval(forceEnglish)) {
-			SDK._isRu = 0;
-		}
+    var pAutoLoot = String(parameters['Auto loot enemies'] || 'false');
+    if(eval(pAutoLoot)) {
+      $.AUTO_LOOT = true;
+    } else
+      $.AUTO_LOOT = false;
 
-		$.GOLD_ICON = parseInt(parameters['Gold icon index']) || 314;
+    var pAllowUI = String(parameters['UI visibility control'] || 'true');
+    if(eval(pAllowUI)) {
+      $.ALLOW_UI_VIS = true;
+    } else
+      $.ALLOW_UI_VIS = false;
 
-		var pAllowKB = String(parameters['Key binding'] || 'true');
-		if(eval(pAllowKB)) {
-			$.ALLOW_KB = true;
-		} else
-			$.ALLOW_KB = false;
+    var pAllowUI2 = String(parameters['UI position control'] || 'true');
+    if(eval(pAllowUI2)) {
+      $.ALLOW_UI_POS = true;
+    } else
+      $.ALLOW_UI_POS = false;
 
-		var pAllowDashOption = String(parameters['Dash on ABS map'] || 'false');
-		if(eval(pAllowDashOption)) {
-			$.ALLOW_DASH = true;
-		} else
-			$.ALLOW_DASH = false;
+    var forceEnglish = String(parameters['Force English'] || 'false');
+    if(eval(forceEnglish)) {
+      SDK._isRu = 0;
+    }
 
-		var temp = String(parameters['Follow allowed'] || 'true');
-		$.CONTROL_PANEL_ALLOW_FOLLOW = eval(temp);
+    $.GOLD_ICON = parseInt(parameters['Gold icon index']) || 314;
 
-		temp = String(parameters['Jump allowed'] || 'true');
-		$.CONTROL_PANEL_ALLOW_JUMP = eval(temp);
+    var pAllowKB = String(parameters['Key binding'] || 'true');
+    if(eval(pAllowKB)) {
+      $.ALLOW_KB = true;
+    } else
+      $.ALLOW_KB = false;
 
-		temp = String(parameters['Rotate allowed'] || 'true');
-		$.CONTROL_PANEL_ALLOW_ROTATE = eval(temp);
+    var pAllowDashOption = String(parameters['Dash on ABS map'] || 'false');
+    if(eval(pAllowDashOption)) {
+      $.ALLOW_DASH = true;
+    } else
+      $.ALLOW_DASH = false;
 
-		temp = String(parameters['Favorite weapons allowed'] || 'true');
-		$.CONTROL_PANEL_ALLOW_FAVWEAP = eval(temp);
+    var pAllowTR = String(parameters['Allow Transfrer'] || 'false');
+    if(eval(pAllowTR)) {
+      $.ALLOW_TRANSFER = true;
+    } else
+      $.ALLOW_TRANSFER = false;
 
-		temp = String(parameters['Show XP bar'] || 'false');
-		$.ALLOW_XPBAR = eval(temp);
+    var temp = String(parameters['Follow allowed'] || 'true');
+    $.CONTROL_PANEL_ALLOW_FOLLOW = eval(temp);
 
-	})(PARAMS);
+    temp = String(parameters['Jump allowed'] || 'true');
+    $.CONTROL_PANEL_ALLOW_JUMP = eval(temp);
 
-	$.PARAMS = PARAMS;
+    temp = String(parameters['Rotate allowed'] || 'true');
+    $.CONTROL_PANEL_ALLOW_ROTATE = eval(temp);
 
-	$.SaveUI = function(values) {
-		var data = LZString.compressToBase64(JsonEx.stringify(values));
-		var fs = require('fs');
-		fs.writeFileSync(this._filePath(), data);
-	}
+    temp = String(parameters['Favorite weapons allowed'] || 'true');
+    $.CONTROL_PANEL_ALLOW_FAVWEAP = eval(temp);
 
-	$.LoadUI = function() {
-		var data = null;
-		var fs = require('fs');
-		var fp = this._filePath();
-		if(fs.existsSync(fp)) {
-			data = fs.readFileSync(fp, { encoding: 'utf8' });
-		} else {
-			this.LOGW.p("UI save file not exists");
-		}
-		if(data) {
-			$gameVariables._uiPositions = JSON.parse(LZString.decompressFromBase64(data));
-		}
-	}
+    temp = String(parameters['Show XP bar'] || 'false');
+    $.ALLOW_XPBAR = eval(temp);
+
+  })(PARAMS);
+
+  $.PARAMS = PARAMS;
+
+  $.SaveUI = function(values) {
+    var data = LZString.compressToBase64(JsonEx.stringify(values));
+    var fs = require('fs');
+    fs.writeFileSync(this._filePath(), data);
+  }
+
+  $.LoadUI = function() {
+    var data = null;
+    var fs = require('fs');
+    var fp = this._filePath();
+    if(fs.existsSync(fp)) {
+      data = fs.readFileSync(fp, { encoding: 'utf8' });
+    } else {
+      this.LOGW.p("UI save file not exists");
+    }
+    if(data) {
+      $gameVariables._uiPositions = JSON.parse(LZString.decompressFromBase64(data));
+    }
+  }
 
     $.GetDataObject = function(type, id) {
-    	var dataObj = null;
-    	type = SDK.check(type, "");
-    	id = type + '_' + id;
-    	for(var i = 0; i<$ABS_DataObjects.length; i++) {
-    		if($ABS_DataObjects[i].id == id) {
-    			dataObj = $ABS_DataObjects[i];
-    			break;
-    		}
-    	}
+      var dataObj = null;
+      type = SDK.check(type, "");
+      id = type + '_' + id;
+      for(var i = 0; i<$ABS_DataObjects.length; i++) {
+        if($ABS_DataObjects[i].id == id) {
+          dataObj = $ABS_DataObjects[i];
+          break;
+        }
+      }
 
-    	if(dataObj == null) {
-    		if($ABS_DataUser !== undefined) {
-	    		for(var i = 0; i<$ABS_DataUser.length; i++) {
-		    		if($ABS_DataUser[i].id == id) {
-		    			dataObj = $ABS_DataUser[i];
-		    			break;
-		    		}
-		    	}
-	    	}
-    	}
+      if(dataObj == null) {
+        if($ABS_DataUser !== undefined) {
+          for(var i = 0; i<$ABS_DataUser.length; i++) {
+            if($ABS_DataUser[i].id == id) {
+              dataObj = $ABS_DataUser[i];
+              break;
+            }
+          }
+        }
+      }
 
-    	return dataObj;
+      return dataObj;
     }
 
     $._filePath = function() {
-    	var path = require('path');
-		var base = path.dirname(process.mainModule.filename);
-		var dir = path.join(base, 'data/');
-		var filePath = dir + 'ABSUI.rpgsave';
-		return filePath;
+      var path = require('path');
+    var base = path.dirname(process.mainModule.filename);
+    var dir = path.join(base, 'data/');
+    var filePath = dir + 'ABSUI.rpgsave';
+    return filePath;
     }
+
+    
+
 
 //DataManager
 //------------------------------------------------------------------------------
-	var _DataManager_loadDatabase_903284 = DataManager.loadDatabase;
-	DataManager.loadDatabase  = function() {
-		_DataManager_loadDatabase_903284.call(this);
-		DataManager.loadDataFile('$ABS_DataObjects','ABSData.json');
-		if(Utils.isNwjs()) {
-			var fs = require('fs');
-			var path = require('path');
-			var base = path.dirname(process.mainModule.filename);
-			var dir = path.join(base, 'data/');
-			var filePath = dir + 'ABSDataUser.json';
-			if(fs.existsSync(filePath)) {
-				DataManager.loadDataFile('$ABS_DataUser','ABSDataUser.json');
-			} else {
-				window['$ABS_DataUser'] = {};
-			}
-		} else {
-			//Brwser
-			try {
-				DataManager.loadDataFile('$ABS_DataUser','ABSDataUser.json');
-			} catch(ex) {
-				LOGW.p("ABSDataUser.json not found, skipped");
-			}
-		}
-	}
-	//END DataManager
+  var _DataManager_loadDatabase_903284 = DataManager.loadDatabase;
+  DataManager.loadDatabase  = function() {
+    _DataManager_loadDatabase_903284.call(this);
+    DataManager.loadDataFile('$ABS_DataObjects','ABSData.json');
+    if(Utils.isNwjs()) {
+      var fs = require('fs');
+      var path = require('path');
+      var base = path.dirname(process.mainModule.filename);
+      var dir = path.join(base, 'data/');
+      var filePath = dir + 'ABSDataUser.json';
+      if(fs.existsSync(filePath)) {
+        DataManager.loadDataFile('$ABS_DataUser','ABSDataUser.json');
+      } else {
+        window['$ABS_DataUser'] = {};
+      }
+    } else {
+      //Brwser
+      try {
+        DataManager.loadDataFile('$ABS_DataUser','ABSDataUser.json');
+      } catch(ex) {
+        LOGW.p("ABSDataUser.json not found, skipped");
+      }
+    }
+  }
+  //END DataManager
 //------------------------------------------------------------------------------
 
 //SceneManager
 //------------------------------------------------------------------------------
-	var _SceneManager_catchException_ABS = SceneManager.catchException;
-	SceneManager.catchException = function(e) {
-		SceneManager._printABSInfo();
-	    _SceneManager_catchException_ABS.call(this, e);
-	};
+  var _SceneManager_catchException_ABS = SceneManager.catchException;
+  SceneManager.catchException = function(e) {
+    SceneManager._printABSInfo();
+      _SceneManager_catchException_ABS.call(this, e);
+  };
 
-	var _SceneManager_onError_ABS = SceneManager.onError;
-	SceneManager.onError = function(e) {
-		SceneManager._printABSInfo();
-		_SceneManager_onError_ABS.call(this, e);
-	}
+  var _SceneManager_onError_ABS = SceneManager.onError;
+  SceneManager.onError = function(e) {
+    SceneManager._printABSInfo();
+    _SceneManager_onError_ABS.call(this, e);
+  }
 
-	SceneManager._printABSInfo = function() {
-		console.error("Using AlphaABS [Version: " + AlphaABS.version + " ; Build: " + AlphaABS.build + " ; on MV  " + Utils.RPGMAKER_VERSION +"]");
-	}
-	//END SceneManager
+  SceneManager._printABSInfo = function() {
+    console.error("Using AlphaABS [Version: " + AlphaABS.version + " ; Build: " + AlphaABS.build + " ; on MV  " + Utils.RPGMAKER_VERSION +"]");
+  }
+  //END SceneManager
 //------------------------------------------------------------------------------
 
 //ImageManager
 //------------------------------------------------------------------------------
-	ImageManager.loadPictureABS = function(filename) {
-		return this.loadBitmap('img/ABS/', filename, 0, true);
-	}
+  ImageManager.loadPictureABS = function(filename) {
+    return this.loadBitmap('img/ABS/', filename, 0, true);
+  }
 
-	ImageManager.loadIconABS = function(iconSymbol /*, size*/) {
-		if(SDK.isInt(iconSymbol)) {
-			var size = SDK.check(size, 32);
-			return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, size)
-		} else {
-			return ImageManager.getIconABS(iconSymbol);
-		}
-	}
+  ImageManager.loadIconABS = function(iconSymbol /*, size*/) {
+    if(SDK.isInt(iconSymbol)) {
+      var size = SDK.check(size, 32);
+      return ImageManager.getIcon(ImageManager.ICON_PATH, iconSymbol, size)
+    } else {
+      return ImageManager.getIconABS(iconSymbol);
+    }
+  }
 
-	ImageManager.getIconABS = function(iconName) {
-		var icon = this.loadPictureABS('icon_' + iconName);
-		return icon;
-	}
+  ImageManager.getIconABS = function(iconName) {
+    var icon = this.loadPictureABS('icon_' + iconName);
+    return icon;
+  }
 
-	ImageManager.drawIconABS = function(x,y, iconSymbol, bitmap, size) {
-		if(SDK.isInt(iconSymbol)) {
-			size = SDK.check(size, 32);
-			SDK.drawIcon(x,y,iconSymbol,bitmap, size);
-		} else {
-			var icon = this.getIconABS(iconSymbol);
-			icon.addLoadListener(function() {
-				bitmap.blt(icon, 0, 0, icon.width, icon.height, x, y);
-			});
-		}
-	}
+  ImageManager.drawIconABS = function(x,y, iconSymbol, bitmap, size) {
+    if(SDK.isInt(iconSymbol)) {
+      size = SDK.check(size, 32);
+      SDK.drawIcon(x,y,iconSymbol,bitmap, size);
+    } else {
+      var icon = this.getIconABS(iconSymbol);
+      icon.addLoadListener(function() {
+        bitmap.blt(icon, 0, 0, icon.width, icon.height, x, y);
+      });
+    }
+  }
 
-	//END ImageManager
+  //END ImageManager
 //------------------------------------------------------------------------------
 
 //ABSKey
 //------------------------------------------------------------------------------
-	function ABSKey() {
+  function ABSKey() {
         throw new Error('This is a static class');
     }
 
@@ -1560,10 +1584,8 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
     ABSKey.onKeyPress = function(event) {
         if(!ABSKey._changeSymbol) return;
 
-        //LOG.p("Input key code: "  + event.charCode);
         if(Input.KeyMapperPKD[event.charCode] !== undefined) {
             ABSKey.symbol[ABSKey._changeSymbol] = Input.KeyMapperPKD[event.charCode];
-            //LOG.p("Key " + Input.KeyMapperPKD[event.charCode]);
             ABSKey._changeSymbol = null;
             if(ABSKey._changeWindow) {
                 ABSKey._changeWindow.onKeyOk(true);
@@ -1600,36 +1622,36 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
     }
 
     AlphaABS.Key = ABSKey;
-	//END ABSKey
+  //END ABSKey
 //------------------------------------------------------------------------------
 
 //ABSPathfinding
 //------------------------------------------------------------------------------
-	function ABSPathfinding() {
-		throw new Error('This is a static class');
-	}
+  function ABSPathfinding() {
+    throw new Error('This is a static class');
+  }
 
-	ABSPathfinding.init = function() {
-		this.worldWidth = 0;
+  ABSPathfinding.init = function() {
+    this.worldWidth = 0;
         this.worldHeight = 0;
         this.worldSize = 0;
         this.char = null;
         this.goalX = 0;
         this.goalY = 0;
-	}
+  }
 
-	ABSPathfinding.setup = function() {
-		this.worldWidth = $gameMap.width();
+  ABSPathfinding.setup = function() {
+    this.worldWidth = $gameMap.width();
         this.worldHeight = $gameMap.height();
         this.worldSize = this.worldWidth * this.worldHeight;
-	}
+  }
 
-	ABSPathfinding.findPath = function(char, goalX, goalY) {
-		this.char = char;
-		this.goalX = goalX;
-		this.goalY = goalY;
-		var path = ABSPathfinding.calculatePath();
-		if(path.length > 0) {
+  ABSPathfinding.findPath = function(char, goalX, goalY) {
+    this.char = char;
+    this.goalX = goalX;
+    this.goalY = goalY;
+    var path = ABSPathfinding.calculatePath();
+    if(path.length > 0) {
 
             if(path.length > 1) {
                 var stepX = path[1][0];
@@ -1652,11 +1674,11 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
         }
 
         return 0;
-	}
+  }
 
-	//PRIVATE
-	ABSPathfinding.canWalkHere = function(x,y) {
-		if(x == this.char.x && y == this.char.y) {
+  //PRIVATE
+  ABSPathfinding.canWalkHere = function(x,y) {
+    if(x == this.char.x && y == this.char.y) {
             return true;
         }
 
@@ -1681,10 +1703,10 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
         }
 
         return true;
-	}
+  }
 
-	ABSPathfinding.Node = function(Parent, Point) {
-		var newNode = {
+  ABSPathfinding.Node = function(Parent, Point) {
+    var newNode = {
             // pointer to another Node object
             Parent:Parent,
             // array index of this Node in the world linear array
@@ -1701,10 +1723,10 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
         };
 
         return newNode;
-	}
+  }
 
-	ABSPathfinding.Neighbours = function(x,y) {
-		var N = y - 1,
+  ABSPathfinding.Neighbours = function(x,y) {
+    var N = y - 1,
         S = y + 1,
         E = x + 1,
         W = x - 1,
@@ -1723,12 +1745,12 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
             result.push({x:W, y:y});
         this.findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
         return result;
-	}
+  }
 
-	ABSPathfinding.findNeighbours = function() {};
+  ABSPathfinding.findNeighbours = function() {};
 
-	ABSPathfinding.DiagonalNeighbours = function(myN, myS, myE, myW, N, S, E, W, result) {
-		if(myN)
+  ABSPathfinding.DiagonalNeighbours = function(myN, myS, myE, myW, N, S, E, W, result) {
+    if(myN)
         {
             if(myE && this.canWalkHere(E, N))
                 result.push({x:E, y:N});
@@ -1742,11 +1764,11 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
             if(myW && this.canWalkHere(W, S))
                 result.push({x:W, y:S});
         }
-	}
+  }
 
-	ABSPathfinding.DiagonalNeighboursFree = function(myN, myS, myE, myW, N, S, E, W, result)
-	{
-		myN = N > -1;
+  ABSPathfinding.DiagonalNeighboursFree = function(myN, myS, myE, myW, N, S, E, W, result)
+  {
+    myN = N > -1;
         myS = S < worldHeight;
         myE = E < worldWidth;
         myW = W > -1;
@@ -1764,16 +1786,16 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
             if(myS && this.canWalkHere(W, S))
                 result.push({x:W, y:S});
         }
-	}
+  }
 
-	ABSPathfinding.ManhattanDistance = function(Point, Goal) {
-		// linear movement - no diagonals - just cardinal directions (NSEW)
-		return Math.abs(Point.x - Goal.x) + Math.abs(Point.y - Goal.y);
-	}
+  ABSPathfinding.ManhattanDistance = function(Point, Goal) {
+    // linear movement - no diagonals - just cardinal directions (NSEW)
+    return Math.abs(Point.x - Goal.x) + Math.abs(Point.y - Goal.y);
+  }
 
-	ABSPathfinding.calculatePath = function() {
-		var distanceFunction = ABSPathfinding.ManhattanDistance;
-		// create Nodes from the Start and End x,y coordinates
+  ABSPathfinding.calculatePath = function() {
+    var distanceFunction = ABSPathfinding.ManhattanDistance;
+    // create Nodes from the Start and End x,y coordinates
         var mypathStart = this.Node(null, {x:this.char.x, y:this.char.y});
         var mypathEnd = this.Node(null, {x:this.goalX, y:this.goalY});
         // create an array that will contain all world cells
@@ -1846,42 +1868,42 @@ var LOGW = new PLATFORM.DevLog("Alpha ABS");
             }
         } // keep iterating until the Open list is empty
         return result;
-	}
-	AlphaABS.ABSPathfinding = ABSPathfinding;
-	//END ABSPathfinding
+  }
+  AlphaABS.ABSPathfinding = ABSPathfinding;
+  //END ABSPathfinding
 //------------------------------------------------------------------------------
 
 //Input
 //------------------------------------------------------------------------------
-	Input.loadSchemeABS = function() {
+  Input.loadSchemeABS = function() {
         if(Utils.isNwjs()) {
-        	if(SDK.isFile(AlphaABS.Key.FNAME)) {
-            	AlphaABS.Key.symbol = SDK.readFile(AlphaABS.Key.FNAME);
-        	} else {
-        		Input.toDefaultABS();
-        	}
+          if(SDK.isFile(AlphaABS.Key.FNAME)) {
+              AlphaABS.Key.symbol = SDK.readFile(AlphaABS.Key.FNAME);
+          } else {
+            Input.toDefaultABS();
+          }
         } else {
-        	if(localStorage.getItem(AlphaABS.Key.FNAME)) {
-        		AlphaABS.Key.symbol = SDK.readFileWeb(AlphaABS.Key.FNAME);
-        	} else {
-        		Input.toDefaultABS();
-        		/*SDK.loadDataFileWeb(AlphaABS.Key.FNAME, function(data) {
-        			AlphaABS.Key.symbol = data;
-        		}, function() {
-					Input.toDefaultABS();
-        		});*/
-        	}
+          if(localStorage.getItem(AlphaABS.Key.FNAME)) {
+            AlphaABS.Key.symbol = SDK.readFileWeb(AlphaABS.Key.FNAME);
+          } else {
+            Input.toDefaultABS();
+            /*SDK.loadDataFileWeb(AlphaABS.Key.FNAME, function(data) {
+              AlphaABS.Key.symbol = data;
+            }, function() {
+          Input.toDefaultABS();
+            });*/
+          }
         }
     }
 
     Input.saveSchemeABS = function() {
-    	if(Utils.isNwjs()) {
-        	SDK.writeFile(AlphaABS.Key.FNAME,AlphaABS.Key.symbol);
+      if(Utils.isNwjs()) {
+          SDK.writeFile(AlphaABS.Key.FNAME,AlphaABS.Key.symbol);
         } else {
-        	SDK.writeFileWeb(AlphaABS.Key.FNAME, AlphaABS.Key.symbol);
+          SDK.writeFileWeb(AlphaABS.Key.FNAME, AlphaABS.Key.symbol);
         }
     }
-	//END Input
+  //END Input
 //------------------------------------------------------------------------------
 
 SDK.setConstant($, 'FONT', 'VL-Gothic-Regular');
@@ -1901,121 +1923,123 @@ AlphaABS.UTILS = {};
 
 (function($) {
 
-	var SDK = PLATFORM.SDK;
+  
 
-	$.printPoint = function(x,y) {
-		return "[" + x + " ; " + y + "]";
-	}
+  var SDK = PLATFORM.SDK;
 
-	$.distanceTo = function(a, b) {
-		if(a === undefined || b === undefined) {
-			return 0; //This is very very bad!
-		}
-		if(a === null || b === null) {
-			return 0;
-		}
-		return $gameMap.distance(a.x,a.y, b.x,b.y);
-	}
+  $.printPoint = function(x,y) {
+    return "[" + x + " ; " + y + "]";
+  }
 
-	$.inFront = function(charA, charB) {
-		var d = charA.direction();
-		var x2 = $gameMap.roundXWithDirection(charA.x, d);
-		var y2 = $gameMap.roundYWithDirection(charA.y, d);
-		return this.inPoint(charB, new Point(x2,y2));
-	}
+  $.distanceTo = function(a, b) {
+    if(a === undefined || b === undefined) {
+      return 0; //This is very very bad!
+    }
+    if(a === null || b === null) {
+      return 0;
+    }
+    return $gameMap.distance(a.x,a.y, b.x,b.y);
+  }
 
-	$.inDirection = function(charA, charB) {
-		var d = charA.direction();
-		switch(d) {
-			case 8: return (charB.y <= charA.y);
-			case 4: return (charB.x <= charA.x);
-			case 6: return (charB.x >= charA.x);
-			case 2: return (charB.y >= charA.y);
-			default : return false;
-		}
-	}
+  $.inFront = function(charA, charB) {
+    var d = charA.direction();
+    var x2 = $gameMap.roundXWithDirection(charA.x, d);
+    var y2 = $gameMap.roundYWithDirection(charA.y, d);
+    return this.inPoint(charB, new Point(x2,y2));
+  }
 
-	$.inDirectionHard = function(charA, charB) {
-		var inD = this.inDirection(charA,charB);
-		if(!inD) {
-			return false;
-		}
-		var d = charA.direction();
-		switch(d) {
-			case 8: return (charB.x == charA.x);
-			case 4: return (charB.y == charA.y);
-			case 6: return (charB.y == charA.y);
-			case 2: return (charB.x == charA.x);
-			default : return false;
-		}
-	}
+  $.inDirection = function(charA, charB) {
+    var d = charA.direction();
+    switch(d) {
+      case 8: return (charB.y <= charA.y);
+      case 4: return (charB.x <= charA.x);
+      case 6: return (charB.x >= charA.x);
+      case 2: return (charB.y >= charA.y);
+      default : return false;
+    }
+  }
 
-	$.inPoint = function(a , b) {
-		if(!a) return false;
-		if(!b) return false;
-		return (a.x == b.x && a.y == b.y);
-	}
+  $.inDirectionHard = function(charA, charB) {
+    var inD = this.inDirection(charA,charB);
+    if(!inD) {
+      return false;
+    }
+    var d = charA.direction();
+    switch(d) {
+      case 8: return (charB.x == charA.x);
+      case 4: return (charB.y == charA.y);
+      case 6: return (charB.y == charA.y);
+      case 2: return (charB.x == charA.x);
+      default : return false;
+    }
+  }
 
-	$.inRadius = function(charA, radius, members) {
-		var t = [];
-		members.forEach(function(item) {
-			if(AlphaABS.UTILS.distanceTo(charA, item) < radius) {
-				t.push(item);
-			}
-		});
-		return t;
-	}
+  $.inPoint = function(a , b) {
+    if(!a) return false;
+    if(!b) return false;
+    return (a.x == b.x && a.y == b.y);
+  }
 
-	$.toGlobalCoord = function(layer, coordSymbol) {
-		return SDK.toGlobalCoord(layer, coordSymbol);
-	}
+  $.inRadius = function(charA, radius, members) {
+    var t = [];
+    members.forEach(function(item) {
+      if(AlphaABS.UTILS.distanceTo(charA, item) < radius) {
+        t.push(item);
+      }
+    });
+    return t;
+  }
 
-	$.framesToTimeA = function(frames, oneSecond) {
-		if(oneSecond === undefined) oneSecond = 60;
-		var secs = Math.floor((frames + oneSecond) / oneSecond);
-		var string = '';
-		if(secs > 59) {
-			var min = Math.floor(secs/60);
-			string = min + "m";
-		} else {
-			string = secs + "s";
-		}
-		return string;
-	}
+  $.toGlobalCoord = function(layer, coordSymbol) {
+    return SDK.toGlobalCoord(layer, coordSymbol);
+  }
 
-	$.framesToTimeB = function(frames, oneSecond) {
-		if(oneSecond === undefined) oneSecond = 60;
-		var secs = Math.floor((frames + oneSecond) / oneSecond);
-		var string = '';
-		if(secs > 59) {
-			var min = Math.floor(secs/60);
-			var minm = (min < 10) ? ('0' + min) : min;
-			var secx = secs - (min * 60);
-			secx = (secx < 10) ? ('0' + secx) : secx;
-			string = min + ":" + secx;
-			} else {
-			string = '0:' + ((secs < 10) ? ('0' + secs) : secs);
-		}
-		return string;
-	}
+  $.framesToTimeA = function(frames, oneSecond) {
+    if(oneSecond === undefined) oneSecond = 60;
+    var secs = Math.floor((frames + oneSecond) / oneSecond);
+    var string = '';
+    if(secs > 59) {
+      var min = Math.floor(secs/60);
+      string = min + "m";
+    } else {
+      string = secs + "s";
+    }
+    return string;
+  }
 
-	/*$.isColidePoint = function(char, point) {
-		return char.isCollidedWithEvents(point.x, point.y);
-	}*/
+  $.framesToTimeB = function(frames, oneSecond) {
+    if(oneSecond === undefined) oneSecond = 60;
+    var secs = Math.floor((frames + oneSecond) / oneSecond);
+    var string = '';
+    if(secs > 59) {
+      var min = Math.floor(secs/60);
+      var minm = (min < 10) ? ('0' + min) : min;
+      var secx = secs - (min * 60);
+      secx = (secx < 10) ? ('0' + secx) : secx;
+      string = min + ":" + secx;
+      } else {
+      string = '0:' + ((secs < 10) ? ('0' + secs) : secs);
+    }
+    return string;
+  }
 
-	$.getDirKey = function(char) {
-		var t = char.direction();
-		switch(t) {
-			case 8: return 'u';
-			case 4: return 'l';
-			case 6: return 'r';
-			case 2: return 'd';
-			default : return 'r';
-		}
-	}
+  /*$.isColidePoint = function(char, point) {
+    return char.isCollidedWithEvents(point.x, point.y);
+  }*/
 
-	$.linkSprite = function(sprite1, sprite2) {
-	    var _r = 0; //right (from right)
+  $.getDirKey = function(char) {
+    var t = char.direction();
+    switch(t) {
+      case 8: return 'u';
+      case 4: return 'l';
+      case 6: return 'r';
+      case 2: return 'd';
+      default : return 'r';
+    }
+  }
+
+  $.linkSprite = function(sprite1, sprite2) {
+      var _r = 0; //right (from right)
         var _u = 0; //up
 
         if(SDK.toGlobalCoord(sprite1, 'x') < Graphics.width / 2) {
@@ -2037,151 +2061,151 @@ AlphaABS.UTILS = {};
         } else {
             sprite2.y = sprite1.y - sprite2.height - 1;
         }
-	}
+  }
 
 //Point
 //------------------------------------------------------------------------------
-	class Point {
-		constructor(mapX, mapY) {
-			mapX = SDK.check(mapX, 0);
-			mapY = SDK.check(mapY, 0);
-			this._x = mapX;
-			this._y = mapY;
-		}
+  class Point {
+    constructor(mapX, mapY) {
+      mapX = SDK.check(mapX, 0);
+      mapY = SDK.check(mapY, 0);
+      this._x = mapX;
+      this._y = mapY;
+    }
 
-		convertToScreen() {
-			this._x = this.screenX();
-			this._y = this.screenY();
-			return this;
-		}
+    convertToScreen() {
+      this._x = this.screenX();
+      this._y = this.screenY();
+      return this;
+    }
 
-		convertToScreen2() {
-			this._x = this._x * $gameMap.tileWidth();
-			this._y = this._y * $gameMap.tileHeight();
-		}
+    convertToScreen2() {
+      this._x = this._x * $gameMap.tileWidth();
+      this._y = this._y * $gameMap.tileHeight();
+    }
 
-		mapPointOnScreen() {
-			var nx = (this._x * $gameMap.tileWidth()) - ($gameMap.displayX() * $gameMap.tileWidth());
-			var ny = (this._y * $gameMap.tileHeight()) - ($gameMap.displayY() * $gameMap.tileHeight());
-			return new Point(nx,ny);
-		}
+    mapPointOnScreen() {
+      var nx = (this._x * $gameMap.tileWidth()) - ($gameMap.displayX() * $gameMap.tileWidth());
+      var ny = (this._y * $gameMap.tileHeight()) - ($gameMap.displayY() * $gameMap.tileHeight());
+      return new Point(nx,ny);
+    }
 
-		static ScreenXYOnScreen(x,y) {
-			var p = new Point(x,y);
-			p.convertToMap();
-			return p.mapPointOnScreen();
-		}
+    static ScreenXYOnScreen(x,y) {
+      var p = new Point(x,y);
+      p.convertToMap();
+      return p.mapPointOnScreen();
+    }
 
-		convertToMap() {
-			this._x = this.mapX();
-			this._y = this.mapY();
-			return this;
-		}
+    convertToMap() {
+      this._x = this.mapX();
+      this._y = this.mapY();
+      return this;
+    }
 
-		applyFloor() {
-			this._x = Math.floor(this._x);
-			this._y = Math.floor(this._y);
-			return this;
-		}
+    applyFloor() {
+      this._x = Math.floor(this._x);
+      this._y = Math.floor(this._y);
+      return this;
+    }
 
-		applyRound() {
-			this._x = Math.ceil(this._x);
-			this._y = Math.ceil(this._y);
-			return this;
-		}
+    applyRound() {
+      this._x = Math.ceil(this._x);
+      this._y = Math.ceil(this._y);
+      return this;
+    }
 
-		screenX() {
-			var t = $gameMap.adjustX(this._x);
-			var tw = $gameMap.tileWidth();
-			return Math.round(t * tw + tw / 2);
-		}
+    screenX() {
+      var t = $gameMap.adjustX(this._x);
+      var tw = $gameMap.tileWidth();
+      return Math.round(t * tw + tw / 2);
+    }
 
-		screenY() {
-			var t = $gameMap.adjustY(this._y);
-			var th = $gameMap.tileHeight();
-			return Math.round(t * th + th);
-		}
+    screenY() {
+      var t = $gameMap.adjustY(this._y);
+      var th = $gameMap.tileHeight();
+      return Math.round(t * th + th);
+    }
 
-		convertToCanvas() {
-			//if(this._x > Graphics.width) {
-				//var rect = Graphics._canvas.getBoundingClientRect();
-				//this._x = Math.round((this._x - rect.left)/(rect.right - rect.left)*Graphics.width);
-			//}
+    convertToCanvas() {
+      //if(this._x > Graphics.width) {
+        //var rect = Graphics._canvas.getBoundingClientRect();
+        //this._x = Math.round((this._x - rect.left)/(rect.right - rect.left)*Graphics.width);
+      //}
 
-			//if(this._y > Graphics.height) {
-				//var rect = Graphics._canvas.getBoundingClientRect();
-				//this._y = Math.round((this._y - rect.top)/(rect.bottom - rect.top)*Graphics.height);
-			//}
+      //if(this._y > Graphics.height) {
+        //var rect = Graphics._canvas.getBoundingClientRect();
+        //this._y = Math.round((this._y - rect.top)/(rect.bottom - rect.top)*Graphics.height);
+      //}
 
-			if(Graphics._realScale != 1) {
-				this._x = Graphics.pageToCanvasX(this._x);
-				this._y = Graphics.pageToCanvasY(this._y);
-			}
-		}
+      if(Graphics._realScale != 1) {
+        this._x = Graphics.pageToCanvasX(this._x);
+        this._y = Graphics.pageToCanvasY(this._y);
+      }
+    }
 
-		mapX() {
-			return $gameMap.canvasToMapX(this._x);
-		}
+    mapX() {
+      return $gameMap.canvasToMapX(this._x);
+    }
 
-		mapY() {
-			return $gameMap.canvasToMapY(this._y);
-		}
+    mapY() {
+      return $gameMap.canvasToMapY(this._y);
+    }
 
-		clone() {
-			return new Point(this._x, this._y);
-		}
+    clone() {
+      return new Point(this._x, this._y);
+    }
 
-		toString() {
-			return AlphaABS.UTILS.printPoint(this._x, this._y);
-		}
+    toString() {
+      return AlphaABS.UTILS.printPoint(this._x, this._y);
+    }
 
-		toPoint() {
-			return this;
-		}
+    toPoint() {
+      return this;
+    }
 
-	}
+  }
 
-	Object.defineProperties(Point.prototype, {
-	    x: { get: function() { return this._x; }, configurable: true },
-	    y: { get: function() { return this._y; }, configurable: true }
-	});
+  Object.defineProperties(Point.prototype, {
+      x: { get: function() { return this._x; }, configurable: true },
+      y: { get: function() { return this._y; }, configurable: true }
+  });
 
-	Array.prototype.toPoint = function() {
-		return new Point(this[0],this[1]);
-	}
+  Array.prototype.toPoint = function() {
+    return new Point(this[0],this[1]);
+  }
 
-	Game_CharacterBase.prototype.toPoint = function() {
-		return new Point(this.x, this.y);
-	}
-	//END Point
+  Game_CharacterBase.prototype.toPoint = function() {
+    return new Point(this.x, this.y);
+  }
+  //END Point
 //------------------------------------------------------------------------------
 
 //SMouse
 //------------------------------------------------------------------------------
-	var __SmouseNeedTrack = false;
-	var __SmousePosition = null;
+  var __SmouseNeedTrack = false;
+  var __SmousePosition = null;
 
-	function SMouse() {
-		throw new Error('This is a static class');
-	}
+  function SMouse() {
+    throw new Error('This is a static class');
+  }
 
-	SMouse.initMouseTrack = function() {
-		document.onmousemove = SMouse.handleMouseMove;
+  SMouse.initMouseTrack = function() {
+    document.onmousemove = SMouse.handleMouseMove;
         __SmouseNeedTrack = false;
         __SmousePosition = new Point(0,0);
-	}
+  }
 
-	SMouse.setTrack = function(isSet) {
-    	//console.log("Track is " + isSet);
-    	__SmouseNeedTrack = isSet;
-    	if(isSet) this.handleMouseMove(null);
+  SMouse.setTrack = function(isSet) {
+      //console.log("Track is " + isSet);
+      __SmouseNeedTrack = isSet;
+      if(isSet) this.handleMouseMove(null);
     }
 
     SMouse.isTracked = function() {
-    	return (__SmouseNeedTrack == true);
+      return (__SmouseNeedTrack == true);
     }
 
-	SMouse.handleMouseMoveCanvas = function(canvas, evt) {
+  SMouse.handleMouseMoveCanvas = function(canvas, evt) {
         var rect = canvas.getBoundingClientRect();
         __SmousePosition = new Point(evt.clientX - rect.left, evt.clientY - rect.top);
         console.log("Mouse " + __SmousePosition);
@@ -2218,598 +2242,378 @@ AlphaABS.UTILS = {};
     SMouse.getMousePosition = function() {
         return __SmousePosition;
     }
-	//END SMouse
+  //END SMouse
 //------------------------------------------------------------------------------
 
 //SMath
 //------------------------------------------------------------------------------
-	function SMath() {
-	 	throw new Error('This is a static class');
-	}
+  function SMath() {
+    throw new Error('This is a static class');
+  }
 
-	SMath.distance = function(point1, point2) {
-		return Math.sqrt(Math.pow(point1.x - point2.x,2) + Math.pow(point1.y - point2.y,2));
-	}
+  SMath.distance = function(point1, point2) {
+    return Math.sqrt(Math.pow(point1.x - point2.x,2) + Math.pow(point1.y - point2.y,2));
+  }
 
-	SMath.angle = function(point1, point2) {
-		var cl = SMath.distance(point1, point2);
-		var al = Math.abs(point2.x - point1.x);
-		var bl = Math.abs(point2.y - point1.y);
+  SMath.angle = function(point1, point2) {
+    var cl = SMath.distance(point1, point2);
+    var al = Math.abs(point2.x - point1.x);
+    var bl = Math.abs(point2.y - point1.y);
 
-		if(al == 0 || cl == 0 || bl == 0)
-			return 0;
-		else {
-			var angle = Math.acos((bl*bl + cl*cl - al*al)/(2 * bl * cl));
-			return angle;
-		}
-	}
+    if(al == 0 || cl == 0 || bl == 0)
+      return 0;
+    else {
+      var angle = Math.acos((bl*bl + cl*cl - al*al)/(2 * bl * cl));
+      return angle;
+    }
+  }
 
-	SMath.rotateTo = function(point1, angle) {
-		var nx = point1.x * Math.cos(angle) - point1.y * Math.sin(angle);
+  SMath.rotateTo = function(point1, angle) {
+    var nx = point1.x * Math.cos(angle) - point1.y * Math.sin(angle);
         var ny = point1.y * Math.cos(angle) + point1.x * Math.sin(angle);
         return new Point(nx,ny);
-	}
+  }
 
-	SMath.moveTo = function(point1, point2, step) {
-		var rotated = SMath.rotateTo(new Point(0, step), SMath.angle(point1, point2));
-		var fx = 0;
-		var fy = 0;
-		if(point2.y < point1.y) { fy = point1.y  - rotated.y; } else { fy = point1.y + rotated.y; }
-		if(point2.x < point1.x) { fx = point1.x  + rotated.x; } else { fx = point1.x - rotated.x; }
-		return new Point(fx,fy);
-	}
+  SMath.moveTo = function(point1, point2, step) {
+    var rotated = SMath.rotateTo(new Point(0, step), SMath.angle(point1, point2));
+    var fx = 0;
+    var fy = 0;
+    if(point2.y < point1.y) { fy = point1.y  - rotated.y; } else { fy = point1.y + rotated.y; }
+    if(point2.x < point1.x) { fx = point1.x  + rotated.x; } else { fx = point1.x - rotated.x; }
+    return new Point(fx,fy);
+  }
 
-	SMath.inRect = function(point, rectangle) {
-		var x2 = rectangle.x + rectangle.width;
-		var y2 = rectangle.y + rectangle.height;
-		if(point.x > rectangle.x && point.x < x2 && point.y < y2 && point.y > rectangle.y) {
-			return true;
-		}
-		return false;
-	}
+  SMath.inRect = function(point, rectangle) {
+    var x2 = rectangle.x + rectangle.width;
+    var y2 = rectangle.y + rectangle.height;
+    if(point.x > rectangle.x && point.x < x2 && point.y < y2 && point.y > rectangle.y) {
+      return true;
+    }
+    return false;
+  }
 
-	//END SMath
+  //END SMath
 //------------------------------------------------------------------------------
 
-	//Расширение
-	$.extendMe = function(obj) {
-		obj.SMath = SMath;
-		obj.Point = Point;
-		obj.SMouse = SMouse;
-	}
+  //Расширение
+  $.extendMe = function(obj) {
+    obj.SMath = SMath;
+    obj.Point = Point;
+    obj.SMouse = SMouse;
+  }
 
-	$.extendMe($);
+  $.extendMe($);
 
 })(AlphaABS.UTILS);
 
 Object.freeze(AlphaABS.UTILS);
 Object.defineProperty(AlphaABS, 'UTILS', {writable: false});
 
-//==========================================================================================================================================================
-// Alpha ABS PopUp Module (deprecated on release :) )
-//==========================================================================================================================================================
-//------------------------------------------------------------------------------
-	(function () {
-
-		var LOG = new PLATFORM.DevLog("UI POP");
-		var SDK = PLATFORM.SDK;
-		var Color = PLATFORM.Color;
-
-	//ABSObject_PopUp
-	//------------------------------------------------------------------------------
-		class ABSObject_PopUp {
-			constructor(text, color, iconIndex, fontSettings)
-	 		{
-	 			this._text = text || null;
-	 			this._color = color;
-	 			this._iconIndex = iconIndex || null;
-	 			this._fontSettings = fontSettings || ABSObject_PopUp.FONT_DEFAULT();
-	 			this._effectType = ABSObject_PopUp.EFFECT_DEFAULT;
-	 			this._sprite = null;
-	 		}
-
-	 		clone() {
-	 			var tempObj = new ABSObject_PopUp(this._text, this._color, this._iconIndex, this._fontSettings.clone());
-	 			tempObj.setEffectSettings(this._effectType);
-	 			return tempObj;
-	 		}
-
-	 		getText() {
-	 			return this._text;
-	 		}
-
-	 		getFontSettings() {
-	 			return this._fontSettings;
-	 		}
-
-	 		setX(x) {
-	 			this.x = x;
-	 			this._sprite.x = x;
-	 		}
-
-	 		setY(y) {
-	 			this.y = y;
-	 			this._sprite.y = y;
-	 		}
-
-	 		setNumered() //This is number value in this PopUp
-	 		{
-	 			this._numered = true;
-	 		}
-
-	 		isNumered()
-	 		{
-	 			return (this._numered === true);
-	 		}
-
-	 		hasIcon() {
-	 			return (this._iconIndex != null);
-	 		}
-
-	 		setExtraText(text) {
-	 			this._text = (text + " " + this._text);
-	 		}
-
-	 		setEffectSettings(settings) {
-	 			this._effectType = settings;
-	 		}
-
-	 		setup(x, y, width, layer)
-	 		{
-	 			this._layer = layer;
-	 			this._width = width;
-	 			this.x = x;
-	 			this.y = y;
-	 			this._refresh();
-	 		}
-
-	 		dispose()
-	 		{
-	 			if(!this._sprite) return;
-	 			this._sprite.bitmap.clear();
-	 			this._layer.removeChild(this._sprite);
-	 			this._sprite = null;
-	 		}
-
-	 		update()
-	 		{
-	 			if(this._sprite != null) {
-	 				this._update_zoom();
-	 				this._sprite.update();
-	 			}
-	 		}
-
-	 		static FONT_DEFAULT() {
-	 			return ['Skratch Punk',30, false, 3, Color.BLACK]; //FontFace, size, outline widht, outline color
-	 		}
-
-	 		//PRIVATE
-	 		_refresh()
-	 		{
-	 			let h = 72;
-	 			let bitmap = new Bitmap(this._width, h);
-	 			bitmap.addLoadListener(function()
-	 			{
-	 				if(this._fontSettings[0] != null)
-	 					bitmap.fontFace = this._fontSettings[0];
-	 				bitmap.fontSize = this._fontSettings[1];
-	 				bitmap.fontItalic = this._fontSettings[2];
-	 				if(this._color)
-	 				{
-	 					bitmap.textColor = this._color.CSS;
-	 				}
-	 				else
-	 					bitmap.textColor = Color.WHITE.CSS;
-
-
-		 			var dx = 0;
-		 			var dw = 0;
-		 			var tw = (this._text != null) ?  bitmap.measureTextWidth(this._text) : 0;
-
-		 			while(tw > this._width){
-		 				bitmap.fontSize = bitmap.fontSize - 4;
-		 				tw = bitmap.measureTextWidth(this._text);
-		 			}
-
-		 			if(this._iconIndex) {
-		 				dx += 24;
-		 				dw += 24;
-		 				SDK.drawIcon((dx + ((this._width - tw)/2) - 36), (h - 24)/2, this._iconIndex, bitmap, 24);
-		 			}
-
-		 			if(this._text) {
-		 				bitmap.outlineWidth = this._fontSettings[3] || 0;
-	 					if(this._fontSettings[4])
-		 					bitmap.outlineColor = this._fontSettings[4].CSS;
-		 				bitmap.outlineColor = Color.BLACK.CSS;
-		 				bitmap.drawText(this._text, dx + 2, 0, this._width - dw, h, 'center');
-		 			}
-	 			}.bind(this));
-
-	 			this._sprite = new Sprite(bitmap);
-	 			this._sprite.x = this.x;
-	 			this._sprite.y = this.y;
-	 			this._sprite.scale.x = this._effectType[0];
-	 			this._sprite.scale.y = this._effectType[0];
-
-	 			this._layer.addChild(this._sprite);
-	 		}
-
-	 		_update_zoom()
-	 		{
-	 			if(this._effectType[1]) {
-	 				this._sprite.scale.x = Math.max(this._sprite.scale.x - 0.075, 1.0);
-	 				this._sprite.scale.y = this._sprite.scale.x;
-	 			}
-	 			this._sprite.opacity = Math.max(this._sprite.opacity - 2, 0);
-	 			if(this._sprite.opacity == 0) {
-	 				this._layer.removeChild(this._sprite);
-	 				this._sprite = null;
-	 			}
-	 		}
-		}
-
-		SDK.setConstant(ABSObject_PopUp, 'EFFECT_DEFAULT', [1.5, true, 0]); //zoom, isUpdateZoom, +toTextSize
-		//END ABSObject_PopUp
-	//------------------------------------------------------------------------------
-
-
-	//ABSObject_PopUpMachine
-	//------------------------------------------------------------------------------
-
-		class ABSObject_PopUpMachine {
-			constructor(x, y, width, stack_size, parent)
-	 		{
-	 			this._x = x;
-	 			this._y = y;
-	 			this._width = width;
-	 			this._stack_size = stack_size;
-	 			this._parent = parent;
-	 			this._effectType = null;
-	 			this._upMode = false;
-
-	 			this._items = [];
-	 			this._timers = [];
-
-	 			this._init_items();
-	 		}
-
-	 		setUpMode() {
-	 			this._upMode = true;
-	 		}
-
-	 		setEffectSettings(effect) {
-	 			this._effectType = effect;
-	 		}
-
-	 		setSingleMode() {
-	 			//this._singleMode = true;
-	 		}
-
-	 		move(x,y) {
-	 			this._x = x;
-	 			this._y = y;
-	 			this._step();
-	 		}
-
-	 		push(popUpItem)
-	 		{
-	 			if(this._effectType != null)
-	 				popUpItem.setEffectSettings(this._effectType);
-
-	 			popUpItem.setup(this._x, this._y, this._width, this._parent);
-
-	 			let item = this._items.shift();
-	 			if(item != null) item.dispose();
-
-	 			this._items.push(popUpItem);
-	 			this._step();
-	 			this._timers.shift();
-	 			this._timers.push(0);
-	 		}
-
-	 		clear()
-	 		{
-	 			this._items.forEach(function(item){
-	 				if(item != null) item.dispose();
-	 			});
-	 			this._items = [];
-	 			this._timers = [];
-	 			this._init_items();
-	 		}
-
-	 		update()
-	 		{
-	 			this._update_timers();
-	 			this._items.forEach(function(item){
-	 				if(item != null) item.update();
-	 			});
-	 		}
-
-	 		//PRIVATE
-	 		_init_items()
-	 		{
-	 			SDK.times(this._stack_size, function() {
-	 				this._items.push(null);
-	 				this._timers.push(null);
-	 			}.bind(this));
-	 		}
-
-	 		_update_timers()
-	 		{
-	 			SDK.times(this._stack_size, function(i) {
-	 				var index = (this._timers.length - 1) - i; //Reverse
-	 				var timer = this._timers[index];
-	 				if(timer == null)
-	 					return;
-	 				else
-	 				{
-	 					if(timer < ABSObject_PopUpMachine.MAX_TIME)
-	 						this._timers[index] = this._timers[index] + 1;
-	 					if(timer == ABSObject_PopUpMachine.MAX_TIME) {
-	 						if(this._items[index] != null)
-	 						{
-	 							this._items[index].dispose();
-	 						}
-	 						this._items[index] = null;
-	 						this._timers[index] = null;
-	 					}
-	 				}
-	 			}.bind(this));
-	 		}
-
-	 		_step()
-	 		{
-	 			SDK.times(this._items.length, function(i) {
-	 				var index = (this._items.length - 1) - i; //Reverse
-	 				var item = this._items[index];
-	 				if(item == null)
-	 					return;
-
-	 				var y = 0;
-	 				if(this._upMode)
-	 					y = this._y - (ABSObject_PopUpMachine.Y_STEP * i);
-	 				else
-	 					y = this._y + (ABSObject_PopUpMachine.Y_STEP * i);
-
-	 				this._items[index].setX(this._x);
-	 				this._items[index].setY(y);
-	 			}.bind(this));
-	 		}
-		}
-
-		SDK.setConstant(ABSObject_PopUpMachine, 'Y_STEP',   24);
-		SDK.setConstant(ABSObject_PopUpMachine, 'MAX_TIME', 60);
-		SDK.setConstant(ABSObject_PopUpMachine, 'SETTINGS', [1, false, 12]); //zoom, isUpdateZoom, +toTextSize
-		//END ABSObject_PopUpMachine
-	//------------------------------------------------------------------------------
-
-
-	//PopInfoManagerABS
-	//------------------------------------------------------------------------------
-		function PopInfoManagerABS() {
-	 		throw new Error('This is a static class');
-	 	}
-
-	 	PopInfoManagerABS.makeDamagePopUp = function(user) {
-	 		let result = user.result();
-
-	 		if(result.hpDamage != 0) {
-	 			let value = PopInfoManagerABS.HP(result.hpDamage, result.critical);
-	 	    	this._apply_pop_up(user, value);
-	 		}
-
-	 		if(result.mpDamage != 0) {
-	 			let value = PopInfoManagerABS.MP(result.mpDamage, result.critical);
-	 			this._apply_pop_up(user, value);
-	 		}
-
-	 		if(result.tpDamage != 0) {
-	 			let value = PopInfoManagerABS.TP(result.tpDamage, result.critical);
-	 			this._apply_pop_up(user, value);
-	 		}
-	 	}
-
-	 	PopInfoManagerABS.makeZeroDamagePopUp = function(user) {
-	 		let result = user.result();
-	 		let value = PopInfoManagerABS.HP(0, result.critical);
-	 		this._apply_pop_up(user, value);
-	 	}
-
-	 	PopInfoManagerABS.makeDrainPopUp = function(user) { //user - who get drained HP
-	 		let result = user.result();
-				if(result.hpDamage != 0) {
-					let value = PopInfoManagerABS.HP(result.hpDamage, result.critical);
-					value.getFontSettings()[2] = true;
-					this._apply_pop_up(user, value);
-				}
-
-				if(result.mpDamage != 0) {
-					let value = PopInfoManagerABS.MP(result.mpDamage, result.critical);
-					value.getFontSettings()[2] = true;
-					this._apply_pop_up(user, value);
-				}
-	 	}
-
-	 	PopInfoManagerABS.makeStatePopUp = function(user, stateId, isErase) {
-	 		let state = $dataStates[stateId];
-	 		if(state.iconIndex == 0)
-	 			return;
-	 		if(state.id == user.deathStateId())
-	 			return;
-	 		let value = PopInfoManagerABS.STATE((user.isEnemy() ? "" : state.name), state.iconIndex, isErase);
-	 		this._apply_pop_up(user, value);
-	 	}
-
-	 	PopInfoManagerABS.makeItemPopUp = function(user) {
-	 		let result = user.result();
-	 		if(!user.isAlive()) return;
-	 		if(result.missed) {
-	 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_MISS[SDK.isRU()]));
-	 			return;
-	 		}
-
-	 		if(result.evaded) {
-	 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_EVADE[SDK.isRU()]));
-	 			return;
-	 		}
-
-	 		if(result.isHit() && !result.success) {
-	 			this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_FAIL[SDK.isRU()]));
-	 			return;
-	 		}
-	 	}
-
-	 	PopInfoManagerABS.makeBuffPopUp = function(user, paramId, isPositive) {
-	 		//if(!BattleManagerRTBS.isBattle()) return;
-	 		if(!user.isAlive()) return;
-	 		let paramName = user.isEnemy() ? "" : TextManager.param(paramId);
-	 		var temp = isPositive ? 1 : -1;
-	 		let iconIndex = user.buffIconIndex(temp, paramId);
-	 		let value = PopInfoManagerABS.BUFF(paramName, iconIndex, isPositive);
-	 		if(!user.getInfoPops().include(value)) {
-	 			this._apply_pop_up(user, value);
-	 		}
-	 	}
-
-	 	PopInfoManagerABS.makeSkillRechargePopUp = function(user, skillId) {
-	 		//if(!BattleManagerRTBS.isBattle()) return;
-	 		if(!user.isAlive()) return;
-	 		if(user.isEnemy()) return; //This is for ActorEnemy, in version 1 not develop yet
-	 		let skill = $dataSkills[skillId];
-	 		let value = PopInfoManagerABS.SKILL(skill.name, skill.iconIndex);
-	 		if(!user.getInfoPops().include(value)) {
-	 			this._apply_pop_up(user, value);
-	 		}
-	 	}
-
-	 	PopInfoManagerABS.calcRate = function(rate) {
-	 		this.text = "";
-	 		/*if(rate > 1) {
-	 			this.text = AlphaABS.SYSTEM.STRING_POPUP_WEAK[SDK.isRU()];
-	 		} else if(rate === 0) {
-	 			this.text = AlphaABS.SYSTEM.STRING_POPUP_IMMUNE[SDK.isRU()];
-	 		} else if(rate < 1) {
-	 			this.text = AlphaABS.SYSTEM.STRING_POPUP_ABSORB[SDK.isRU()];
-	 		} else {
-	 			this.text = "Resist"; //What a hell?
-	 		}*/ //Not yet, my friend...
-	 	}
-
-	 	//STATIC
-	 	PopInfoManagerABS.HP = function(value, critical) {
-	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
-	 		var color = Color.YELLOW;
-	 		if(value < 0) {
-	 			color = Color.GREEN;
-	 			value = Math.abs(value);
-	 		} else if(critical) {
-	 			color = Color.RED;
-	 			fontSettings[1] = 34;
-	 		}
-
-	 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
-	 		x.setNumered();
-	 		return x;
-	 	}
-
-	 	PopInfoManagerABS.TP = function(value, critical) {
-	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
-	 		var color = Color.ORANGE;
-	 		if(value < 0) {
-	 			color = Color.GREEN;
-	 			value = Math.abs(value);
-	 		} else if(critical) {
-	 			color = Color.RED;
-	 			fontSettings[1] = 34;
-	 		}
-
-	 		value = value + " " +TextManager.tpA;
-	 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
-	 		x.setNumered();
-	 		return x;
-	 	}
-
-	 	PopInfoManagerABS.MP = function(value, critical) {
-	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
-	 		var color = Color.MAGENTA;
-	 		if(value < 0) {
-	 			color = Color.BLUE;
-	 			value = Math.abs(value);
-	 		} else if(critical) {
-	 			color = Color.MAGENTA;
-	 			fontSettings[1] = 34;
-	 		}
-
-	 		let x = new ABSObject_PopUp(value, color, null, fontSettings);
-	 		x.setNumered();
-	 		return x;
-	 	}
-
-	 	PopInfoManagerABS.STATE = function(name, iconIndex, isErase) {
-	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
-	 		fontSettings[2] = true;
-
-	 		var temp = isErase ? "- " : "+ ";
-	 		fontSettings[0] = AlphaABS.SYSTEM.FONT;
-	 		return new ABSObject_PopUp(temp + name, null, iconIndex, fontSettings);
-	 	}
-
-	 	PopInfoManagerABS.BUFF = function(name, iconIndex, isPositive) {
-	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
-	 		fontSettings[2] = true;
-
-	 		var color = isPositive ? Color.GREEN : Color.RED;
-	 		fontSettings[0] = AlphaABS.SYSTEM.FONT;
-	 		return new ABSObject_PopUp(name, color, iconIndex, fontSettings);
-	 	}
-
-	 	PopInfoManagerABS.TEXT = function(text) {
-	 		return new ABSObject_PopUp(text);
-	 	}
-
-	 	PopInfoManagerABS.TEXT_WITH_COLOR = function(text, color) {
-	 		return new ABSObject_PopUp(text, color);
-	 	}
-
-	 	PopInfoManagerABS.ALERT = function(text) {
-	 		return new ABSObject_PopUp(text, Color.RED, null, [null, 22, false, 2, Color.BLACK]);
-	 	}
-
-	 	PopInfoManagerABS.EXP = function(value) {
-	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
-	 		fontSettings[1] = 32;
-	 		let x = new ABSObject_PopUp(value, Color.MAGENTA, null, fontSettings);
-	 		x.setNumered();
-	 		return x;
-	 	}
-
-	 	PopInfoManagerABS.SKILL = function(name, iconIndex) {
-	 		var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
-	 		fontSettings[2] = true;
-	 		return new ABSObject_PopUp(AlphaABS.SYSTEM.STRING_POPUP_SKILL[SDK.isRU()], Color.GREEN, iconIndex, fontSettings);
-	 	}
-
-	 	//PRIVATE
-	 	PopInfoManagerABS._apply_pop_up = function(user, value) {
-	 		/*if(this.text === undefined)
-	 			this.text = "";
-	 		if(this.text != "") {
-	 			if(value.isNumered()) value.setExtraText(this.text);
-	 			this.text = "";
-	 		}*/
-	 		user.addInfoPop(value);
-	 	}
-
-		//END PopInfoManagerABS
-	//------------------------------------------------------------------------------
-
-		AlphaABS.ABSObject_PopUp = ABSObject_PopUp;
-		AlphaABS.ABSObject_PopUpMachine = ABSObject_PopUpMachine;
-		AlphaABS.PopInfoManagerABS = PopInfoManagerABS;
-
-	})();
-//------------------------------------------------------------------------------
+(function() {
+
+  
+
+  //ABSObject_PopUp
+  //------------------------------------------------------------------------------
+    class ABSObject_PopUp {
+      constructor(text, color, iconIndex, fontSettings)
+      {
+        this._text = text || null;
+        this._color = color;
+        this._iconIndex = iconIndex || null;
+        this._fontSettings = fontSettings || ABSObject_PopUp.FONT_DEFAULT();
+        this._effectType = ABSObject_PopUp.EFFECT_DEFAULT;
+        this._sprite = null;
+      }
+
+      clone() {
+        var tempObj = new ABSObject_PopUp(this._text, this._color, this._iconIndex, this._fontSettings.clone());
+        tempObj.setEffectSettings(this._effectType);
+        return tempObj;
+      }
+
+      getText() {
+        return this._text;
+      }
+
+      getFontSettings() {
+        return this._fontSettings;
+      }
+
+      setX(x) {
+        this.x = x;
+        this._sprite.x = x;
+      }
+
+      setY(y) {
+        this.y = y;
+        this._sprite.y = y;
+      }
+
+      setNumered() //This is number value in this PopUp
+      {
+        this._numered = true;
+      }
+
+      isNumered()
+      {
+        return (this._numered === true);
+      }
+
+      hasIcon() {
+        return (this._iconIndex != null);
+      }
+
+      setExtraText(text) {
+        this._text = (text + " " + this._text);
+      }
+
+      setEffectSettings(settings) {
+        this._effectType = settings;
+      }
+
+      setup(x, y, width, layer)
+      {
+        this._layer = layer;
+        this._width = width;
+        this.x = x;
+        this.y = y;
+        this._refresh();
+      }
+
+      dispose()
+      {
+        if(!this._sprite) return;
+        this._sprite.bitmap.clear();
+        this._layer.removeChild(this._sprite);
+        this._sprite = null;
+      }
+
+      update()
+      {
+        if(this._sprite != null) {
+          this._update_zoom();
+          this._sprite.update();
+        }
+      }
+
+      static FONT_DEFAULT() {
+        return ['Skratch Punk',30, false, 3, Color.BLACK]; //FontFace, size, outline widht, outline color
+      }
+
+      //PRIVATE
+      _refresh()
+      {
+        let h = 72;
+        let bitmap = new Bitmap(this._width, h);
+        bitmap.addLoadListener(function()
+        {
+          if(this._fontSettings[0] != null)
+            bitmap.fontFace = this._fontSettings[0];
+          bitmap.fontSize = this._fontSettings[1];
+          bitmap.fontItalic = this._fontSettings[2];
+          if(this._color)
+          {
+            bitmap.textColor = this._color.CSS;
+          }
+          else
+            bitmap.textColor = Color.WHITE.CSS;
+
+
+          var dx = 0;
+          var dw = 0;
+          var tw = (this._text != null) ?  bitmap.measureTextWidth(this._text) : 0;
+
+          while(tw > this._width){
+            bitmap.fontSize = bitmap.fontSize - 4;
+            tw = bitmap.measureTextWidth(this._text);
+          }
+
+          if(this._iconIndex) {
+            dx += 24;
+            dw += 24;
+            SDK.drawIcon((dx + ((this._width - tw)/2) - 36), (h - 24)/2, this._iconIndex, bitmap, 24);
+          }
+
+          if(this._text) {
+            bitmap.outlineWidth = this._fontSettings[3] || 0;
+            if(this._fontSettings[4])
+              bitmap.outlineColor = this._fontSettings[4].CSS;
+            bitmap.outlineColor = Color.BLACK.CSS;
+            bitmap.drawText(this._text, dx + 2, 0, this._width - dw, h, 'center');
+          }
+        }.bind(this));
+
+        this._sprite = new Sprite(bitmap);
+        this._sprite.x = this.x;
+        this._sprite.y = this.y;
+        this._sprite.scale.x = this._effectType[0];
+        this._sprite.scale.y = this._effectType[0];
+
+        this._layer.addChild(this._sprite);
+      }
+
+      _update_zoom()
+      {
+        if(this._effectType[1]) {
+          this._sprite.scale.x = Math.max(this._sprite.scale.x - 0.075, 1.0);
+          this._sprite.scale.y = this._sprite.scale.x;
+        }
+        this._sprite.opacity = Math.max(this._sprite.opacity - 2, 0);
+        if(this._sprite.opacity == 0) {
+          this._layer.removeChild(this._sprite);
+          this._sprite = null;
+        }
+      }
+    }
+
+    SDK.setConstant(ABSObject_PopUp, 'EFFECT_DEFAULT', [1.5, true, 0]); //zoom, isUpdateZoom, +toTextSize
+    //END ABSObject_PopUp
+  //------------------------------------------------------------------------------
+
+  AlphaABS.ABSObject_PopUp = ABSObject_PopUp;
+
+})();
+
+(function() {
+
+  
+
+  //ABSObject_PopUpMachine
+  //------------------------------------------------------------------------------
+
+    class ABSObject_PopUpMachine {
+      constructor(x, y, width, stack_size, parent)
+      {
+        this._x = x;
+        this._y = y;
+        this._width = width;
+        this._stack_size = stack_size;
+        this._parent = parent;
+        this._effectType = null;
+        this._upMode = false;
+
+        this._items = [];
+        this._timers = [];
+
+        this._init_items();
+      }
+
+      setUpMode() {
+        this._upMode = true;
+      }
+
+      setEffectSettings(effect) {
+        this._effectType = effect;
+      }
+
+      setSingleMode() {
+        //this._singleMode = true;
+      }
+
+      move(x,y) {
+        this._x = x;
+        this._y = y;
+        this._step();
+      }
+
+      push(popUpItem)
+      {
+        if(this._effectType != null)
+          popUpItem.setEffectSettings(this._effectType);
+
+        popUpItem.setup(this._x, this._y, this._width, this._parent);
+
+        let item = this._items.shift();
+        if(item != null) item.dispose();
+
+        this._items.push(popUpItem);
+        this._step();
+        this._timers.shift();
+        this._timers.push(0);
+      }
+
+      clear()
+      {
+        this._items.forEach(function(item){
+          if(item != null) item.dispose();
+        });
+        this._items = [];
+        this._timers = [];
+        this._init_items();
+      }
+
+      update()
+      {
+        this._update_timers();
+        this._items.forEach(function(item){
+          if(item != null) item.update();
+        });
+      }
+
+      //PRIVATE
+      _init_items()
+      {
+        SDK.times(this._stack_size, function() {
+          this._items.push(null);
+          this._timers.push(null);
+        }.bind(this));
+      }
+
+      _update_timers()
+      {
+        SDK.times(this._stack_size, function(i) {
+          var index = (this._timers.length - 1) - i; //Reverse
+          var timer = this._timers[index];
+          if(timer == null)
+            return;
+          else
+          {
+            if(timer < ABSObject_PopUpMachine.MAX_TIME)
+              this._timers[index] = this._timers[index] + 1;
+            if(timer == ABSObject_PopUpMachine.MAX_TIME) {
+              if(this._items[index] != null)
+              {
+                this._items[index].dispose();
+              }
+              this._items[index] = null;
+              this._timers[index] = null;
+            }
+          }
+        }.bind(this));
+      }
+
+      _step()
+      {
+        SDK.times(this._items.length, function(i) {
+          var index = (this._items.length - 1) - i; //Reverse
+          var item = this._items[index];
+          if(item == null)
+            return;
+
+          var y = 0;
+          if(this._upMode)
+            y = this._y - (ABSObject_PopUpMachine.Y_STEP * i);
+          else
+            y = this._y + (ABSObject_PopUpMachine.Y_STEP * i);
+
+          this._items[index].setX(this._x);
+          this._items[index].setY(y);
+        }.bind(this));
+      }
+    }
+
+    SDK.setConstant(ABSObject_PopUpMachine, 'Y_STEP',   24);
+    SDK.setConstant(ABSObject_PopUpMachine, 'MAX_TIME', 60);
+    SDK.setConstant(ABSObject_PopUpMachine, 'SETTINGS', [1, false, 12]); //zoom, isUpdateZoom, +toTextSize
+    //END ABSObject_PopUpMachine
+  //------------------------------------------------------------------------------
+
+
+  AlphaABS.ABSObject_PopUpMachine = ABSObject_PopUpMachine;
+})();
+
+var XPLATFORM = XPLATFORM || {};
 
 //==========================================================================================================================================================
 // Alpha ABS EXTENSION Particle Engine
@@ -2817,9 +2621,11 @@ Object.defineProperty(AlphaABS, 'UTILS', {writable: false});
 AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
 (function() {
 
-	var ABSPE = function() {};
 
-	class Particle {
+
+  var ABSPE = function() {};
+
+    class Particle {
         constructor(x, y, w, h, rotation, xVel, yVel, lifeTime, sizeChange, color, imageName, startOpacity) {
             this.x = x;
             this.y = y;
@@ -2892,7 +2698,7 @@ AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
         }
 
         setOuterData(data) {
-        	this.arg = data;
+          this.arg = data;
         }
 
         update() {
@@ -3043,27 +2849,1907 @@ AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
 
 })();
 
+
+//DEV
+//var __selected = null;
+
+(function() {
+
+  
+
+  var LOG = new PLATFORM.DevLog("BattleManagerABS");
+  LOG.applyPresetLib();
+
+  function isDevMode() {
+    //return (DEV !== undefined);
+    return false;
+  }
+
+  //BattleManagerABS
+  //------------------------------------------------------------------------------
+    function BattleManagerABS() {
+      throw new Error('This is a static class');
+    }
+
+    AlphaABS.register(BattleManagerABS);
+
+    var SMouse = AlphaABS.UTILS.SMouse;
+    var Consts = AlphaABS.SYSTEM;
+
+    BattleManagerABS.init = function() {
+      this._setupPlugins();
+      this.timer = new Game_TimerABS();
+      this._ready = false;
+      this._ui = null;
+      this._plTargets = [];
+      BattleManagerABS.clearABS();
+      this._prepareResources();
+      Input.loadSchemeABS();
+      AlphaABS.ABSPathfinding.init();
+    }
+
+    BattleManagerABS.connectProcess = function() {
+        this._process = new AlphaABS.LIBS["Game_BattleProcessABS"]();
+    }
+
+    BattleManagerABS.battleProcess = function() {
+      return this._process;
+    }
+
+    BattleManagerABS.onMapLoaded = function() {
+      if(this._isABSMap && $gameMap.isABS()) { //Если переход между АБС картами, то не делаем StopABS, а только prepare Заного
+        if(this._absMapId != $gameMap.mapId()) {
+          $gameTroop.initABS(); //Need restart
+          this._absMapId = $gameMap.mapId();
+        }
+        this._ui.initABS();
+        $gamePlayer.prepareABS();
+        LOG.p("Manager : Go to ABS map from ABS map, Prepare new ABS session");
+        return;
+      }
+
+      if(this._isABSMap && !$gameMap.isABS()) { //Если переход от AБС карты на обычную, то надо всё остановить
+        this.stopABS();
+        LOG.p("Manager : Go to map from ABS map, stop ABS session");
+        return;
+      }
+
+      if(!this._isABSMap && $gameMap.isABS()) {
+        this.initABS();
+        LOG.p("Manager : Go to ABS map from map, start new ABS session");
+      }
+    }
+
+    BattleManagerABS.initABS = function() { //Инициализация боевой карты и ABS системы
+      $gamePlayer.initABS();
+      $gameTroop.initABS();
+      $gameParty.initABS();
+      this.timer.start(BattleManagerABS.TURN);
+      this._ready = true;
+      SMouse.setTrack(true);
+
+      this._ui.initABS();
+
+      $gamePlayer.prepareABS();
+
+      LOG.p("Manager : ABS Map loaded");
+      this._isABSMap = true;
+      this._absMapId = $gameMap.mapId();
+      AlphaABS.ABSPathfinding.setup();
+    }
+
+    BattleManagerABS.stopABS = function() {
+      LOG.p("Manager : ABS Map destroy");
+      BattleManagerABS.clearABS();
+      SMouse.setTrack(false);
+      $gamePlayer.stopABS();
+    }
+
+    BattleManagerABS.clearABS = function() {
+      this._isABSMap = false;
+      this._absMapId = -1;
+    }
+
+    BattleManagerABS.setPlayerTarget = function(target) {
+      if(target && target.inActive()) {
+        $gamePlayer.setTarget(target);
+        $gameTroop.selectOnMap(target);
+        this.UI().showTarget(target);
+        if(isDevMode()) {__selected = target;}
+      } else {
+        $gamePlayer.setTarget(null);
+        $gameTroop.selectOnMap(null);
+        this.UI().showTarget(null);
+      }
+    }
+
+    BattleManagerABS.getPlayerTarget = function() {
+      return $gamePlayer.target();
+    }
+
+    BattleManagerABS.updateABS = function() {
+      if(!this._ready) return;
+      this.timer.update();
+      if(this.timer.isReady()) {
+        this.timer.reset();
+        $gamePlayer.onTurnEnd();
+        $gameTroop.onTurnEnd();
+      }
+    }
+
+    BattleManagerABS.setUI = function(spritesetUI) {
+      this._ui = spritesetUI;
+    }
+
+    BattleManagerABS.UI = function() {
+      return this._ui;
+    }
+
+    BattleManagerABS.alertOnUI = function(string) {
+      this.UI().addPopUp(AlphaABS.PopInfoManagerABS.ALERT(string));
+    }
+
+    BattleManagerABS.alertNoInBattle = function() {
+      BattleManagerABS.alertOnUI(AlphaABS.SYSTEM.STRING_ALERT_NOINBATTLE[SDK.isRU()]);
+    }
+
+    BattleManagerABS.playSe = function(se, point) {
+      if(BattleManagerABS.isABSAudio()) {
+        AudioManager.playSeAt(se, point);
+      } else {
+        AudioManager.playSe(se);
+      }
+    }
+
+    BattleManagerABS.isABSAudio = function() {
+      return AlphaABS.SYSTEM.EXTENSIONS.AUDIO;
+    }
+
+    BattleManagerABS.isABSParticleSystem = function() {
+      return (AlphaABS.SYSTEM.EXTENSIONS.ABSPE !== undefined) && (AlphaABS.SYSTEM.EXTENSIONS.ABSPE != false);
+    }
+
+    BattleManagerABS.isABSLightingExt = function() {
+      return AlphaABS.SYSTEM.EXTENSIONS.LIGHT;
+    }
+
+    BattleManagerABS.alertOnUIbySym = function(alertSymbol) {
+      switch(alertSymbol) {
+        case 'noUse':
+          BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NOUSE[SDK.isRU()]);
+        break;
+        case 'toFar':
+          BattleManagerABS.alertOnUI(Consts.STRING_ALERT_TOFAR[SDK.isRU()]);
+        break;
+        case 'noTarget':
+          BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NEEDTARGET[SDK.isRU()]);
+        break;
+        case 'noAmmo':
+          BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NOCHARGES[SDK.isRU()]);
+        break;
+        case 'recharge':
+          BattleManagerABS.alertOnUI(Consts.STRING_ALERT_RECHARGE[SDK.isRU()]);
+        break;
+      }
+    }
+
+    BattleManagerABS.nextPlayerTarget = function() {
+      var t = ABSUtils.inRadius($gamePlayer, 12, $gameTroop.membersABS());
+      if(t.count() == 0) {
+        return null;
+      }
+
+      var t2 = t.diff(this._plTargets);
+
+      if(t2.count() == 0) {
+        this._plTargets = [];
+        return this.nextPlayerTarget();
+      } else {
+        this._plTargets.push(t2.first());
+      }
+      return t2.first();
+    }
+
+    //HELPERS
+    BattleManagerABS.canUseSkillByTimer = function(skill) {
+      return skill ? skill.isReady() : false;
+    }
+
+    BattleManagerABS.playerABSSkillById = function(skillId) {
+      return $gamePlayer.battler().skillABS_byId(skillId);
+    }
+
+    BattleManagerABS.canUseSkillByTarget = function(who, target, skill) {
+      if(!skill) return false;
+      if(skill.isRadiusType()) return true;
+      if(skill.isNeedTarget()) {
+        if(target)
+          return true;
+        else
+          return false;
+
+      } else
+        return true;
+    }
+
+    BattleManagerABS.canUseSkillByRange = function(who, target, skill) {
+      if(!skill) return false;
+      if(skill.isZoneType()) return true;
+      if(skill.isRadiusType()) return true;
+      if(skill.range == 0 && !skill.isNeedTarget()) return true;
+      if(skill.range == 0) {
+        return ABSUtils.inFront(who, target);
+      } else {
+        var t = ABSUtils.distanceTo(who,target);
+        if(skill.range >= t) {
+          if(skill.isDirectionFix()) {
+            LOG.p("SPELL: Dirction FIXed");
+            return ABSUtils.inDirectionHard(who, target);
+          }
+          else
+            return true;
+        } else
+          return false;
+      }
+    }
+
+    BattleManagerABS.canUseSkillByAmmo = function(skill) {
+      var result = true;
+      if(skill.isStackType() && !skill.isAutoReloadStack()) {
+        result = !skill.isNeedReloadStack();
+      }
+      if(!skill.isStackType() && skill.isNeedAmmo()) {
+        result = $gameParty.numItems($dataItems[skill.ammo]) > 0;
+      }
+      return result;
+    }
+
+    BattleManagerABS.canUseABSSkillNow = function(who, target, skill) {
+      if(!skill) return false;
+      return this.canUseSkillByTarget(who, target, skill) &&
+      this.canUseSkillByRange(who, target, skill) &&
+      this.canUseSkillByTimer(skill) && this.canUseSkillByAmmo(skill);
+    }
+
+    BattleManagerABS.canUseABSSkillUI = function(skill) {
+      if(!$gamePlayer.inActive()) return false;
+      var t = $gamePlayer.battler();
+      return t.canUse(skill.skill()) && this.canUseABSSkillNow($gamePlayer, $gamePlayer.target(), skill) && t.canMove();
+    }
+
+    BattleManagerABS.whoTargetOnMe = function(me, members) {
+      var x = members.filter(function(t) {
+        return (t.target() == me);
+      });
+      return x.first();
+    }
+
+    BattleManagerABS.isValidTarget = function(target) {
+      return target && target.inActive() && (target.battler().tgr != 0);
+    }
+
+    BattleManagerABS.warning = function(index) {
+      switch(index) {
+        case 1: LOGW.p(Consts.STRING_WARNING_COMMON2[SDK.isRU()]); break;
+        case 2: LOGW.p(Consts.STRING_WARNING_COMMON3[SDK.isRU()]); break;
+        case 129: LOGW.p(Consts.STRING_WARNING_COMMAND129[SDK.isRU()]); break;
+        case 321: LOGW.p(Consts.STRING_WARNING_COMMAND321[SDK.isRU()]); break;
+        default: LOGW.p(Consts.STRING_WARNING_COMMON[SDK.isRU()]); break;
+      }
+    }
+
+    BattleManagerABS._prepareResources = function() {
+      //Load images to memory
+      ImageManager.loadPictureABS('CircleSegment_small')
+        ImageManager.loadPictureABS('CircleSegment_small_down');
+        ImageManager.loadPictureABS('CircleSegment_small_L');
+        ImageManager.loadPictureABS('CircleSegment_small_R');
+    }
+
+    BattleManagerABS._setupPlugins = function() {
+      if(Imported.YEP_ItemCore == true) {
+        var _Game_Party_gainIndependentItem_YEP = Game_Party.prototype.gainIndependentItem;
+        Game_Party.prototype.gainIndependentItem = function(item, amount, includeEquip) {
+          _Game_Party_gainIndependentItem_YEP.call(this, item, amount, includeEquip);
+          if($gameMap.isABS()) {
+            if(amount > 0 && !this._noNotifyABS) {
+              AudioManager.playSe({name:'Equip2',pan:0,pitch:140,volume:90});
+              BattleManagerABS.UI().pushOnItemPanel('item', item);
+            }
+
+            if(DataManager.isWeapon(item)) {
+                    if(AlphaABS.BattleManagerABS.UI()) {
+                        AlphaABS.BattleManagerABS.UI().weapCircleRefresh();
+                    }
+                }
+              }
+        }
+      }
+
+      if(Imported.YEP_EquipCore == true) {
+        var _Window_EquipSlot_drawItem_YEP = Window_EquipSlot.prototype.drawItem;
+        Window_EquipSlot.prototype.drawItem = function(index) {
+          _Window_EquipSlot_drawItem_YEP.call(this, index);
+          this._drawFavWeapSymbol(index);
+        }
+      }
+
+      if(Imported.YEP_SaveCore == true) {
+        var _Scene_File_performActionLoad_YEP = Scene_File.prototype.performActionLoad;
+        Scene_File.prototype.performActionLoad = function() {
+          if(BattleManagerABS._isABSMap == true) {
+            BattleManagerABS.stopABS();
+          }
+            _Scene_File_performActionLoad_YEP.call(this);
+        };
+      }
+    }
+
+    SDK.setConstant(BattleManagerABS, 'TURN', AlphaABS.SYSTEM.FRAMES_PER_SECOND);
+  //END BattleManagerABS
+  //------------------------------------------------------------------------------
+
+  AlphaABS.BattleManagerABS = BattleManagerABS;
+
+})();
+
+//Class extension (for savefile compability)
+function Game_AIBot()        { this.initialize.apply(this, arguments);}
+(function(){
+
+  
+
+  var LOG = new PLATFORM.DevLog("AIBot");
+  LOG.applyPresetLib();
+
+  var BattleManagerABS = {};
+  var Consts = AlphaABS.SYSTEM;
+
+//Game_AIBot
+//------------------------------------------------------------------------------
+  Game_AIBot.prototype = Object.create(Game_Event.prototype);
+  Game_AIBot.prototype.constructor = Game_AIBot;
+  AlphaABS.register(Game_AIBot);
+
+  Game_AIBot.prototype.initialize = function(mapId, eventId, enemyId) {
+      Game_Event.prototype.initialize.call(this, mapId, eventId);
+      LOG.p("AI inited " + $dataEnemies[enemyId].name + " at " + this.toPoint().toString());
+
+      BattleManagerABS = AlphaABS.BattleManagerABS;
+      this._absParams.enemyId = enemyId;
+      this._absParams.battler = null;
+      this._absParams.target = null;
+
+      //States
+      this._absParams.inBattle = false;
+      this._absParams.active = true; //Со мной можно взаимодействовать
+      this._absParams.selected = false; //Я выбран на карте игроком?
+      this._absParams.casting = false; //Читаю заклинание
+      this._absParams.state = "free";
+      this._absParams.actionState = "stay";
+
+      //Variables
+      this._absParams.allyToSearch = null; //Кого мне искать
+      this._absParams.reviveTimer = null; //Таймер для возраждения
+      this._absParams.regenTimer = null; //Таймер для восстановления параметров
+      this._absParams.myStartPosition = this.toPoint();
+      this._absParams.myHomePosition = null;
+      this._absParams.looted = false;
+      this._absParams.activateSwitch = null; //Used if enemy not been active at start
+
+      //Behavior
+      var b = new AlphaABS.LIBS["Game_AIBehavior"](this);
+      this._absParams.behavior = b;
+      //I know, this is terrible, but this is still BETA
+      this._absParams.viewRadius = b.viewRadius;
+      this._absParams.returnRadius = b.returnRadius;
+      this._absParams.escapeOnBattle = b.escapeOnBattle; //Убегает во время битвы
+      this._absParams.canSearch = b.canSearch; //Могу ля я искать противника, если мой сосед атакован
+      this._absParams.noFight = b.noFight; //Не будет сражаться
+      this._absParams.reviveTime = b.reviveTime; //Время возрождения (минуты)
+      this._absParams.regenOnFree = b.regen;
+      this._absParams.slow = b.slow; //Медленный враг
+      this._absParams.agressive = b.agressive; //Агрессивный враг (будет догонять)
+      this._absParams.returnType = b.returnType; //Тип возвращения 0 - быстрое, 1 - обычное, 2 - остановка
+
+    this.setRevive(this._absParams.reviveTime);
+
+    if(Imported.Quasi_Movement)
+      this._absParams.useAStar = true;
+    else
+      this._absParams.useAStar = false;
+
+      this._storeMoveData();
+  };
+
+  Game_AIBot.prototype.changeReturnType = function(newReturnType) {
+        this._absParams.returnType = newReturnType;
+        LOG.p("ReturnType: " + this._absParams.returnType);
+  }
+
+  Game_AIBot.prototype.isFastReturn = function() {
+    return this._absParams.returnType == 0;
+  }
+
+  Game_AIBot.prototype.isSlowReturn = function() {
+    return this._absParams.returnType == 1;
+  }
+
+  Game_AIBot.prototype.isNotReturn = function() {
+    return this._absParams.returnType == 2;
+  }
+
+  //NEW
+  Game_AIBot.prototype.battler = function() {
+    return this._absParams.battler;
+  }
+
+  //NEW
+  Game_AIBot.prototype.target = function() {
+    return this._absParams.target;
+  }
+
+  //NEW
+  Game_AIBot.prototype.initABS = function() {
+    if(!this._absParams.battler) {
+      this._absParams.battler = new Game_EnemyABS(this._absParams.enemyId);
+      this._absParams.battler.initABS();
+    }
+    if(this._checkActiveState()) {
+      this._absParams.active = true;
+      this._checkDieSwitch();
+
+      if(this._absParams.battler.enemy().actions.length == 0) {
+        LOG.p("AI: Not actions");
+        this._absParams.noFight = true;
+      }
+    } else {
+      LOG.p("AI: Deactivated from start");
+      this._deactivate();
+    }
+  }
+
+  //NEW
+  Game_AIBot.prototype.activate = function() {
+    if(!this._absParams.activateSwitch) return;
+    LOG.p("AI: Activate");
+    var key = [$gameMap.mapId(), this.eventId(), this._absParams.activateSwitch];
+    $gameSelfSwitches.setValue(key, true);
+    this.refresh();
+    this._absParams.activateSwitch = null;
+    this.initABS();
+  }
+
+  //NEW
+  Game_AIBot.prototype.inBattle = function() {
+    return this._absParams.inBattle;
+  }
+
+  //NEW
+  Game_AIBot.prototype.inActive = function() {
+    return this._absParams.active;
+  }
+
+  //NEW
+  Game_AIBot.prototype.onTurnEnd = function() {
+    if(this.inBattle()) {
+      this.battler().onTurnEnd();
+    }
+  }
+
+  Game_AIBot.prototype.hasLoot = function() {
+    return !this._absParams.looted;
+  }
+
+  //NEW
+  Game_AIBot.prototype.loot = function() {
+    if(!this._absParams.looted) {
+      this._absParams.looted = true;
+      //TODO Можно звук соответствующий
+      //'coin'
+      var gold = this.battler().gold();
+      if(gold > 0) {
+        $gameParty.gainGold(gold);
+      }
+      var t = this.battler().makeDropItems();
+      if(t.length > 0) {
+        t.forEach(function(i) {
+          $gameParty.gainItem(i,1);
+        });
+      }
+      LOG.p("AI : Looted!");
+    } else {
+      LOG.p("AI : Already looted!");
+    }
+  }
+
+  //NEW
+  Game_AIBot.prototype.onActionOnMe = function(who) {
+    if(!this.inBattle() && !this._absParams.noFight) {
+      LOG.p("AI : I'am attacked!!!");
+      this._absParams.target = who;
+      this._changeState('battle');
+    }
+
+    if(!this.battler().isAlive() && this.inActive()) {
+      var t = this.battler().exp();
+      $gameParty.gainExp(t);
+      if(Consts.PARAMS.AUTO_LOOT)
+        this.loot();
+      if(this._absParams.behavior.cEonDeath > 0) {
+        LOG.p("AI : Common Event (on Death): " + this._absParams.behavior.cEonDeath);
+        $gameTemp.reserveCommonEvent(this._absParams.behavior.cEonDeath);
+      }
+      //$gamePlayer.requestExpPopup(t); //ABUNAI, honto ni 'who' ga 'Player' ka
+    }
+  }
+
+  //NEW
+  Game_AIBot.prototype.selectOnMap = function(isSelect) {
+    this._absParams.selected = isSelect;
+  }
+
+  //NEW
+  Game_AIBot.prototype.isAlly = function() {
+    return false;
+  }
+
+  //NEW
+  Game_AIBot.prototype.setRevive = function(time) {
+    if(time == 0) {
+      this._absParams.reviveTimer = null;
+      return;
+    }
+    var t = time * AlphaABS.SYSTEM.FRAMES_PER_SECOND;
+    LOG.p("AI : Set revive " + time + " secs.");
+    if(time) {
+      this._absParams.reviveTimer = new Game_TimerABS();
+      this._absParams.reviveTimer.start(t);
+    }
+  }
+
+  //NEW Load from save file
+  Game_AIBot.prototype.onGameLoad = function() {
+    LOG.p("AI : On Game Load");
+    this.battler().onGameLoad();
+    //if(this._paused) {
+    //  this._paused = false;
+    //  this.pause(true);
+    //} This not work
+    /*var t = 0;
+    if(this._absParams.reviveTimer)
+      t = this._absParams.reviveTimer._value;
+    this.setRevive(this._absParams.reviveTime);
+    if(this._absParams.reviveTimer && t > 0) //Continue
+    {
+      LOG.p("AI : Continue revive from " + t);
+      this._absParams.reviveTimer.start(t);
+    }*/
+  }
+
+  //OVER
+  Game_AIBot.prototype.start = function() {
+    if(this.inActive()) { //Select by Enter
+      if(this != BattleManagerABS.getPlayerTarget()) {
+        BattleManagerABS.setPlayerTarget(this);
+        LOG.p("Selected " + this.event().name);
+      }
+    }
+    Game_Event.prototype.start.call(this);
+  };
+
+  //Pause function work but if you pause enemy then save game and load, enemy not be paused
+  /*Game_AIBot.prototype.pause = function(isPause) {
+    if(isPause) {
+      if(this.inActive() && this.battler().isAlive()) {
+        this._deactivate();
+        this._paused = true;
+        LOG.p("AI: Paused");
+      }
+    } else {
+      if(this._paused) {
+        LOG.p("AI: Resumed");
+        this._paused = false;
+        this.initABS();
+      }
+    }
+
+  }*/
+
+  //OVER
+  Game_AIBot.prototype.update = function() {
+    var isMoving = this.isMoving();
+    Game_Event.prototype.update.call(this);
+    if(!this.isMoving()){
+      this._updateNonmoving(isMoving);
+    }
+    this._updateABS();
+    this._updateRevive();
+  }
+
+  //NEW
+  Game_AIBot.prototype.interruptCast = function() {
+    var t = this._absParams.currentAction;
+    if(t && t.isCasting()){
+      LOG.p("AI : Cast intterupt");
+      t.resetCast();
+      this._absParams.casting = false;
+    }
+  }
+
+  //NEW
+  Game_AIBot.prototype._checkActiveState = function() {
+    var t = this.list();
+    for (var i =0; i < t.length; i++) {
+          var item = t[i];
+          if (item.code == 108) {
+                var comment = item.parameters[0];
+                if(comment.indexOf("<noActive") >= 0) {
+                  var t2 = /<noActive\s?:\s?(.+?)>/;
+                  var match = t2.exec(comment);
+                  if(match) {
+                    if(SDK.checkSwitch(match[1])) {
+                      this._absParams.activateSwitch = match[1];
+                      return false;
+                    }
+                  }
+                }
+          }
+      }
+      return true;
+  }
+
+  //PRIVATE
+  Game_AIBot.prototype._storeMoveData = function() {
+    var t = this._absParams;
+    t.moveData = {};
+    t = t.moveData;
+    t.moveSpeed = this._moveSpeed;
+    t.moveType = this._moveType;
+    t.moveFrequency = this._moveFrequency;
+  }
+
+  Game_AIBot.prototype._restoreMoveData = function() {
+    var t = this._absParams.moveData;
+    this._moveSpeed = t.moveSpeed;
+    this._moveType = t.moveType;
+    this._moveFrequency = t.moveFrequency;
+  }
+
+  Game_AIBot.prototype._resetMoveData = function() {
+    this._moveSpeed = this._absParams.moveData.moveSpeed;
+    this._moveType = 0;
+    this._moveFrequency = this._absParams.moveData.moveFrequency;
+  }
+
+  Game_AIBot.prototype._checkDieSwitch = function() {
+    var key = [$gameMap.mapId(), this.eventId(), Consts.PARAMS.DEAD_SWITCH];
+    if($gameSelfSwitches.value(key) === true) {
+      if(this._absParams.reviveTime == 0) {
+        this._deactivate();
+      } else {
+        $gameSelfSwitches.setValue(key, false);
+      }
+    }
+  }
+
+  Game_AIBot.prototype._makeActions = function() {
+    if(this._absParams.casting) return;
+
+    this._absParams.battler.makeActions();
+
+    var actions = this._absParams.battler._actions.filter(function(action) {
+      var skill = this.battler().skillABS_byAction(action);
+      var target = this.target();
+      if(skill)
+        target = skill.isNeedTarget() ? this.target() : self;
+      return BattleManagerABS.canUseABSSkillNow(this, target, skill) && this._isUsableABSSkill(skill);
+    }.bind(this));
+
+    //Выбрали действия, которые можно использовать в данный момент
+    if(actions.length > 0) {
+      this._setForceAction(actions.first());
+    }
+    else {
+      this._setCurrentAction(this.battler().action(0)); //Устанавливаю
+    }
+  }
+
+  Game_AIBot.prototype._isUsableABSSkill = function(absSkill) { //SOME TYPES NOT SUPPORTED YET
+    var result = true;
+    if(absSkill.isZoneType()) return false;
+    if(absSkill.isRadiusType()) return false;
+    if(absSkill.isNeedAmmo()) return false;
+    if(absSkill.isVectorTypeR()) return false;
+    if(absSkill.isStackType() && !absSkill.isAutoReloadStack()) return false;
+    return result;
+  }
+
+  Game_AIBot.prototype._setForceAction = function(action) {
+    this._absParams.currentAction = this.battler().skillABS_byAction(action);
+    this._changeActionState('action');
+  }
+
+  Game_AIBot.prototype._setCurrentAction = function(action) {
+    var t = this.battler().skillABS_byAction(action);
+    if(this._absParams.currentAction != t) {
+      this._absParams.currentAction = t;
+      if(this._absParams.currentAction)
+        this._changeActionState('prepareAction');
+      else {
+        if(this._absParams.escapeOnBattle)
+          this._changeActionState('escape');
+        else
+          this._changeWaitActionState('prepareAction', 'wait', null);
+      }
+    }
+  }
+
+  Game_AIBot.prototype._performAction = function() {
+    LOG.p("AI : Perform! " + this._absParams.currentAction.skill().name);
+    if(this._absParams.currentAction.isVectorType()) {
+      BattleManagerABS.battleProcess().startPostBattleAction(this, this.target(), this.battler().action(0), this._absParams.currentAction);
+    } else {
+      if(this._absParams.currentAction.isNeedTarget())
+        BattleManagerABS.battleProcess().performBattleAction(this, this.target());
+      else
+        BattleManagerABS.battleProcess().performBattleAction(this, this);
+    }
+    this.battler().performCurrentAction();
+    this._absParams.currentAction.playStartSound(this.toPoint());
+    this._changeActionState('prepareAction');
+  }
+
+  Game_AIBot.prototype._updateABS = function() {
+
+    if(this._absParams.active && !this._erased)
+    {
+      this.battler().updateABS();
+
+      if(!this.battler().isAlive()) {
+        this._changeState('dead');
+        return;
+      }
+
+      if(!this.battler().canMove() && this._absParams.state != 'stun') {
+        this._changeState('stun');
+      }
+
+      switch(this._absParams.state){
+        case 'free': this._update_on_free(); break;
+        case 'battle': this._update_on_battle(); break;
+        case 'search' : this._update_on_search(); break;
+        case 'return': this._update_on_return(); break;
+        case 'stun' : this._update_on_stun(); break;
+      }
+    } else {
+      if(this._absParams.state == 'return') {
+        this._update_on_return();
+      }
+    }
+
+    if(this._absParams.active == true && this._erased == true) {
+      this._deactivate();
+    }
+  }
+
+  Game_AIBot.prototype._updateRevive = function() {
+    if(this._absParams.reviveTimer == null || this.battler().isAlive()) {
+      return;
+    }
+
+    this._absParams.reviveTimer.update();
+    if(this._absParams.reviveTimer.isReady()) {
+      //TODO Colide with test
+      //if(this.isCollidedWithEvents(this._absParams.myStartPosition.x, this._absParams.myStartPosition.y).length == 0) {
+        this._revive();
+      //} else {
+      //  LOG.p("Can't revive, place is busy, wait");
+      //  this._absParams.reviveTimer.start(720);
+      //}
+
+    }
+  }
+
+  Game_AIBot.prototype._revive = function() {
+    if(this._erased == true) {
+      this._absParams.reviveTimer = null;
+      return;
+    }
+
+    this.locate(this._absParams.myStartPosition.x, this._absParams.myStartPosition.y);
+    var key = [$gameMap.mapId(), this.eventId(), Consts.PARAMS.DEAD_SWITCH];
+    $gameSelfSwitches.setValue(key, false);
+    this._absParams.battler = null;
+    this._absParams.reviveTimer = null;
+    this.refresh();
+    this.initABS();
+    this.setRevive(this._absParams.reviveTime);
+    this._absParams.active = true;
+    this._absParams.looted = false;
+    if(Consts.PARAMS.REVIVE_ANIMATION_ID > 0)
+      this.requestAnimationABS(Consts.PARAMS.REVIVE_ANIMATION_ID); //TODO If in visible screen
+    this._absParams.myHomePosition = null;
+    this._changeState('free');
+  }
+
+  Game_AIBot.prototype._changeState = function(newState) {
+    this._absParams.state = newState;
+    switch(newState) {
+      case 'free' :
+        this._absParams.target = null;
+        this._restoreMoveData();
+        this._moveSpeed += this.battler().ABSParams().moveSpeedUpKoef;
+      break;
+      case 'battle' :
+      if(this._absParams.regenTimer) {
+        this._absParams.regenTimer.reset();
+      }
+      this._onBattleStart();
+      this._changeActionState('approach');  //преследую цель!
+      break;
+      case 'return' :
+        this._deactivate();
+        LOG.p("AI : Return to " + this._absParams.myHomePosition.toString());
+      break;
+      case 'search':
+        this._restoreMoveData();
+        LOG.p("AI : Curious! I'am searching...");
+        if(!this._absParams.behavior.noEmote) this.requestBalloon(2);
+      break;
+      case 'dead' :
+        this._moveType = 0;
+        var key = [$gameMap.mapId(), this.eventId(), Consts.PARAMS.DEAD_SWITCH];
+        $gameSelfSwitches.setValue(key, true);
+        this._originalDirection = -1;
+        this._originalPattern = -1;
+        this.refresh();
+        this._deactivate();
+      break;
+      case 'stun':
+        //this.interruptCast();
+        this._resetTarget();
+        this._moveType = 0; //Stop
+        this._moveFrequency = this._absParams.moveData.moveFrequency;
+        LOG.p("AI : I'am stunned!");
+        if(!this._absParams.behavior.noEmote) this.requestBalloon(10);
+      break;
+    }
+  }
+
+  Game_AIBot.prototype._changeActionState = function(newActionState) {
+    this._resetMoveData();
+    this._absParams.actionState = newActionState;
+    switch(newActionState) {
+      case 'approach' :
+        //LOG.p("AI : approach apply");
+        if(this._absParams.behavior.noMove == true) {
+          this._moveType = 0; //Stay
+          this.turnTowardPlayer();
+        } else {
+          this._applyAproachSpeed();
+          this._moveType = 2;
+        }
+        break;
+      case 'prepareAction' :
+        break;
+      case 'cast':
+        this._moveType = 0; //Stay
+        this._moveFrequency = this._absParams.moveData.moveFrequency;
+        this.turnTowardPlayer();
+        break;
+      case 'action' :
+        this._moveType = 0; //Stay
+        this._moveFrequency = this._absParams.moveData.moveFrequency;
+        this._absParams.myHomePosition = new Point(this.x,this.y); //Reset position
+        this.turnTowardPlayer();
+        break;
+      case 'escape':
+        this._applyAproachSpeed();
+        this._moveType = 0;
+        break;
+      case 'wait' :
+        this._moveType = 0; //Stay
+        this._moveFrequency = this._absParams.moveData.moveFrequency;
+        break;
+    }
+  }
+
+  Game_AIBot.prototype._applyAproachSpeed = function() {
+    if(this._absParams.slow != true) {
+      //LOG.p("AI : Apply acceleration");
+      this._moveFrequency = this._absParams.moveData.moveFrequency + 2;
+    }
+  }
+
+  Game_AIBot.prototype._changeWaitActionState = function(oldActionState, waitType, waitTimer) {
+    this._absParams.oldActionState = oldActionState;
+    this._absParams.waitType = waitType;
+    this._absParams.waitTimer = waitTimer;
+    this._changeActionState('wait');
+  }
+
+  Game_AIBot.prototype._checkReturn = function() {
+    if(this._absParams.myHomePosition) {
+      var t = ABSUtils.distanceTo(this, this._absParams.myHomePosition);
+      if(t > this._absParams.returnRadius) {
+        LOG.p("AI : I'am to far from my home!");
+        //IDEA Можно включать прозрачность, чтобы быстрее вернулся домой
+        this._changeState('return');
+      }
+    }
+  }
+
+  Game_AIBot.prototype._setTarget = function(t) {
+    if(BattleManagerABS.isValidTarget(t)) {
+      this._absParams.target = t;
+      //if(t == $gamePlayer) //TODO Target to ally
+        $gamePlayer.refreshBattleState();
+    }
+    if(t == null)
+      this._resetTarget();
+  }
+
+  Game_AIBot.prototype._resetTarget = function() {
+    this._absParams.target = null;
+    this._absParams.inBattle = false;
+    this.interruptCast();
+  }
+
+
+  Game_AIBot.prototype.moveTypeTowardPlayer = function() {
+      if (this.isNearThePlayerX()) {
+          //Nothing
+      } else {
+          this.moveToPoint($gamePlayer);
+      }
+  };
+
+  Game_AIBot.prototype.isNearThePlayerX = function() {
+      var sx = Math.abs(this.deltaXFrom($gamePlayer.x));
+      var sy = Math.abs(this.deltaYFrom($gamePlayer.y));
+      return sx + sy < 1;
+  };
+
+  Game_AIBot.prototype._update_on_free = function() {
+    if(this._absParams.noFight) {
+      var t = this._checkVision($gamePlayer);
+      if(!t) {
+        this._regenerateValues();
+      } else {
+        if(this._absParams.escapeOnBattle == true) {
+          LOG.p("AI : Run away from Player");
+          this._runAwayFromTarget();
+        }
+      }
+      return;
+    }
+
+    if(this._absParams.myHomePosition != null) {
+      if(this._absParams.active == true)
+        this.returnSlow();
+    }
+
+    this._regenerateValues();
+    var t = this._checkVision($gamePlayer);
+    if(t) {
+      this._setTarget($gamePlayer);
+      if(this._absParams.target) {
+        LOG.p("AI : Player Detected!");
+        this._changeState('battle');
+      }
+    } else {
+      if(this._absParams.canSearch) {
+        this._checkVisionAlly();
+        if(this._absParams.allyToSearch) {
+          this._changeState('search');
+        }
+      }
+    }
+  }
+
+  Game_AIBot.prototype._update_on_stun = function() {
+    if(this.battler().canMove()) {
+      this._changeState('free');
+    } else {
+
+    }
+  }
+
+  Game_AIBot.prototype._update_on_battle = function() {
+    if(!this.target().inActive()) {
+      this._changeState('free');
+    }
+
+    if(!this._checkVision(this.target())) {
+      if(this._absParams.behavior.noMove) {
+        this._changeState('free');
+        return;
+      }
+    }
+
+    this._makeActions();
+    //LOG.p("AI : Make Actions Done");
+    switch(this._absParams.actionState) {
+    case 'approach':
+      this._checkReturn();
+      //LOG.p("AI : Check return Done");
+    break;
+
+    case 'prepareAction':
+      LOG.p('prepareAction');
+      var t = this._absParams.currentAction;
+      if(t.cEonStart != 0) {
+        LOG.p("AI : Common Event " + t.cEonStart);
+        $gameTemp.reserveCommonEvent(t.cEonStart);
+      }
+      if(BattleManagerABS.canUseSkillByTimer(t)) {
+        if(BattleManagerABS.canUseSkillByRange(this, this.target(), t)) {
+          this._changeActionState('action');
+        } else {
+          LOG.p("AI : Player to away!");
+          if(!this._absParams.behavior.noMove)
+            //if(this._absParams.currentAction != 'approach')
+              this._changeActionState('approach');
+          else {
+            this.turnTowardPlayer();
+          }
+        }
+      } else {
+        LOG.p("AI : Wait my attack");
+        if(this._absParams.escapeOnBattle)
+          this._changeWaitActionState('prepareAction', 'escape', t);
+        else
+          this._changeWaitActionState('prepareAction', 'wait', t);
+      }
+    break;
+
+    case 'action':
+      LOG.p("AI : Execute Action!");
+      var t = this._absParams.currentAction;
+      if(t.isNeedCast()) {
+        if(t.isCasting()){
+          if(t.isReady()) {
+            this._performAction();
+            this._absParams.casting = false;
+          }
+        } else {
+          LOG.p("AI : Start cast!");
+          this._absParams.casting = true;
+          t.startCast();
+          //this.requestAnimationABS(120); //TODO 130 анимация подлагивает при первом срабатывании!!! временно 120 поставил
+          this._changeActionState('cast');
+        }
+      } else {
+        this._performAction();
+      }
+    break;
+
+    case 'cast':
+      this.turnTowardPlayer();
+      var t = this._absParams.currentAction;
+      if(t.isCasting()) {
+        if(!BattleManagerABS.canUseSkillByRange(this,this.target(),t)) {
+          LOG.p("AI : Cast intterupt, target too far");
+          t.resetCast();
+          this._absParams.casting = false;
+          this._changeActionState('prepareAction');
+        } else {
+          if(t.isReady()) {
+            LOG.p("AI : Cast END");
+            this._changeActionState('action');
+          }
+        }
+      } else {
+        this._absParams.casting = false;
+        this._changeActionState('prepareAction');
+      }
+    break;
+
+    case 'escape':
+      this._escapeFromTarget();
+      this._checkReturn();
+    break;
+
+    case 'wait':
+      if(this._absParams.waitType == 'escape') {
+        this._escapeFromTarget();
+        if(this._absParams.agressive) return;
+      }
+      if(this._absParams.waitTimer && this._absParams.waitTimer.isReady()){
+        this._changeActionState(this._absParams.oldActionState);
+        if(this._absParams.agressive) return;
+      }
+
+      if(this._absParams.agressive)
+        this._changeActionState('approach');
+      else {
+        if(!this._checkVision($gamePlayer)) {
+          this._resetTarget();
+          this._changeState('free');
+        }
+      }
+    break;
+    }
+  }
+
+  Game_AIBot.prototype._update_on_return = function() {
+    if(!this._absParams.myHomePosition) {
+      this.returnNot();
+      return;
+    }
+
+    if(this.isNotReturn()) {
+      this.returnNot();
+    } else if(this.isSlowReturn()) {
+      this._absParams.active = true;
+      this._onBattleEnd();
+      this.returnSlow();
+    } else {
+      this.returnFast();
+    }
+  }
+
+  Game_AIBot.prototype.returnNot = function() {
+    this._absParams.active = true;
+    this._onBattleEnd();
+  };
+
+  Game_AIBot.prototype.returnSlow = function() {
+    var t = this._absParams.myHomePosition;
+    var direction = this.findDirectionTo(t.x,t.y);
+    if(direction > 0) {
+      if (!this.isMoving())
+        this.moveStraight(direction);
+    } else {
+      LOG.p("AI : I'am return to Home!");
+      this._absParams.myHomePosition = null;
+      this._restoreMoveData();
+    }
+  };
+
+  Game_AIBot.prototype.returnFast = function() {
+    var t = this._absParams.myHomePosition;
+    var direction = this.findDirectionTo(t.x,t.y);
+    if(direction > 0) {
+      this.moveStraight(direction);
+    } else {
+      LOG.p("AI : I'am return to Home!");
+      this._absParams.myHomePosition = null;
+      this._absParams.active = true;
+      this._onBattleEnd();
+    }
+  }
+
+  Game_AIBot.prototype._update_on_search = function() {
+    if(this._absParams.allyToSearch &&
+      this._absParams.allyToSearch.inActive()) {
+
+      var t = this._checkVision($gamePlayer);
+      if(t) {
+        this._absParams.allyToSearch = null;
+        this._setTarget($gamePlayer);
+        if(this._absParams.target) {
+          LOG.p("AI : Player Detected!");
+          this._changeState('battle');
+        }
+      } else {
+        if(!this.isMoving() && !this._absParams.behavior.noMove) {
+          //this.moveTowardCharacter(this._absParams.allyToSearch);
+          this.moveToPoint(this._absParams.allyToSearch);
+        }
+      }
+
+    } else {
+      this._changeState('free');
+    }
+  }
+
+  Game_AIBot.prototype._checkVision = function(who) {
+    if(!who || !who.inActive()) {
+      return false;
+    }
+    var t = ABSUtils.distanceTo(this, who);
+    if(t < this._absParams.viewRadius) {
+      return true;
+    } else
+      return false;
+  }
+
+  Game_AIBot.prototype._checkVisionAlly = function() {
+    var ally = ABSUtils.inRadius(this, this._absParams.viewRadius, $gameTroop.membersABS());
+    this._absParams.allyToSearch = null;
+    if(ally.length > 0) {
+      ally.forEach(function(t) {
+        if(t.inBattle()) {
+          this._absParams.allyToSearch = t;
+        }
+      }.bind(this));
+    }
+  }
+
+  Game_AIBot.prototype._escapeFromTarget = function() {
+    var escapeRange = 2;
+    if(!this._absParams.target) return;
+    var t = ABSUtils.distanceTo(this, this._absParams.target);
+    if(!this.isMoving()) {
+      if(t < escapeRange) {
+          this.moveFromPoint($gamePlayer);
+          this.turnTowardPlayer();
+      } else if(t > escapeRange + 1) {
+        this.moveTowardCharacter($gamePlayer);
+      } else
+        this.turnTowardPlayer();
+    }
+  }
+
+  Game_AIBot.prototype._runAwayFromTarget = function() {
+    var realRange = this._absParams.viewRadius / 2;
+    var escapeRange = (realRange >= 2) ? realRange : 2;
+    var t = ABSUtils.distanceTo(this, $gamePlayer);
+    if(!this.isMoving()) {
+      if(t < escapeRange) {
+        this._applyAproachSpeed();
+        this.moveFromPoint($gamePlayer);
+      } else {
+        this._changeState('free');
+      }
+    }
+  }
+
+  Game_AIBot.prototype._deactivate = function() {
+    if(BattleManagerABS.getPlayerTarget() == this) {
+      BattleManagerABS.setPlayerTarget(null);
+    }
+    this._absParams.active = false;
+    this._resetTarget();
+  }
+
+  Game_AIBot.prototype._onBattleStart = function() {
+    if(!this._absParams.behavior.noEmote) this.requestBalloon(1);
+    this.battler().onBattleStart();
+    this._absParams.inBattle = true;
+    this._absParams.myHomePosition = new Point(this.x, this.y);
+    LOG.p("AI : Store home position: " + this._absParams.myHomePosition.toString());
+    if(this._absParams.behavior.cEonStart > 0) {
+      LOG.p("AI : Common Event (on Battle Start): " + this._absParams.behavior.cEonStart);
+      $gameTemp.reserveCommonEvent(this._absParams.behavior.cEonStart);
+    }
+  }
+
+  Game_AIBot.prototype._onBattleEnd = function() {
+    this._absParams.inBattle = false;
+    this._absParams.allyToSearch = null;
+    this.battler().onBattleEnd();
+    if(this._absParams.behavior.cEonEnd > 0) {
+      LOG.p("AI : Common Event (on Battle End): " + this._absParams.behavior.cEonEnd);
+      $gameTemp.reserveCommonEvent(this._absParams.behavior.cEonEnd);
+    }
+    this._changeState('free');
+  }
+
+  Game_AIBot.prototype._updateNonmoving = function(wasMoving) { //from Player
+    if (!$gameMap.isEventRunning()) {
+          if (wasMoving && !this.isMoveRouteForcing()) {
+              this.battler().onWalk();
+          }
+      }
+  }
+
+  Game_AIBot.prototype._checkFloorEffect = function() {
+      if ($gameMap.isDamageFloor(this.x, this.y)) {
+          this.battler().executeFloorDamage();
+      }
+  };
+
+  Game_AIBot.prototype._regenerateValues = function() {
+    if(this._absParams.regenOnFree) {
+      if(!this._absParams.regenTimer){
+        this._absParams.regenTimer = new Game_TimerABS();
+        this._absParams.regenTimer.start(60);
+      }
+      this._absParams.regenTimer.update();
+      if(this._absParams.regenTimer.isReady()) {
+        this._absParams.regenTimer.reset();
+        this.battler().regenerateAllonFree();
+      }
+    }
+  }
+  //END Game_AIBot
+//------------------------------------------------------------------------------
+
+})();
+
+(function() {
+
+  
+
+  var LOG = new PLATFORM.DevLog("BattleProcessABS");
+  LOG.applyPresetLib();
+
+  var Point = AlphaABS.UTILS.Point;
+
+  //BattleProcessABS
+  //------------------------------------------------------------------------------
+    class Game_BattleProcessABS {
+      constructor() {
+        this._postProcesses = [];
+        this._skill = null;
+        this._centerPoint = null;
+      }
+
+      performBattleAction(subject, target) {
+        this._processAction(subject, target, subject.battler().currentAction());
+      }
+
+      performBattleActionZone(subject, action) {
+        LOG.p("Battle : Start Zone Action");
+        this._processAction(subject, null, action);
+      }
+
+      performBattleActionRadius(subject, point, action, skill) {
+        LOG.p("Battle : Start Radius Action");
+        this._centerPoint = point;
+        this._processAction(subject, null, action);
+      }
+
+      startPostBattleAction(subject, target, action, skill) {
+        LOG.p("Battle : Start post Action");
+        action._forcing = true; //Because subject use MP and other on action start
+        var postProcess = {};
+        postProcess.subject = subject;
+        postProcess.target = target;
+        postProcess.action = action;
+        postProcess.skill = skill;
+        var t = new AlphaABS.LIBS["Game_SVector"](postProcess);
+        this._postProcesses.push(t);
+        $gameMap.addSVector(t);
+        if(subject == $gamePlayer) {
+          if(!$gamePlayer.inBattle())
+            $gamePlayer.onBattleStart();
+        }
+      }
+
+      performPostBattleAction(sVector) {
+        var t = sVector.data();
+        if(t.skill.isVectorTypeR()) {
+          LOG.p("Battle : Start Radius Action by Vector");
+          this._centerPoint = t.target;
+          this._processAction(t.subject, null, t.action);
+        } else
+          this._processAction(t.subject,t.target,t.action);
+        this._postProcesses.delete(sVector);
+      }
+
+      isPostProcessExists() {
+        return (this._postProcesses.length != 0);
+      }
+
+      //PRIVATE
+      _processAction(subject, target, action) {
+        if(subject == null) {
+          return;
+        }
+        if(!subject.battler()) {
+          return;
+        }
+        if(action) {
+          action.prepare(); //???
+          if(action.isValid()) {
+            this._start_action(subject, target, action);
+            this._end_action(subject);
+          }
+        }
+      }
+
+      _start_action(subject, target, action) {
+        //subject.requestEffect('whiten'); TODO
+        this._skill = subject.battler().skillABS_byAction(action);
+        action.applyGlobal();
+        var targets = this._makeTargets(subject, target);
+        this._showAnimation(subject, targets, action);
+        targets.forEach(function(item){
+          if(item && item.inActive()) {
+            this._invokeAction(subject, item, action);
+          }
+        }.bind(this));
+      }
+
+      _end_action(subject) {
+        subject.battler().performActionEnd(); //???
+        subject.battler().onAllActionsEnd();
+        this._skill = null;
+        this._centerPoint = null;
+      }
+
+      _invokeAction(subject, target, action) {
+        /*if (Math.random() < action.itemCnt(target)) {
+              this.invokeCounterAttack(this._subject, target);
+          } else if (Math.random() < action.itemMrf(target)) {
+              this.invokeMagicReflection(this._subject, target);
+          } else {
+              this.invokeNormalAction(this._subject, target);
+          }*/
+          this._invokeNormalAction(subject, target, action);
+      }
+
+      _invokeNormalAction(subject, target, action) {
+        //var realTarget = this.applySubstitute(target);
+        action.apply(target.battler());
+        this._onActionResult(subject, target);
+      }
+
+      _makeTargets(subject, target) {
+        var targets = [];
+        if(this._skill.isZoneType()) {
+          var zone = this._generateZone(subject);
+          var points = zone.points;
+          this._centerPoint = zone.center;
+          var candidates = [];
+          if(subject == $gamePlayer) {
+            candidates = $gameTroop.membersABS();
+          } else {
+            candidates = [$gamePlayer];
+          }
+          for(var i = 0; i<points.length; i++) {
+            candidates.forEach(function(item){
+              if(ABSUtils.inPoint(item, points[i])) {
+                targets.push(item);
+              }
+            });
+          }
+          return targets;
+        } else
+          if(this._skill.isRadiusType() || this._skill.isVectorTypeR()) {
+            if(subject == $gamePlayer) {
+              targets = ABSUtils.inRadius(this._centerPoint, this._skill.radius, $gameTroop.membersABS());
+            } else {
+              targets = ABSUtils.inRadius(this._centerPoint, this._skill.radius, [$gamePlayer]);
+            }
+          } else {
+            targets.push(target);
+          }
+
+        return targets;
+      }
+
+      _showAnimation(subject, targets, action) {
+        if(action.isSkill() && action.item().id == subject.battler().attackSkillId()) {
+          this._requestAnimation(targets, subject.battler().attackAnimationId1());
+        } else {
+          var animId = action.item().animationId;
+          if(this._skill.isZoneType() || this._skill.isRadiusType() || this._skill.isVectorTypeR()) {
+            this._requestMapAnimation(animId);
+          } else {
+            this._requestAnimation(targets, animId);
+          }
+        }
+      }
+
+      _requestAnimation(objects, animationId) {
+        objects.forEach(function(item) {
+          if(item)
+            item.requestAnimationABS(animationId);
+        });
+      }
+
+      _requestMapAnimation(animationId) {
+        /*var t = null;
+        if(this._skill.isZoneType()) {
+          t = new Bitmap(96,96);
+        } else {
+          t = new Bitmap(this._skill.radius * 2 * 32, this._skill.radius * 2 * 32);
+        }
+        var sprite = new Sprite_Base(t);*/
+        var sprite = new Sprite_Base();
+        sprite.anchor.x = -0.5;
+        sprite.anchor.y = -0.5;
+        var point = this._centerPoint.mapPointOnScreen();
+        sprite.x = point.x;
+        sprite.y = point.y;
+        LOG.p("Request Map animation on " + point);
+
+        $gameMap.requestAnimationABS({sprite: sprite, id : animationId});
+      }
+
+      _onActionResult(subject, target) {
+        if(target.battler().result().used) {
+          this._resultOnDamage(target.battler());
+          //this._resultOnFailure(target.battler());
+          //if (target.battler().result().isStatusAffected())
+          //    this._resultOnAffectedStatus(target.battler());
+          target.battler().startDamagePopup();
+          subject.battler().startDamagePopup();
+          target.onActionOnMe(subject);
+        }
+      }
+
+      _resultOnDamage(target) {
+        if(target.result().missed) {
+          if(target.result().physical) {
+            target.performMiss();
+          } else {
+            this._resultOnFailure(target);
+          }
+
+        } else if (target.result().evaded) {
+           if (target.result().physical) {
+            target.performEvasion();
+           }
+           else {
+            target.performMagicEvasion();
+           }
+        } else {
+           //HP
+           if (target.result().hpAffected) {
+                if (target.result().hpDamage > 0 && !target.result().drain) {
+                    target.performDamage();
+                }
+                if (target.result().hpDamage < 0) {
+                    target.performRecovery();
+                }
+            }
+            //MP
+            if (target.isAlive() && target.result().mpDamage !== 0) {
+                if (target.result().mpDamage < 0) {
+                    target.performRecovery();
+                }
+            }
+            //TP
+            if (target.isAlive() && target.result().tpDamage !== 0) {
+                if (target.result().tpDamage < 0) {
+                    target.performRecovery();
+                }
+            }
+        }
+        target.performActionUsed();
+      }
+
+      _resultOnFailure(target) {
+        //Empty
+      }
+
+      _resultOnAffectedStatus(target) {
+        let states = target.result().addedStateObjects();
+        states.forEach(function(state) {
+          var state_msg = target.isActor() ? state.message1 : state.message2;
+          //if(state.id === target.deathStateId())
+          //  target.performCollapse();
+          //this._add_state_info(target, state_msg); (not used)
+        }.bind(this));
+      }
+
+      _generateZone(subject) {
+        var d = ABSUtils.getDirKey(subject);
+        var points = [];
+        var point = subject.toPoint();
+
+        /*
+            **
+        SUBJECT ***
+            **
+        */
+
+        var centerPoint = null;
+
+        switch(d) {
+          case 'r' :
+            centerPoint = new Point(point.x + 2,point.y);
+            points.push(new Point(point.x + 1, point.y + 1));
+            points.push(new Point(point.x + 1, point.y - 1));
+          break;
+          case 'l' :
+            centerPoint = new Point(point.x - 2, point.y);
+            points.push(new Point(point.x - 1, point.y + 1));
+            points.push(new Point(point.x - 1, point.y - 1));
+          break;
+          case 'u' :
+            centerPoint = new Point(point.x, point.y - 2);
+            points.push(new Point(point.x + 1, point.y - 1));
+            points.push(new Point(point.x - 1, point.y - 1));
+          break;
+          default: //d
+            centerPoint = new Point(point.x, point.y + 2);
+            points.push(new Point(point.x + 1, point.y + 1));
+            points.push(new Point(point.x - 1, point.y + 1));
+          break;
+        }
+
+        points.push(centerPoint);
+        points.push(new Point(centerPoint.x - 1, centerPoint.y));
+        points.push(new Point(centerPoint.x + 1, centerPoint.y));
+        points.push(new Point(centerPoint.x, centerPoint.y - 1));
+        points.push(new Point(centerPoint.x, centerPoint.y + 1));
+
+        /*
+               *
+          * CenterPoint *
+               *
+        */
+
+        return {center: centerPoint, points: points};
+      }
+    }
+
+    AlphaABS.register(Game_BattleProcessABS);
+    AlphaABS.BattleManagerABS.connectProcess();
+
+    //END BattleProcessABS
+  //------------------------------------------------------------------------------
+
+
+
+})();
+
+(function() {
+
+  
+
+  var ABSObject_PopUp = AlphaABS.ABSObject_PopUp;
+  var ABSObject_PopUpMachine = AlphaABS.ABSObject_PopUpMachine;
+
+  //PopInfoManagerABS
+  //------------------------------------------------------------------------------
+    function PopInfoManagerABS() {
+      throw new Error('This is a static class');
+    }
+
+    PopInfoManagerABS.makeDamagePopUp = function(user) {
+      let result = user.result();
+
+      if(result.hpDamage != 0) {
+        let value = PopInfoManagerABS.HP(result.hpDamage, result.critical);
+          this._apply_pop_up(user, value);
+      }
+
+      if(result.mpDamage != 0) {
+        let value = PopInfoManagerABS.MP(result.mpDamage, result.critical);
+        this._apply_pop_up(user, value);
+      }
+
+      if(result.tpDamage != 0) {
+        let value = PopInfoManagerABS.TP(result.tpDamage, result.critical);
+        this._apply_pop_up(user, value);
+      }
+    }
+
+    PopInfoManagerABS.makeZeroDamagePopUp = function(user) {
+      let result = user.result();
+      let value = PopInfoManagerABS.HP(0, result.critical);
+      this._apply_pop_up(user, value);
+    }
+
+    PopInfoManagerABS.makeDrainPopUp = function(user) { //user - who get drained HP
+      let result = user.result();
+        if(result.hpDamage != 0) {
+          let value = PopInfoManagerABS.HP(result.hpDamage, result.critical);
+          value.getFontSettings()[2] = true;
+          this._apply_pop_up(user, value);
+        }
+
+        if(result.mpDamage != 0) {
+          let value = PopInfoManagerABS.MP(result.mpDamage, result.critical);
+          value.getFontSettings()[2] = true;
+          this._apply_pop_up(user, value);
+        }
+    }
+
+    PopInfoManagerABS.makeStatePopUp = function(user, stateId, isErase) {
+      let state = $dataStates[stateId];
+      if(state.iconIndex == 0)
+        return;
+      if(state.id == user.deathStateId())
+        return;
+      let value = PopInfoManagerABS.STATE((user.isEnemy() ? "" : state.name), state.iconIndex, isErase);
+      this._apply_pop_up(user, value);
+    }
+
+    PopInfoManagerABS.makeItemPopUp = function(user) {
+      let result = user.result();
+      if(!user.isAlive()) return;
+      if(result.missed) {
+        this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_MISS[SDK.isRU()]));
+        return;
+      }
+
+      if(result.evaded) {
+        this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_EVADE[SDK.isRU()]));
+        return;
+      }
+
+      if(result.isHit() && !result.success) {
+        this._apply_pop_up(user, PopInfoManagerABS.TEXT(AlphaABS.SYSTEM.STRING_POPUP_FAIL[SDK.isRU()]));
+        return;
+      }
+    }
+
+    PopInfoManagerABS.makeBuffPopUp = function(user, paramId, isPositive) {
+      //if(!BattleManagerRTBS.isBattle()) return;
+      if(!user.isAlive()) return;
+      let paramName = user.isEnemy() ? "" : TextManager.param(paramId);
+      var temp = isPositive ? 1 : -1;
+      let iconIndex = user.buffIconIndex(temp, paramId);
+      let value = PopInfoManagerABS.BUFF(paramName, iconIndex, isPositive);
+      if(!user.getInfoPops().include(value)) {
+        this._apply_pop_up(user, value);
+      }
+    }
+
+    PopInfoManagerABS.makeSkillRechargePopUp = function(user, skillId) {
+      //if(!BattleManagerRTBS.isBattle()) return;
+      if(!user.isAlive()) return;
+      if(user.isEnemy()) return; //This is for ActorEnemy, in version 1 not develop yet
+      let skill = $dataSkills[skillId];
+      let value = PopInfoManagerABS.SKILL(skill.name, skill.iconIndex);
+      if(!user.getInfoPops().include(value)) {
+        this._apply_pop_up(user, value);
+      }
+    }
+
+    PopInfoManagerABS.calcRate = function(rate) {
+      this.text = "";
+      /*if(rate > 1) {
+        this.text = AlphaABS.SYSTEM.STRING_POPUP_WEAK[SDK.isRU()];
+      } else if(rate === 0) {
+        this.text = AlphaABS.SYSTEM.STRING_POPUP_IMMUNE[SDK.isRU()];
+      } else if(rate < 1) {
+        this.text = AlphaABS.SYSTEM.STRING_POPUP_ABSORB[SDK.isRU()];
+      } else {
+        this.text = "Resist"; //What a hell?
+      }*/ //Not yet, my friend...
+    }
+
+    //STATIC
+    PopInfoManagerABS.HP = function(value, critical) {
+      var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+      var color = Color.YELLOW;
+      if(value < 0) {
+        color = Color.GREEN;
+        value = Math.abs(value);
+      } else if(critical) {
+        color = Color.RED;
+        fontSettings[1] = 34;
+      }
+
+      let x = new ABSObject_PopUp(value, color, null, fontSettings);
+      x.setNumered();
+      return x;
+    }
+
+    PopInfoManagerABS.TP = function(value, critical) {
+      var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+      var color = Color.ORANGE;
+      if(value < 0) {
+        color = Color.GREEN;
+        value = Math.abs(value);
+      } else if(critical) {
+        color = Color.RED;
+        fontSettings[1] = 34;
+      }
+
+      value = value + " " +TextManager.tpA;
+      let x = new ABSObject_PopUp(value, color, null, fontSettings);
+      x.setNumered();
+      return x;
+    }
+
+    PopInfoManagerABS.MP = function(value, critical) {
+      var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+      var color = Color.MAGENTA;
+      if(value < 0) {
+        color = Color.BLUE;
+        value = Math.abs(value);
+      } else if(critical) {
+        color = Color.MAGENTA;
+        fontSettings[1] = 34;
+      }
+
+      let x = new ABSObject_PopUp(value, color, null, fontSettings);
+      x.setNumered();
+      return x;
+    }
+
+    PopInfoManagerABS.STATE = function(name, iconIndex, isErase) {
+      var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+      fontSettings[2] = true;
+
+      var temp = isErase ? "- " : "+ ";
+      fontSettings[0] = AlphaABS.SYSTEM.FONT;
+      return new ABSObject_PopUp(temp + name, null, iconIndex, fontSettings);
+    }
+
+    PopInfoManagerABS.BUFF = function(name, iconIndex, isPositive) {
+      var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+      fontSettings[2] = true;
+
+      var color = isPositive ? Color.GREEN : Color.RED;
+      fontSettings[0] = AlphaABS.SYSTEM.FONT;
+      return new ABSObject_PopUp(name, color, iconIndex, fontSettings);
+    }
+
+    PopInfoManagerABS.TEXT = function(text) {
+      return new ABSObject_PopUp(text);
+    }
+
+    PopInfoManagerABS.TEXT_WITH_COLOR = function(text, color) {
+      return new ABSObject_PopUp(text, color);
+    }
+
+    PopInfoManagerABS.ALERT = function(text) {
+      return new ABSObject_PopUp(text, Color.RED, null, [null, 22, false, 2, Color.BLACK]);
+    }
+
+    PopInfoManagerABS.EXP = function(value) {
+      var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+      fontSettings[1] = 32;
+      let x = new ABSObject_PopUp(value, Color.MAGENTA, null, fontSettings);
+      x.setNumered();
+      return x;
+    }
+
+    PopInfoManagerABS.SKILL = function(name, iconIndex) {
+      var fontSettings = ABSObject_PopUp.FONT_DEFAULT();
+      fontSettings[2] = true;
+      return new ABSObject_PopUp(AlphaABS.SYSTEM.STRING_POPUP_SKILL[SDK.isRU()], Color.GREEN, iconIndex, fontSettings);
+    }
+
+    //PRIVATE
+    PopInfoManagerABS._apply_pop_up = function(user, value) {
+      /*if(this.text === undefined)
+        this.text = "";
+      if(this.text != "") {
+        if(value.isNumered()) value.setExtraText(this.text);
+        this.text = "";
+      }*/
+      user.addInfoPop(value);
+    }
+
+    //END PopInfoManagerABS
+  //------------------------------------------------------------------------------
+
+    AlphaABS.PopInfoManagerABS = PopInfoManagerABS;
+
+})();
+
+
+
+var PLATFORM = PLATFORM || {};
+
+//==========================================================================================================================================================
+// ABS Library
+//==========================================================================================================================================================
+(function() {
+	AlphaABS.LIB = {}; //Подключаем библиотеку
+	AlphaABS.LIB.EXT = {}; //Временные расширения для области видимости
+	//Object.freeze(AlphaABS.LIB);
+	//Object.defineProperty(AlphaABS, 'LIB', {writable: false});
+})();
+
+
 //==========================================================================================================================================================
 // Alpha ABS MAIN
 //==========================================================================================================================================================
 //Class extension (for savefile compability)
-function Game_AIBot() 			 { this.initialize.apply(this, arguments);}
 function Game_EnemyABS()		 { this.initialize.apply(this, arguments);}
 function Game_SkillABS()		 { this.initialize.apply(this, arguments);}
 function Game_SkillManagerABS()  { this.initialize.apply(this, arguments);}
 function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
+//TEMP
+var ABSUtils = AlphaABS.UTILS;
+
 (function() {
 
 	//PLATFORM
-	var LOG = new PLATFORM.DevLog("Dev ABS");
 	var SDK = PLATFORM.SDK;
 	var Color = PLATFORM.Color;
+
+	var LOG = new PLATFORM.DevLog("ABS");
+	LOG.setColors(new Color(164,66,161,0).hex(), Color.WHITE.hex());
 
 	//ABS
 	var SMouse = AlphaABS.UTILS.SMouse;
 	var Point = AlphaABS.UTILS.Point;
-	var BattleProcessABS;
 	SMouse.initMouseTrack();
 
 	var PopInfoManagerABS = AlphaABS.PopInfoManagerABS;
@@ -3073,320 +4759,13 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	var LOGW = AlphaABS.SYSTEM.LOGW;
 
 	//EXTEND for DEV
-	AlphaABS.BattleManagerABS = BattleManagerABS;
 	var ABSUtils = AlphaABS.UTILS;
 	var ABSPathfinding = AlphaABS.ABSPathfinding;
 
-//BattleManagerABS
-//------------------------------------------------------------------------------
-	function BattleManagerABS() {
-	 	throw new Error('This is a static class');
-	}
-
-	BattleManagerABS.init = function() {
-		this._setupPlugins();
-		this.timer = new Game_TimerABS();
-		this._ready = false;
-		this._ui = null;
-		this._plTargets = [];
-		BattleProcessABS = new Game_BattleProcessABS();
-		BattleManagerABS.clearABS();
-		this._prepareResources();
-		Input.loadSchemeABS();
-		ABSPathfinding.init();
-	}
-
-	BattleManagerABS.onMapLoaded = function() {
-		if(this._isABSMap && $gameMap.isABS()) { //Если переход между АБС картами, то не делаем StopABS, а только prepare Заного
-			if(this._absMapId != $gameMap.mapId()) {
-				$gameTroop.initABS(); //Need restart
-				this._absMapId = $gameMap.mapId();
-			}
-			this._ui.initABS();
-			$gamePlayer.prepareABS();
-			LOG.p("Manager : Go to ABS map from ABS map, Prepare new ABS session");
-			return;
-		}
-
-		if(this._isABSMap && !$gameMap.isABS()) { //Если переход от AБС карты на обычную, то надо всё остановить
-			this.stopABS();
-			LOG.p("Manager : Go to map from ABS map, stop ABS session");
-			return;
-		}
-
-		if(!this._isABSMap && $gameMap.isABS()) {
-			this.initABS();
-			LOG.p("Manager : Go to ABS map from map, start new ABS session");
-		}
-	}
-
-	BattleManagerABS.initABS = function() { //Инициализация боевой карты и ABS системы
-		$gamePlayer.initABS();
-		$gameTroop.initABS();
-		$gameParty.initABS();
-		this.timer.start(BattleManagerABS.TURN);
-		this._ready = true;
-		SMouse.setTrack(true);
-
-		this._ui.initABS();
-
-		$gamePlayer.prepareABS();
-
-		LOG.p("Manager : ABS Map loaded");
-		this._isABSMap = true;
-		this._absMapId = $gameMap.mapId();
-		ABSPathfinding.setup();
-	}
-
-	BattleManagerABS.stopABS = function() {
-		LOG.p("Manager : ABS Map destroy");
-		BattleManagerABS.clearABS();
-		SMouse.setTrack(false);
-		$gamePlayer.stopABS();
-	}
-
-	BattleManagerABS.clearABS = function() {
-		this._isABSMap = false;
-		this._absMapId = -1;
-	}
-
-	BattleManagerABS.setPlayerTarget = function(target) {
-		if(target && target.inActive()) {
-			$gamePlayer.setTarget(target);
-			$gameTroop.selectOnMap(target);
-			this.UI().showTarget(target);
-		} else {
-			$gamePlayer.setTarget(null);
-			$gameTroop.selectOnMap(null);
-			this.UI().showTarget(null);
-		}
-	}
-
-	BattleManagerABS.getPlayerTarget = function() {
-		return $gamePlayer.target();
-	}
-
-	BattleManagerABS.updateABS = function() {
-		if(!this._ready) return;
-		this.timer.update();
-		if(this.timer.isReady()) {
-			this.timer.reset();
-			$gamePlayer.onTurnEnd();
-			$gameTroop.onTurnEnd();
-		}
-	}
-
-	BattleManagerABS.setUI = function(spritesetUI) {
-		this._ui = spritesetUI;
-	}
-
-	BattleManagerABS.UI = function() {
-		return this._ui;
-	}
-
-	BattleManagerABS.alertOnUI = function(string) {
-		this.UI().addPopUp(PopInfoManagerABS.ALERT(string));
-	}
-
-	BattleManagerABS.alertNoInBattle = function() {
-		BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NOINBATTLE[SDK.isRU()]);
-	}
-
-	BattleManagerABS.playSe = function(se, point) {
-		if(BattleManagerABS.isABSAudio()) {
-			AudioManager.playSeAt(se, point);
-		} else {
-			AudioManager.playSe(se);
-		}
-	}
-
-	BattleManagerABS.isABSAudio = function() {
-		return AlphaABS.SYSTEM.EXTENSIONS.AUDIO;
-	}
-
-	BattleManagerABS.isABSParticleSystem = function() {
-		return (AlphaABS.SYSTEM.EXTENSIONS.ABSPE !== undefined) && (AlphaABS.SYSTEM.EXTENSIONS.ABSPE != false);
-	}
-
-	BattleManagerABS.isABSLightingExt = function() {
-		return AlphaABS.SYSTEM.EXTENSIONS.LIGHT;
-	}
-
-	BattleManagerABS.alertOnUIbySym = function(alertSymbol) {
-		switch(alertSymbol) {
-			case 'noUse':
-				BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NOUSE[SDK.isRU()]);
-			break;
-			case 'toFar':
-				BattleManagerABS.alertOnUI(Consts.STRING_ALERT_TOFAR[SDK.isRU()]);
-			break;
-			case 'noTarget':
-				BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NEEDTARGET[SDK.isRU()]);
-			break;
-			case 'noAmmo':
-				BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NOCHARGES[SDK.isRU()]);
-			break;
-			case 'recharge':
-				BattleManagerABS.alertOnUI(Consts.STRING_ALERT_RECHARGE[SDK.isRU()]);
-			break;
-		}
-	}
-
-	BattleManagerABS.nextPlayerTarget = function() {
-		var t = ABSUtils.inRadius($gamePlayer, 12, $gameTroop.membersABS());
-		if(t.count() == 0) {
-			return null;
-		}
-
-		var t2 = t.diff(this._plTargets);
-
-		if(t2.count() == 0) {
-			this._plTargets = [];
-			return this.nextPlayerTarget();
-		} else {
-			this._plTargets.push(t2.first());
-		}
-		return t2.first();
-	}
-
-	//HELPERS
-	BattleManagerABS.canUseSkillByTimer = function(skill) {
-		return skill ? skill.isReady() : false;
-	}
-
-	BattleManagerABS.playerABSSkillById = function(skillId) {
-		return $gamePlayer.battler().skillABS_byId(skillId);
-	}
-
-	BattleManagerABS.canUseSkillByTarget = function(who, target, skill) {
-		if(!skill) return false;
-		if(skill.isRadiusType()) return true;
-		if(skill.isNeedTarget()) {
-			if(target)
-				return true;
-			else
-				return false;
-
-		} else
-			return true;
-	}
-
-	BattleManagerABS.canUseSkillByRange = function(who, target, skill) {
-		if(!skill) return false;
-		if(skill.isZoneType()) return true;
-		if(skill.isRadiusType()) return true;
-		if(skill.range == 0 && !skill.isNeedTarget()) return true;
-		if(skill.range == 0) {
-			return ABSUtils.inFront(who, target);
-		} else {
-			var t = ABSUtils.distanceTo(who,target);
-			if(skill.range >= t) {
-				if(skill.isDirectionFix()) {
-					LOG.p("SPELL: Dirction FIXed");
-					return ABSUtils.inDirectionHard(who, target);
-				}
-				else
-					return true;
-			} else
-				return false;
-		}
-	}
-
-	BattleManagerABS.canUseSkillByAmmo = function(skill) {
-		var result = true;
-		if(skill.isStackType() && !skill.isAutoReloadStack()) {
-			result = !skill.isNeedReloadStack();
-		}
-		if(!skill.isStackType() && skill.isNeedAmmo()) {
-			result = $gameParty.numItems($dataItems[skill.ammo]) > 0;
-		}
-		return result;
-	}
-
-	BattleManagerABS.canUseABSSkillNow = function(who, target, skill) {
-		if(!skill) return false;
-		return this.canUseSkillByTarget(who, target, skill) &&
-		this.canUseSkillByRange(who, target, skill) &&
-		this.canUseSkillByTimer(skill) && this.canUseSkillByAmmo(skill);
-	}
-
-	BattleManagerABS.canUseABSSkillUI = function(skill) {
-		if(!$gamePlayer.inActive()) return false;
-		var t = $gamePlayer.battler();
-		return t.canUse(skill.skill()) && this.canUseABSSkillNow($gamePlayer, $gamePlayer.target(), skill) && t.canMove();
-	}
-
-	BattleManagerABS.whoTargetOnMe = function(me, members) {
-		var x = members.filter(function(t) {
-			return (t.target() == me);
-		});
-		return x.first();
-	}
-
-	BattleManagerABS.isValidTarget = function(target) {
-		return target && target.inActive() && (target.battler().tgr != 0);
-	}
-
-	BattleManagerABS.warning = function(index) {
-		switch(index) {
-			case 1: LOGW.p(Consts.STRING_WARNING_COMMON2[SDK.isRU()]); break;
-			case 2: LOGW.p(Consts.STRING_WARNING_COMMON3[SDK.isRU()]); break;
-			case 129: LOGW.p(Consts.STRING_WARNING_COMMAND129[SDK.isRU()]); break;
-			case 321: LOGW.p(Consts.STRING_WARNING_COMMAND321[SDK.isRU()]); break;
-			default: LOGW.p(Consts.STRING_WARNING_COMMON[SDK.isRU()]); break;
-		}
-	}
-
-	BattleManagerABS._prepareResources = function() {
-		//Load images to memory
-		ImageManager.loadPictureABS('CircleSegment_small')
-	    ImageManager.loadPictureABS('CircleSegment_small_down');
-	    ImageManager.loadPictureABS('CircleSegment_small_L');
-	    ImageManager.loadPictureABS('CircleSegment_small_R');
-	}
-
-	BattleManagerABS._setupPlugins = function() {
-		if(Imported.YEP_ItemCore == true) {
-			var _Game_Party_gainIndependentItem_YEP = Game_Party.prototype.gainIndependentItem;
-			Game_Party.prototype.gainIndependentItem = function(item, amount, includeEquip) {
-				_Game_Party_gainIndependentItem_YEP.call(this, item, amount, includeEquip);
-				if($gameMap.isABS()) {
-					if(amount > 0 && !this._noNotifyABS) {
-						AudioManager.playSe({name:'Equip2',pan:0,pitch:140,volume:90});
-						BattleManagerABS.UI().pushOnItemPanel('item', item);
-					}
-
-					if(DataManager.isWeapon(item)) {
-			            if(AlphaABS.BattleManagerABS.UI()) {
-			                AlphaABS.BattleManagerABS.UI().weapCircleRefresh();
-			            }
-		        	}
-	        	}
-			}
-		}
-
-		if(Imported.YEP_EquipCore == true) {
-			var _Window_EquipSlot_drawItem_YEP = Window_EquipSlot.prototype.drawItem;
-			Window_EquipSlot.prototype.drawItem = function(index) {
-				_Window_EquipSlot_drawItem_YEP.call(this, index);
-				this._drawFavWeapSymbol(index);
-			}
-		}
-
-		if(Imported.YEP_SaveCore == true) {
-			var _Scene_File_performActionLoad_YEP = Scene_File.prototype.performActionLoad;
-			Scene_File.prototype.performActionLoad = function() {
-				if(BattleManagerABS._isABSMap == true) {
-					BattleManagerABS.stopABS();
-				}
-			    _Scene_File_performActionLoad_YEP.call(this);
-			};
-		}
-	}
-
-	SDK.setConstant(BattleManagerABS, 'TURN', AlphaABS.SYSTEM.FRAMES_PER_SECOND);
-//END BattleManagerABS
-//------------------------------------------------------------------------------
+	//LOAD LIBS
+	var Game_AIBot = AlphaABS.LIBS["Game_AIBot"];
+	var BattleManagerABS = AlphaABS.LIBS["BattleManagerABS"];
+	var BattleProcessABS = BattleManagerABS.battleProcess();
 
 //Game_SkillABS
 //------------------------------------------------------------------------------
@@ -3531,6 +4910,11 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			this._currentStack = this.stack;
 			return 0;
 		} else {
+
+			if(this._currentStack === undefined) {
+				this._currentStack = 0;
+			}
+
 			var d = 0;
 
 			if(size > 0) {
@@ -4121,6 +5505,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	//END Game_SVector
 //------------------------------------------------------------------------------
 
+AlphaABS.register(Game_SVector);
+
 //Game_AIBehavior
 //------------------------------------------------------------------------------
 	class Game_AIBehavior {
@@ -4190,6 +5576,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		}
 	}
 
+	AlphaABS.register(Game_AIBehavior);
+
 	SDK.setConstant(Game_AIBehavior, 'TEMPLATES', //YOU CAN ADD YOU OWN TEMPLATE, but DON'T MODIFY EXIST ZERO TEMPLATE!!!
 		[
 			{ //Zero template
@@ -4206,322 +5594,18 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 				noEmote: false, //Не показывает эмоции
 				cEonStart: 0, //Common Event ID when start battle (see player)
 				cEonEnd: 0, //Common Event ID when stop battle (after start)
-				cEonDeath: 0 //Common Event ID when Death
+				cEonDeath: 0, //Common Event ID when Death
+				returnType: 0 //Тип возвращения (0 - быстрый, 1 - обычный, 2 - стоит на месте)
 			} //END Zero template
 		]
 	);
 
 	SDK.setConstant(Game_AIBehavior, 'PARAMS', ['viewRadius', 'returnRadius', 'escapeOnBattle',
 		'canSearch', 'noFight','reviveTime','regen','slow','agressive',
-		'noMove','noEmote','cEonStart','cEonDeath','cEonEnd']);
+		'noMove','noEmote','cEonStart','cEonDeath','cEonEnd', 'returnType']);
 
 	//END Game_AIBehavior
 //------------------------------------------------------------------------------
-
-//BattleProcessABS
-//------------------------------------------------------------------------------
-	class Game_BattleProcessABS {
-		constructor() {
-			this._postProcesses = [];
-			this._skill = null;
-			this._centerPoint = null;
-		}
-
-		performBattleAction(subject, target) {
-			this._processAction(subject, target, subject.battler().currentAction());
-		}
-
-		performBattleActionZone(subject, action) {
-			LOG.p("Battle : Start Zone Action");
-			this._processAction(subject, null, action);
-		}
-
-		performBattleActionRadius(subject, point, action, skill) {
-			LOG.p("Battle : Start Radius Action");
-			this._centerPoint = point;
-			this._processAction(subject, null, action);
-		}
-
-		startPostBattleAction(subject, target, action, skill) {
-			LOG.p("Battle : Start post Action");
-			action._forcing = true; //Because subject use MP and other on action start
-			var postProcess = {};
-			postProcess.subject = subject;
-			postProcess.target = target;
-			postProcess.action = action;
-			postProcess.skill = skill;
-			var t = new Game_SVector(postProcess);
-			this._postProcesses.push(t);
-			$gameMap.addSVector(t);
-			if(subject == $gamePlayer) {
-				if(!$gamePlayer.inBattle())
-					$gamePlayer.onBattleStart();
-			}
-		}
-
-		performPostBattleAction(sVector) {
-			var t = sVector.data();
-			if(t.skill.isVectorTypeR()) {
-				LOG.p("Battle : Start Radius Action by Vector");
-				this._centerPoint = t.target;
-				this._processAction(t.subject, null, t.action);
-			} else
-				this._processAction(t.subject,t.target,t.action);
-			this._postProcesses.delete(sVector);
-		}
-
-		isPostProcessExists() {
-			return (this._postProcesses.length != 0);
-		}
-
-		//PRIVATE
-		_processAction(subject, target, action) {
-			if(subject == null) {
-				return;
-			}
-			if(!subject.battler()) {
- 				return;
- 			}
- 			if(action) {
- 				action.prepare(); //???
- 				if(action.isValid()) {
- 					this._start_action(subject, target, action);
- 					this._end_action(subject);
- 				}
- 			}
-		}
-
-		_start_action(subject, target, action) {
-			//subject.requestEffect('whiten'); TODO
-			this._skill = subject.battler().skillABS_byAction(action);
-			action.applyGlobal();
-			var targets = this._makeTargets(subject, target);
-			this._showAnimation(subject, targets, action);
-			targets.forEach(function(item){
-				if(item && item.inActive()) {
-					this._invokeAction(subject, item, action);
-				}
-			}.bind(this));
-		}
-
-		_end_action(subject) {
-			subject.battler().performActionEnd(); //???
-			subject.battler().onAllActionsEnd();
-			this._skill = null;
-			this._centerPoint = null;
-		}
-
-		_invokeAction(subject, target, action) {
-			/*if (Math.random() < action.itemCnt(target)) {
-		        this.invokeCounterAttack(this._subject, target);
-		    } else if (Math.random() < action.itemMrf(target)) {
-		        this.invokeMagicReflection(this._subject, target);
-		    } else {
-		        this.invokeNormalAction(this._subject, target);
-		    }*/
-		    this._invokeNormalAction(subject, target, action);
-		}
-
-		_invokeNormalAction(subject, target, action) {
-			//var realTarget = this.applySubstitute(target);
-			action.apply(target.battler());
-			this._onActionResult(subject, target);
-		}
-
-		_makeTargets(subject, target) {
-			var targets = [];
-			if(this._skill.isZoneType()) {
-				var zone = this._generateZone(subject);
-				var points = zone.points;
-				this._centerPoint = zone.center;
-				var candidates = [];
-				if(subject == $gamePlayer) {
-					candidates = $gameTroop.membersABS();
-				} else {
-					candidates = [$gamePlayer];
-				}
-				for(var i = 0; i<points.length; i++) {
-					candidates.forEach(function(item){
-						if(ABSUtils.inPoint(item, points[i])) {
-							targets.push(item);
-						}
-					});
-				}
-				return targets;
-			} else
-				if(this._skill.isRadiusType() || this._skill.isVectorTypeR()) {
-					if(subject == $gamePlayer) {
-						targets = ABSUtils.inRadius(this._centerPoint, this._skill.radius, $gameTroop.membersABS());
-					} else {
-						targets = ABSUtils.inRadius(this._centerPoint, this._skill.radius, [$gamePlayer]);
-					}
-				} else {
-					targets.push(target);
-				}
-
-			return targets;
-		}
-
-		_showAnimation(subject, targets, action) {
-			if(action.isSkill() && action.item().id == subject.battler().attackSkillId()) {
-				this._requestAnimation(targets, subject.battler().attackAnimationId1());
-			} else {
-				var animId = action.item().animationId;
-				if(this._skill.isZoneType() || this._skill.isRadiusType() || this._skill.isVectorTypeR()) {
-					this._requestMapAnimation(animId);
-				} else {
-					this._requestAnimation(targets, animId);
-				}
-			}
-		}
-
-		_requestAnimation(objects, animationId) {
-			objects.forEach(function(item) {
-				if(item)
-					item.requestAnimationABS(animationId);
-			});
-		}
-
-		_requestMapAnimation(animationId) {
-			/*var t = null;
-			if(this._skill.isZoneType()) {
-				t = new Bitmap(96,96);
-			} else {
-				t = new Bitmap(this._skill.radius * 2 * 32, this._skill.radius * 2 * 32);
-			}
-			var sprite = new Sprite_Base(t);*/
-			var sprite = new Sprite_Base();
-			sprite.anchor.x = -0.5;
-			sprite.anchor.y = -0.5;
-			var point = this._centerPoint.mapPointOnScreen();
-			sprite.x = point.x;
-			sprite.y = point.y;
-			LOG.p("Request Map animation on " + point);
-
-			$gameMap.requestAnimationABS({sprite: sprite, id : animationId});
-		}
-
-		_onActionResult(subject, target) {
-			if(target.battler().result().used) {
- 				this._resultOnDamage(target.battler());
- 				//this._resultOnFailure(target.battler());
- 				//if (target.battler().result().isStatusAffected())
-	 			//		this._resultOnAffectedStatus(target.battler());
-	 			target.battler().startDamagePopup();
- 				subject.battler().startDamagePopup();
- 				target.onActionOnMe(subject);
- 			}
-		}
-
-		_resultOnDamage(target) {
-			if(target.result().missed) {
- 				if(target.result().physical) {
- 					target.performMiss();
- 				} else {
- 					this._resultOnFailure(target);
- 				}
-
- 			} else if (target.result().evaded) {
- 				 if (target.result().physical) {
- 				 	target.performEvasion();
- 				 }
- 				 else {
- 				 	target.performMagicEvasion();
- 				 }
- 			} else {
- 				 //HP
- 				 if (target.result().hpAffected) {
-			        if (target.result().hpDamage > 0 && !target.result().drain) {
-			            target.performDamage();
-			        }
-			        if (target.result().hpDamage < 0) {
-			            target.performRecovery();
-			        }
-			    }
-			    //MP
-			    if (target.isAlive() && target.result().mpDamage !== 0) {
-			        if (target.result().mpDamage < 0) {
-			            target.performRecovery();
-			        }
-			    }
-			    //TP
-			    if (target.isAlive() && target.result().tpDamage !== 0) {
-			        if (target.result().tpDamage < 0) {
-			            target.performRecovery();
-			        }
-			    }
- 			}
- 			target.performActionUsed();
-		}
-
-		_resultOnFailure(target) {
-			//Empty
-		}
-
-		_resultOnAffectedStatus(target) {
-			let states = target.result().addedStateObjects();
- 			states.forEach(function(state) {
- 				var state_msg = target.isActor() ? state.message1 : state.message2;
- 				//if(state.id === target.deathStateId())
- 				//	target.performCollapse();
- 				//this._add_state_info(target, state_msg); (not used)
- 			}.bind(this));
-		}
-
-		_generateZone(subject) {
-			var d = ABSUtils.getDirKey(subject);
-			var points = [];
-			var point = subject.toPoint();
-
-			/*
-					**
-			SUBJECT ***
-					**
-			*/
-
-			var centerPoint = null;
-
-			switch(d) {
-				case 'r' :
-					centerPoint = new Point(point.x + 2,point.y);
-					points.push(new Point(point.x + 1, point.y + 1));
-					points.push(new Point(point.x + 1, point.y - 1));
-				break;
-				case 'l' :
-					centerPoint = new Point(point.x - 2, point.y);
-					points.push(new Point(point.x - 1, point.y + 1));
-					points.push(new Point(point.x - 1, point.y - 1));
-				break;
-				case 'u' :
-					centerPoint = new Point(point.x, point.y - 2);
-					points.push(new Point(point.x + 1, point.y - 1));
-					points.push(new Point(point.x - 1, point.y - 1));
-				break;
-				default: //d
-					centerPoint = new Point(point.x, point.y + 2);
-					points.push(new Point(point.x + 1, point.y + 1));
-					points.push(new Point(point.x - 1, point.y + 1));
-				break;
-			}
-
-			points.push(centerPoint);
-			points.push(new Point(centerPoint.x - 1, centerPoint.y));
-			points.push(new Point(centerPoint.x + 1, centerPoint.y));
-			points.push(new Point(centerPoint.x, centerPoint.y - 1));
-			points.push(new Point(centerPoint.x, centerPoint.y + 1));
-
-			/*
-				 	   *
-				* CenterPoint *
-				 	   *
-			*/
-
-			return {center: centerPoint, points: points};
-		}
-	}
-	//END BattleProcessABS
-//------------------------------------------------------------------------------
-
 
 //Game_TimerABS
 //------------------------------------------------------------------------------
@@ -4529,6 +5613,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		this._paused = false;
 		this._mValue = 0;
 		this._value = 0;
+		this._delta = 0;
+		this._lastTick = Date.now();
  	}
 
 	Game_TimerABS.prototype.getMaxValue = function()
@@ -4556,7 +5642,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	Game_TimerABS.prototype.isReady = function()
 	{
-		return (this._value == this._mValue);
+		return (this._value >= this._mValue);
 	}
 
 	Game_TimerABS.prototype.start = function(frameCount)
@@ -4587,903 +5673,25 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	Game_TimerABS.prototype.update = function()
 	{
+		this.updateDelta();
 		if(!this.isReady())
 		{
 			if(!this._paused)
 			{
 				if(this._value < this._mValue)
-					this._value += 1;
+					this._value += (AlphaABS.SYSTEM.FRAMES_PER_SECOND * this._delta);
 			}
 		}
 	}
+
+	Game_TimerABS.prototype.updateDelta = function() {
+			var now = Date.now();
+			this._delta = (now - this._lastTick)/1000.0;
+			this._lastTick = now;
+	};
 	//END Game_TimerABS
 //------------------------------------------------------------------------------
 
-//Game_AIBot
-//------------------------------------------------------------------------------
-	Game_AIBot.prototype = Object.create(Game_Event.prototype);
-	Game_AIBot.prototype.constructor = Game_AIBot;
-
-	Game_AIBot.prototype.initialize = function(mapId, eventId, enemyId) {
-	    Game_Event.prototype.initialize.call(this, mapId, eventId);
-	    LOG.p("AI inited " + $dataEnemies[enemyId].name + " at " + this.toPoint().toString());
-
-	    this._absParams.enemyId = enemyId;
-	    this._absParams.battler = null;
-	    this._absParams.target = null;
-
-	    //States
-	    this._absParams.inBattle = false;
-	    this._absParams.active = true; //Со мной можно взаимодействовать
-	    this._absParams.selected = false; //Я выбран на карте игроком?
-	    this._absParams.casting = false; //Читаю заклинание
-	    this._absParams.state = "free";
-	    this._absParams.actionState = "stay";
-
-	    //Variables
-	    this._absParams.allyToSearch = null; //Кого мне искать
-	    this._absParams.reviveTimer = null; //Таймер для возраждения
-	    this._absParams.regenTimer = null; //Таймер для восстановления параметров
-	    this._absParams.myStartPosition = this.toPoint();
-	    this._absParams.myHomePosition = null;
-	    this._absParams.looted = false;
-	    this._absParams.activateSwitch = null; //Used if enemy not been active at start
-
-	    //Behavior
-	    var b = new Game_AIBehavior(this);
-	    this._absParams.behavior = b;
-	    //I know, this is terrible, but this is still BETA
-	    this._absParams.viewRadius = b.viewRadius;
-	    this._absParams.returnRadius = b.returnRadius;
-	    this._absParams.escapeOnBattle = b.escapeOnBattle; //Убегает во время битвы
-	    this._absParams.canSearch = b.canSearch; //Могу ля я искать противника, если мой сосед атакован
-	    this._absParams.noFight = b.noFight; //Не будет сражаться
-	    this._absParams.reviveTime = b.reviveTime; //Время возрождения (минуты)
-	    this._absParams.regenOnFree = b.regen;
-	    this._absParams.slow = b.slow; //Медленный враг
-	    this._absParams.agressive = b.agressive; //Агрессивный враг (будет догонять)
-		this.setRevive(this._absParams.reviveTime);
-
-		if(Imported.Quasi_Movement)
-			this._absParams.useAStar = true;
-		else
-			this._absParams.useAStar = false;
-
-	    this._storeMoveData();
-	};
-
-
-	//NEW
-	Game_AIBot.prototype.battler = function() {
-		return this._absParams.battler;
-	}
-
-	//NEW
-	Game_AIBot.prototype.target = function() {
-		return this._absParams.target;
-	}
-
-	//NEW
-	Game_AIBot.prototype.initABS = function() {
-		if(!this._absParams.battler) {
-			this._absParams.battler = new Game_EnemyABS(this._absParams.enemyId);
-			this._absParams.battler.initABS();
-		}
-		if(this._checkActiveState()) {
-			this._absParams.active = true;
-			this._checkDieSwitch();
-
-			if(this._absParams.battler.enemy().actions.length == 0) {
-				LOG.p("AI: Not actions");
-				this._absParams.noFight = true;
-			}
-		} else {
-			LOG.p("AI: Deactivated from start");
-			this._deactivate();
-		}
-	}
-
-	//NEW
-	Game_AIBot.prototype.activate = function() {
-		if(!this._absParams.activateSwitch) return;
-		LOG.p("AI: Activate");
-		var key = [$gameMap.mapId(), this.eventId(), this._absParams.activateSwitch];
-		$gameSelfSwitches.setValue(key, true);
-		this.refresh();
-		this._absParams.activateSwitch = null;
-		this.initABS();
-	}
-
-	//NEW
-	Game_AIBot.prototype.inBattle = function() {
-		return this._absParams.inBattle;
-	}
-
-	//NEW
-	Game_AIBot.prototype.inActive = function() {
-		return this._absParams.active;
-	}
-
-	//NEW
-	Game_AIBot.prototype.onTurnEnd = function() {
-		if(this.inBattle()) {
-			this.battler().onTurnEnd();
-		}
-	}
-
-	Game_AIBot.prototype.hasLoot = function() {
-		return !this._absParams.looted;
-	}
-
-	//NEW
-	Game_AIBot.prototype.loot = function() {
-		if(!this._absParams.looted) {
-			this._absParams.looted = true;
-			//TODO Можно звук соответствующий
-			//'coin'
-			var gold = this.battler().gold();
-			if(gold > 0) {
-				$gameParty.gainGold(gold);
-			}
-			var t = this.battler().makeDropItems();
-			if(t.length > 0) {
-				t.forEach(function(i) {
-					$gameParty.gainItem(i,1);
-				});
-			}
-			LOG.p("AI : Looted!");
-		} else {
-			LOG.p("AI : Already looted!");
-		}
-	}
-
-	//NEW
-	Game_AIBot.prototype.onActionOnMe = function(who) {
-		if(!this.inBattle() && !this._absParams.noFight) {
-			LOG.p("AI : I'am attacked!!!");
-			this._absParams.target = who;
-			this._changeState('battle');
-		}
-
-		if(!this.battler().isAlive() && this.inActive()) {
-			var t = this.battler().exp();
-			$gameParty.gainExp(t);
-			if(Consts.PARAMS.AUTO_LOOT)
-				this.loot();
-			if(this._absParams.behavior.cEonDeath > 0) {
-				LOG.p("AI : Common Event (on Death): " + this._absParams.behavior.cEonDeath);
-				$gameTemp.reserveCommonEvent(this._absParams.behavior.cEonDeath);
-			}
-			//$gamePlayer.requestExpPopup(t); //ABUNAI, honto ni 'who' ga 'Player' ka
-		}
-	}
-
-	//NEW
-	Game_AIBot.prototype.selectOnMap = function(isSelect) {
-		this._absParams.selected = isSelect;
-	}
-
-	//NEW
-	Game_AIBot.prototype.setRevive = function(time) {
-		if(time == 0) {
-			this._absParams.reviveTimer = null;
-			return;
-		}
-		var t = time * BattleManagerABS.TURN;
- 		LOG.p("AI : Set revive " + time + " secs.");
-		if(time) {
-			this._absParams.reviveTimer = new Game_TimerABS();
-			this._absParams.reviveTimer.start(t);
-		}
-	}
-
-	//NEW Load from save file
-	Game_AIBot.prototype.onGameLoad = function() {
-		LOG.p("AI : On Game Load");
-		this.battler().onGameLoad();
-		//if(this._paused) {
-		//	this._paused = false;
-		//	this.pause(true);
-		//} This not work
-		/*var t = 0;
-		if(this._absParams.reviveTimer)
-			t = this._absParams.reviveTimer._value;
-		this.setRevive(this._absParams.reviveTime);
-		if(this._absParams.reviveTimer && t > 0) //Continue
-		{
-			LOG.p("AI : Continue revive from " + t);
-			this._absParams.reviveTimer.start(t);
-		}*/
-	}
-
-	//OVER
-	Game_AIBot.prototype.start = function() {
-		if(this.inActive()) { //Select by Enter
-			if(this != BattleManagerABS.getPlayerTarget()) {
-				BattleManagerABS.setPlayerTarget(this);
-				LOG.p("Selected " + this.event().name);
-			}
-		}
-		Game_Event.prototype.start.call(this);
-	};
-
-	//Pause function work but if you pause enemy then save game and load, enemy not be paused
-	/*Game_AIBot.prototype.pause = function(isPause) {
-		if(isPause) {
-			if(this.inActive() && this.battler().isAlive()) {
-				this._deactivate();
-				this._paused = true;
-				LOG.p("AI: Paused");
-			}
-		} else {
-			if(this._paused) {
-				LOG.p("AI: Resumed");
-				this._paused = false;
-				this.initABS();
-			}
-		}
-
-	}*/
-
-	//OVER
-	Game_AIBot.prototype.update = function() {
-		var isMoving = this.isMoving();
-		Game_Event.prototype.update.call(this);
-		if(!this.isMoving()){
-			this._updateNonmoving(isMoving);
-		}
-		this._updateABS();
-		this._updateRevive();
-	}
-
-	//NEW
-	Game_AIBot.prototype.interruptCast = function() {
-		var t = this._absParams.currentAction;
-		if(t && t.isCasting()){
-			LOG.p("AI : Cast intterupt");
-			t.resetCast();
-			this._absParams.casting = false;
-		}
-	}
-
-	//NEW
-	Game_AIBot.prototype._checkActiveState = function() {
-		var t = this.list();
-		for (var i =0; i < t.length; i++) {
-         	var item = t[i];
-         	if (item.code == 108) {
-              	var comment = item.parameters[0];
-              	if(comment.indexOf("<noActive") >= 0) {
-              		var t2 = /<noActive\s?:\s?(.+?)>/;
-              		var match = t2.exec(comment);
-              		if(match) {
-              			if(SDK.checkSwitch(match[1])) {
-              				this._absParams.activateSwitch = match[1];
-              				return false;
-              			}
-              		}
-              	}
-         	}
-     	}
-     	return true;
-	}
-
-	//PRIVATE
-	Game_AIBot.prototype._storeMoveData = function() {
-		var t = this._absParams;
-		t.moveData = {};
-		t = t.moveData;
-		t.moveSpeed = this._moveSpeed;
-		t.moveType = this._moveType;
-		t.moveFrequency = this._moveFrequency;
-	}
-
-	Game_AIBot.prototype._restoreMoveData = function() {
-		var t = this._absParams.moveData;
-		this._moveSpeed = t.moveSpeed;
-		this._moveType = t.moveType;
-		this._moveFrequency = t.moveFrequency;
-	}
-
-	Game_AIBot.prototype._resetMoveData = function() {
-		this._moveSpeed = this._absParams.moveData.moveSpeed;
-		this._moveType = 0;
-		this._moveFrequency = this._absParams.moveData.moveFrequency;
-	}
-
-	Game_AIBot.prototype._checkDieSwitch = function() {
-		var key = [$gameMap.mapId(), this.eventId(), Consts.PARAMS.DEAD_SWITCH];
-		if($gameSelfSwitches.value(key) === true) {
-			if(this._absParams.reviveTime == 0) {
-				this._deactivate();
-			} else {
-				$gameSelfSwitches.setValue(key, false);
-			}
-		}
-	}
-
-	Game_AIBot.prototype._makeActions = function() {
-		if(this._absParams.casting) return;
-
-		this._absParams.battler.makeActions();
-
-		var actions = this._absParams.battler._actions.filter(function(action) {
-			var skill = this.battler().skillABS_byAction(action);
-			var target = this.target();
-			if(skill)
-				target = skill.isNeedTarget() ? this.target() : self;
-			return BattleManagerABS.canUseABSSkillNow(this, target, skill) && this._isUsableABSSkill(skill);
-		}.bind(this));
-
-		//Выбрали действия, которые можно использовать в данный момент
-		if(actions.length > 0) {
-			this._setForceAction(actions.first());
-		}
-		else {
-			this._setCurrentAction(this.battler().action(0)); //Устанавливаю
-		}
-	}
-
-	Game_AIBot.prototype._isUsableABSSkill = function(absSkill) { //SOME TYPES NOT SUPPORTED YET
-		var result = true;
-		if(absSkill.isZoneType()) return false;
-		if(absSkill.isRadiusType()) return false;
-		if(absSkill.isNeedAmmo()) return false;
-		if(absSkill.isVectorTypeR()) return false;
-		if(absSkill.isStackType() && !absSkill.isAutoReloadStack()) return false;
-		return result;
-	}
-
-	Game_AIBot.prototype._setForceAction = function(action) {
-		this._absParams.currentAction = this.battler().skillABS_byAction(action);
-		this._changeActionState('action');
-	}
-
-	Game_AIBot.prototype._setCurrentAction = function(action) {
-		var t = this.battler().skillABS_byAction(action);
-		if(this._absParams.currentAction != t) {
-			this._absParams.currentAction = t;
-			if(this._absParams.currentAction)
-				this._changeActionState('prepareAction');
-			else {
-				if(this._absParams.escapeOnBattle)
-					this._changeActionState('escape');
-				else
-					this._changeWaitActionState('prepareAction', 'wait', null);
-			}
-		}
-	}
-
-	Game_AIBot.prototype._performAction = function() {
-		LOG.p("AI : Perform! " + this._absParams.currentAction.skill().name);
-		if(this._absParams.currentAction.isVectorType()) {
-			BattleProcessABS.startPostBattleAction(this, this.target(), this.battler().action(0), this._absParams.currentAction);
-		} else {
-			if(this._absParams.currentAction.isNeedTarget())
-				BattleProcessABS.performBattleAction(this, this.target());
-			else
-				BattleProcessABS.performBattleAction(this, this);
-		}
-		this.battler().performCurrentAction();
-		this._absParams.currentAction.playStartSound(this.toPoint());
-		this._changeActionState('prepareAction');
-	}
-
-	Game_AIBot.prototype._updateABS = function() {
-
-		if(this._absParams.active && !this._erased)
-		{
-			this.battler().updateABS();
-
-			if(!this.battler().isAlive()) {
-				this._changeState('dead');
-				return;
-			}
-
-			if(!this.battler().canMove() && this._absParams.state != 'stun') {
-				this._changeState('stun');
-			}
-
-			switch(this._absParams.state){
-				case 'free': this._update_on_free(); break;
-				case 'battle': this._update_on_battle(); break;
-				case 'search' : this._update_on_search(); break;
-				case 'return': this._update_on_return(); break;
-				case 'stun' : this._update_on_stun(); break;
-			}
-		} else {
-			if(this._absParams.state == 'return') {
-				this._update_on_return();
-			}
-		}
-
-		if(this._absParams.active == true && this._erased == true) {
-			this._deactivate();
-		}
-	}
-
-	Game_AIBot.prototype._updateRevive = function() {
-		if(this._absParams.reviveTimer == null || this.battler().isAlive()) {
-			return;
-		}
-
-		this._absParams.reviveTimer.update();
-		if(this._absParams.reviveTimer.isReady()) {
-			//TODO Colide with test
-			//if(this.isCollidedWithEvents(this._absParams.myStartPosition.x, this._absParams.myStartPosition.y).length == 0) {
-				this._revive();
-			//} else {
-			//	LOG.p("Can't revive, place is busy, wait");
-			//	this._absParams.reviveTimer.start(720);
-			//}
-
-		}
-	}
-
-	Game_AIBot.prototype._revive = function() {
-		if(this._erased == true) {
-			this._absParams.reviveTimer = null;
-			return;
-		}
-
-		this.locate(this._absParams.myStartPosition.x, this._absParams.myStartPosition.y);
-		var key = [$gameMap.mapId(), this.eventId(), Consts.PARAMS.DEAD_SWITCH];
-		$gameSelfSwitches.setValue(key, false);
-		this._absParams.battler = null;
-		this._absParams.reviveTimer = null;
-		this.refresh();
-		this.initABS();
-		this.setRevive(this._absParams.reviveTime);
-		this._absParams.active = true;
-		this._absParams.looted = false;
-		if(Consts.PARAMS.REVIVE_ANIMATION_ID > 0)
-			this.requestAnimationABS(Consts.PARAMS.REVIVE_ANIMATION_ID); //TODO If in visible screen
-		this._changeState('free');
-	}
-
-	Game_AIBot.prototype._changeState = function(newState) {
-		this._absParams.state = newState;
-		switch(newState) {
-			case 'free' :
-				this._absParams.target = null;
-				this._restoreMoveData();
-				this._moveSpeed += this.battler().ABSParams().moveSpeedUpKoef;
-			break;
-			case 'battle' :
-			if(this._absParams.regenTimer) {
-				this._absParams.regenTimer.reset();
-			}
-			this._onBattleStart();
-			this._changeActionState('approach');  //преследую цель!
-			break;
-			case 'return' :
-				this._deactivate();
-				LOG.p("AI : Return to " + this._absParams.myHomePosition.toString());
-			break;
-			case 'search':
-				this._restoreMoveData();
-				LOG.p("AI : Curious! I'am searching...");
-				if(!this._absParams.behavior.noEmote) this.requestBalloon(2);
-			break;
-			case 'dead' :
-				this._moveType = 0;
-				var key = [$gameMap.mapId(), this.eventId(), Consts.PARAMS.DEAD_SWITCH];
-				$gameSelfSwitches.setValue(key, true);
-				this._originalDirection = -1;
-				this._originalPattern = -1;
-				this.refresh();
-				this._deactivate();
-			break;
-			case 'stun':
-				//this.interruptCast();
-				this._resetTarget();
-				this._moveType = 0; //Stop
-				this._moveFrequency = this._absParams.moveData.moveFrequency;
-				LOG.p("AI : I'am stunned!");
-				if(!this._absParams.behavior.noEmote) this.requestBalloon(10);
-			break;
-		}
-	}
-
-	Game_AIBot.prototype._changeActionState = function(newActionState) {
-		this._resetMoveData();
-		this._absParams.actionState = newActionState;
-		switch(newActionState) {
-			case 'approach' :
-				//LOG.p("AI : approach apply");
-				if(this._absParams.behavior.noMove == true) {
-					this._moveType = 0; //Stay
-					this.turnTowardPlayer();
-				} else {
-					this._applyAproachSpeed();
-					this._moveType = 2;
-				}
-				break;
-			case 'prepareAction' :
-				break;
-			case 'cast':
-				this._moveType = 0; //Stay
-				this._moveFrequency = this._absParams.moveData.moveFrequency;
-				this.turnTowardPlayer();
-				break;
-			case 'action' :
-				this._moveType = 0; //Stay
-				this._moveFrequency = this._absParams.moveData.moveFrequency;
-				this._absParams.myHomePosition = new Point(this.x,this.y); //Reset position
-				this.turnTowardPlayer();
-				break;
-			case 'escape':
-				this._applyAproachSpeed();
-				this._moveType = 0;
-				break;
-			case 'wait' :
-				this._moveType = 0; //Stay
-				this._moveFrequency = this._absParams.moveData.moveFrequency;
-				break;
-		}
-	}
-
-	Game_AIBot.prototype._applyAproachSpeed = function() {
-		if(this._absParams.slow != true) {
-			//LOG.p("AI : Apply acceleration");
-			this._moveFrequency = this._absParams.moveData.moveFrequency + 2;
-		}
-	}
-
-	Game_AIBot.prototype._changeWaitActionState = function(oldActionState, waitType, waitTimer) {
-		this._absParams.oldActionState = oldActionState;
-		this._absParams.waitType = waitType;
-		this._absParams.waitTimer = waitTimer;
-		this._changeActionState('wait');
-	}
-
-	Game_AIBot.prototype._checkReturn = function() {
-		if(this._absParams.myHomePosition) {
-			var t = ABSUtils.distanceTo(this, this._absParams.myHomePosition);
-			if(t > this._absParams.returnRadius) {
-				LOG.p("AI : I'am to far from my home!");
-				//IDEA Можно включать прозрачность, чтобы быстрее вернулся домой
-				this._changeState('return');
-			}
-		}
-	}
-
-	Game_AIBot.prototype._setTarget = function(t) {
-		if(BattleManagerABS.isValidTarget(t)) {
-			this._absParams.target = t;
-			//if(t == $gamePlayer) //TODO Target to ally
-				$gamePlayer.refreshBattleState();
-		}
-		if(t == null)
-			this._resetTarget();
-	}
-
-	Game_AIBot.prototype._resetTarget = function() {
-		this._absParams.target = null;
-		this._absParams.inBattle = false;
-		this.interruptCast();
-	}
-
-	/*Game_AIBot.prototype.moveTypeTowardPlayer = function() { //This is very lagy code
-	    if (this.isNearThePlayer()) {
-	        this.moveToPoint($gamePlayer);
-	    } else {
-	        this.moveRandom();
-	    }
-	};*/
-
-	Game_AIBot.prototype._update_on_free = function() {
-		if(this._absParams.noFight) {
-			var t = this._checkVision($gamePlayer);
-			if(!t) {
-				this._regenerateValues();
-			} else {
-				if(this._absParams.escapeOnBattle == true) {
-					LOG.p("AI : Run away from Player");
-					this._runAwayFromTarget();
-				}
-			}
-			return;
-		}
-
-		this._regenerateValues();
-		var t = this._checkVision($gamePlayer);
-		if(t) {
-			this._setTarget($gamePlayer);
-			if(this._absParams.target) {
-				LOG.p("AI : Player Detected!");
-				this._changeState('battle');
-			}
-		} else {
-			if(this._absParams.canSearch) {
-				this._checkVisionAlly();
-				if(this._absParams.allyToSearch) {
-					this._changeState('search');
-				}
-			}
-		}
-	}
-
-	Game_AIBot.prototype._update_on_stun = function() {
-		if(this.battler().canMove()) {
-			this._changeState('free');
-		} else {
-
-		}
-	}
-
-	Game_AIBot.prototype._update_on_battle = function() {
-		if(!this.target().inActive()) {
-			this._changeState('free');
-		}
-
-		if(!this._checkVision(this.target())) {
-			if(this._absParams.behavior.noMove) {
-				this._changeState('free');
-				return;
-			}
-		}
-
-		this._makeActions();
-		//LOG.p("AI : Make Actions Done");
-		switch(this._absParams.actionState) {
-		case 'approach':
-			this._checkReturn();
-			//LOG.p("AI : Check return Done");
-		break;
-
-		case 'prepareAction':
-		  LOG.p('prepareAction');
-			var t = this._absParams.currentAction;
-			if(t.cEonStart != 0) {
-				LOG.p("AI : Common Event " + t.cEonStart);
-				$gameTemp.reserveCommonEvent(t.cEonStart);
-			}
-			if(BattleManagerABS.canUseSkillByTimer(t)) {
-				if(BattleManagerABS.canUseSkillByRange(this, this.target(), t)) {
-					this._changeActionState('action');
-				} else {
-					LOG.p("AI : Player to away!");
-					if(!this._absParams.behavior.noMove)
-						//if(this._absParams.currentAction != 'approach')
-							this._changeActionState('approach');
-					else {
-						this.turnTowardPlayer();
-					}
-				}
-			} else {
-				LOG.p("AI : Wait my attack");
-				if(this._absParams.escapeOnBattle)
-					this._changeWaitActionState('prepareAction', 'escape', t);
-				else
-					this._changeWaitActionState('prepareAction', 'wait', t);
-			}
-		break;
-
-		case 'action':
-			LOG.p("AI : Execute Action!");
-			var t = this._absParams.currentAction;
-			if(t.isNeedCast()) {
-				if(t.isCasting()){
-					if(t.isReady()) {
-						this._performAction();
-						this._absParams.casting = false;
-					}
-				} else {
-					LOG.p("AI : Start cast!");
-					this._absParams.casting = true;
-					t.startCast();
-					//this.requestAnimationABS(120); //TODO 130 анимация подлагивает при первом срабатывании!!! временно 120 поставил
-					this._changeActionState('cast');
-				}
-			} else {
-				this._performAction();
-			}
-		break;
-
-		case 'cast':
-			this.turnTowardPlayer();
-			var t = this._absParams.currentAction;
-			if(t.isCasting()) {
-				if(!BattleManagerABS.canUseSkillByRange(this,this.target(),t)) {
-					LOG.p("AI : Cast intterupt, target too far");
-					t.resetCast();
-					this._absParams.casting = false;
-					this._changeActionState('prepareAction');
-				} else {
-					if(t.isReady()) {
-						LOG.p("AI : Cast END");
-						this._changeActionState('action');
-					}
-				}
-			} else {
-				this._absParams.casting = false;
-				this._changeActionState('prepareAction');
-			}
-		break;
-
-		case 'escape':
-			this._escapeFromTarget();
-			this._checkReturn();
-		break;
-
-		case 'wait':
-			if(this._absParams.waitType == 'escape') {
-				this._escapeFromTarget();
-				if(this._absParams.agressive) return;
-			}
-			if(this._absParams.waitTimer && this._absParams.waitTimer.isReady()){
-				this._changeActionState(this._absParams.oldActionState);
-				if(this._absParams.agressive) return;
-			}
-
-			if(this._absParams.agressive)
-				this._changeActionState('approach');
-			else {
-				if(!this._checkVision($gamePlayer)) {
-					this._resetTarget();
-					this._changeState('free');
-				}
-			}
-		break;
-		}
-	}
-
-	Game_AIBot.prototype._update_on_return = function() {
-		if(!this._absParams.myHomePosition) {
-			this._absParams.active = true;
-			this._onBattleEnd();
-			return;
-		}
-
-		var t = this._absParams.myHomePosition;
-		var direction = this.findDirectionTo(t.x,t.y);
-		if(direction > 0) {
-			this.moveStraight(direction);
-		} else {
-			LOG.p("AI : I'am return to Home!");
-			this._absParams.myHomePosition = null;
-			this._absParams.active = true;
-			this._onBattleEnd();
-		}
-	}
-
-	Game_AIBot.prototype._update_on_search = function() {
-		if(this._absParams.allyToSearch &&
-			this._absParams.allyToSearch.inActive()) {
-
-			var t = this._checkVision($gamePlayer);
-			if(t) {
-				this._absParams.allyToSearch = null;
-				this._setTarget($gamePlayer);
-				if(this._absParams.target) {
-					LOG.p("AI : Player Detected!");
-					this._changeState('battle');
-				}
-			} else {
-				if(!this.isMoving() && !this._absParams.behavior.noMove) {
-					//this.moveTowardCharacter(this._absParams.allyToSearch);
-					this.moveToPoint(this._absParams.allyToSearch);
-				}
-			}
-
-		} else {
-			this._changeState('free');
-		}
-	}
-
-	Game_AIBot.prototype._checkVision = function(who) {
-		if(!who || !who.inActive()) {
-			return false;
-		}
-		var t = ABSUtils.distanceTo(this, who);
-		if(t < this._absParams.viewRadius) {
-			return true;
-		} else
-			return false;
-	}
-
-	Game_AIBot.prototype._checkVisionAlly = function() {
-		var ally = ABSUtils.inRadius(this, this._absParams.viewRadius, $gameTroop.membersABS());
-		this._absParams.allyToSearch = null;
-		if(ally.length > 0) {
-			ally.forEach(function(t) {
-				if(t.inBattle()) {
-					this._absParams.allyToSearch = t;
-				}
-			}.bind(this));
-		}
-	}
-
-	Game_AIBot.prototype._escapeFromTarget = function() {
-		var escapeRange = 2;
-		if(!this._absParams.target) return;
-		var t = ABSUtils.distanceTo(this, this._absParams.target);
-		if(!this.isMoving()) {
-			if(t < escapeRange) {
-					this.moveFromPoint($gamePlayer);
-					this.turnTowardPlayer();
-			} else if(t > escapeRange + 1) {
-				this.moveTowardCharacter($gamePlayer);
-			} else
-				this.turnTowardPlayer();
-		}
-	}
-
-	Game_AIBot.prototype._runAwayFromTarget = function() {
-		var realRange = this._absParams.viewRadius / 2;
-		var escapeRange = (realRange >= 2) ? realRange : 2;
-		var t = ABSUtils.distanceTo(this, $gamePlayer);
-		if(!this.isMoving()) {
-			if(t < escapeRange) {
-				this._applyAproachSpeed();
-				this.moveFromPoint($gamePlayer);
-			} else {
-				this._changeState('free');
-			}
-		}
-	}
-
-	Game_AIBot.prototype._deactivate = function() {
-		if(BattleManagerABS.getPlayerTarget() == this) {
-			BattleManagerABS.setPlayerTarget(null);
-		}
-		this._absParams.active = false;
-		this._resetTarget();
-	}
-
-	Game_AIBot.prototype._onBattleStart = function() {
-		if(!this._absParams.behavior.noEmote) this.requestBalloon(1);
-		this.battler().onBattleStart();
-		this._absParams.inBattle = true;
-		this._absParams.myHomePosition = new Point(this.x, this.y);
-		LOG.p("AI : Store home position: " + this._absParams.myHomePosition.toString());
-		if(this._absParams.behavior.cEonStart > 0) {
-			LOG.p("AI : Common Event (on Battle Start): " + this._absParams.behavior.cEonStart);
-			$gameTemp.reserveCommonEvent(this._absParams.behavior.cEonStart);
-		}
-	}
-
-	Game_AIBot.prototype._onBattleEnd = function() {
-		this._absParams.inBattle = false;
-		this._absParams.allyToSearch = null;
-		this.battler().onBattleEnd();
-		if(this._absParams.behavior.cEonEnd > 0) {
-			LOG.p("AI : Common Event (on Battle End): " + this._absParams.behavior.cEonEnd);
-			$gameTemp.reserveCommonEvent(this._absParams.behavior.cEonEnd);
-		}
-		this._changeState('free');
-	}
-
-	Game_AIBot.prototype._updateNonmoving = function(wasMoving) { //from Player
-		if (!$gameMap.isEventRunning()) {
-	        if (wasMoving && !this.isMoveRouteForcing()) {
-	            this.battler().onWalk();
-	        }
-	    }
-	}
-
-	Game_AIBot.prototype._checkFloorEffect = function() {
-	    if ($gameMap.isDamageFloor(this.x, this.y)) {
-	        this.battler().executeFloorDamage();
-	    }
-	};
-
-	Game_AIBot.prototype._regenerateValues = function() {
-		if(this._absParams.regenOnFree) {
-			if(!this._absParams.regenTimer){
-				this._absParams.regenTimer = new Game_TimerABS();
-				this._absParams.regenTimer.start(60);
-			}
-			this._absParams.regenTimer.update();
-			if(this._absParams.regenTimer.isReady()) {
-				this._absParams.regenTimer.reset();
-				this.battler().regenerateAllonFree();
-			}
-		}
-	}
-	//END Game_AIBot
-//------------------------------------------------------------------------------
 
 //Game_EnemyABS
 //------------------------------------------------------------------------------
@@ -5640,6 +5848,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	Sprite_CharacterABS.prototype.isPlayer = function() {
 		return this._absParams.type == 1;
 	}
+
+
 
 	Sprite_CharacterABS.prototype.ABSParams = function() {
 		return this._absParams;
@@ -6071,7 +6281,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			this._absParams.menuClickCount = 1;
 
 			this.setupEventsABS();
-			$gamePlayer.hideFollowers();
+			//$gamePlayer.hideFollowers();
 		}
 	}
 
@@ -6157,6 +6367,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	//NEW
 	Game_Map.prototype.setupEventsABS = function() {
+		LOG.p("setupEventsABS");
 		for (var i = 0; i < this._events.length; i++) {
 			if(!this._events[i]) continue;
 			var ev = this._events[i].event();
@@ -6168,6 +6379,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			}
 		}
 	}
+
 
 //END Game_Map
 //------------------------------------------------------------------------------
@@ -7463,7 +7675,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	Game_Battler.prototype.initMembers = function() {
 		_Game_Battler_initMembers.call(this);
 		this._initBattleSkills();
-	}
+}
 
 
 	var _GameBattler_attackSpeed = Game_Battler.prototype.attackSpeed;
@@ -7682,6 +7894,17 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
             }
             return null;
         });
+    };
+
+		/*var _Game_Actor_prototype_isFormationChangeOk = Game_Actor.prototype.isFormationChangeOk;
+    Game_Actor.prototype.isFormationChangeOk = function() {
+    		this.changeFormationABS();
+        return _Game_Actor_prototype_isFormationChangeOk.call(this);
+    };*/
+
+    Game_Actor.prototype.changeFormationABS = function() {
+    		//$gamePlayer.refresh();
+    		//$gamePlayer.initABS();
     };
 
     //NEW
@@ -8015,6 +8238,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 			BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NEWLEVEL[SDK.isRU()]);
 			if(Consts.PARAMS.LEVELUP_ANIMATION_ID > 0)
 				$gamePlayer.requestAnimationABS(Consts.PARAMS.LEVELUP_ANIMATION_ID); //If Party, need char selector
+
 		} else
 			_Game_Actor_displayLevelUp.call(this, newSkills);
 	};
@@ -8031,7 +8255,8 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	Game_Actor.prototype.gainExp = function(exp) {
 	    if($gameMap.isABS() && exp > 0) {
 	    	var nExp = Math.round(exp * this.finalExpRate());
-			BattleManagerABS.UI().pushOnItemPanel('exp', nExp);
+	    	if(this.isPlayer())
+					BattleManagerABS.UI().pushOnItemPanel('exp', nExp);
 		}
 	    _Game_Actor_gainExp.call(this, exp);
 	};
@@ -8267,12 +8492,17 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
     // Transfer Player
     var _Game_Interpreter_command201 = Game_Interpreter.prototype.command201;
 	Game_Interpreter.prototype.command201 = function() {
-		if($gameParty.inBattle()) {
-			BattleManagerABS.alertNoInBattle();
-			BattleManagerABS.warning(1);
-			return true;
-		} else {
+		if(AlphaABS.SYSTEM.PARAMS.ALLOW_TRANSFER == true) {
+			$gamePlayer.stopABS();
 			return _Game_Interpreter_command201.call(this);
+		} else {
+			if($gameParty.inBattle()) {
+				BattleManagerABS.alertNoInBattle();
+				BattleManagerABS.warning(1);
+				return true;
+			} else {
+				return _Game_Interpreter_command201.call(this);
+			}
 		}
 	};
 
@@ -8465,6 +8695,7 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 //------------------------------------------------------------------------------
 	//OVER
 	Spriteset_Map.prototype.createCharacters = function() {
+			LOG.p("createCharacters");
 	    this._characterSprites = [];
 	    this._characterSpritesABS = [];
 	    this._spritePlayerABS = null;
@@ -8481,9 +8712,15 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 	    $gameMap.vehicles().forEach(function(vehicle) {
 	        this._characterSprites.push(new Sprite_Character(vehicle));
 	    }, this);
+
 	    $gamePlayer.followers().reverseEach(function(follower) {
 	        this._characterSprites.push(new Sprite_Character(follower));
 	    }, this);
+
+	    //$gameParty.members().forEach(function(member) {
+
+	    //}, this);
+
 	    var t = new Sprite_CharacterABS($gamePlayer, 1);
 	    this._characterSprites.push(t);
 	    this._spritePlayerABS = t;
@@ -9024,7 +9261,12 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 		            	{
 		            		if(selected.character() != BattleManagerABS.getPlayerTarget()) {
 		            			BattleManagerABS.setPlayerTarget(selected.character());
-		            			LOG.p("Selected " + selected.character().event().name);
+
+		            			if(!selected.character().isAlly())
+		            				LOG.p("Selected " + selected.character().event().name);
+		            			else
+		            				LOG.p("Selected ally " + selected.character().battler().name());
+
 		            			$gameMap.ABSParams().menuClickCount = 0;
 		            		} else {
 		            			$gamePlayer.stopFollowMode();
@@ -15220,3 +15462,5 @@ function Game_TimerABS()		 { this.initialize.apply(this, arguments);}
 
 	})();
 //------------------------------------------------------------------------------
+
+//Plugin Alpha_ABS automatic build by MVPluginBuilder. 09.01.2018
