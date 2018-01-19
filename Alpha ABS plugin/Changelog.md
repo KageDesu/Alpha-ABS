@@ -1,6 +1,10 @@
 # Version 1.1  
 ## Builds:  
 
+**758** - (19.01.2018)
+> - fixed bug: enemy AI bug with spawn timer
+> - tested with 1.6.0
+
 **756** - (09.01.2018)
 > - fixed bug: ammunition was lost in the transition to the map
 > - fixed bug: stupid AI movement

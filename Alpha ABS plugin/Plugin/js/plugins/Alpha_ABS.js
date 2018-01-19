@@ -400,7 +400,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 110;
-AlphaABS.build = 756; //(9.01.2018)
+AlphaABS.build = 758; //(19.01.2018)
 
 AlphaABS.LIBS = {};
 
@@ -2849,10 +2849,6 @@ AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
 
 })();
 
-
-//DEV
-//var __selected = null;
-
 (function() {
 
   
@@ -2860,10 +2856,6 @@ AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
   var LOG = new PLATFORM.DevLog("BattleManagerABS");
   LOG.applyPresetLib();
 
-  function isDevMode() {
-    //return (DEV !== undefined);
-    return false;
-  }
 
   //BattleManagerABS
   //------------------------------------------------------------------------------
@@ -2955,7 +2947,6 @@ AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
         $gamePlayer.setTarget(target);
         $gameTroop.selectOnMap(target);
         this.UI().showTarget(target);
-        if(isDevMode()) {__selected = target;}
       } else {
         $gamePlayer.setTarget(null);
         $gameTroop.selectOnMap(null);
@@ -2982,6 +2973,9 @@ AlphaABS.SYSTEM.EXTENSIONS.ABSPE = {};
     }
 
     BattleManagerABS.UI = function() {
+      if(this._ui == null) {
+        LOG.p("Attempt to acces NULL UI");
+      }
       return this._ui;
     }
 
@@ -3412,19 +3406,6 @@ function Game_AIBot()        { this.initialize.apply(this, arguments);}
   Game_AIBot.prototype.onGameLoad = function() {
     LOG.p("AI : On Game Load");
     this.battler().onGameLoad();
-    //if(this._paused) {
-    //  this._paused = false;
-    //  this.pause(true);
-    //} This not work
-    /*var t = 0;
-    if(this._absParams.reviveTimer)
-      t = this._absParams.reviveTimer._value;
-    this.setRevive(this._absParams.reviveTime);
-    if(this._absParams.reviveTimer && t > 0) //Continue
-    {
-      LOG.p("AI : Continue revive from " + t);
-      this._absParams.reviveTimer.start(t);
-    }*/
   }
 
   //OVER
@@ -3437,24 +3418,6 @@ function Game_AIBot()        { this.initialize.apply(this, arguments);}
     }
     Game_Event.prototype.start.call(this);
   };
-
-  //Pause function work but if you pause enemy then save game and load, enemy not be paused
-  /*Game_AIBot.prototype.pause = function(isPause) {
-    if(isPause) {
-      if(this.inActive() && this.battler().isAlive()) {
-        this._deactivate();
-        this._paused = true;
-        LOG.p("AI: Paused");
-      }
-    } else {
-      if(this._paused) {
-        LOG.p("AI: Resumed");
-        this._paused = false;
-        this.initABS();
-      }
-    }
-
-  }*/
 
   //OVER
   Game_AIBot.prototype.update = function() {
@@ -5609,87 +5572,78 @@ AlphaABS.register(Game_SVector);
 
 //Game_TimerABS
 //------------------------------------------------------------------------------
-	Game_TimerABS.prototype.initialize = function() {
-		this._paused = false;
-		this._mValue = 0;
-		this._value = 0;
-		this._delta = 0;
-		this._lastTick = Date.now();
- 	}
+  Game_TimerABS.prototype.initialize = function() {
+    this._paused = false;
+    this._mValue = 0;
+    this._value = 0;
+  }
 
-	Game_TimerABS.prototype.getMaxValue = function()
-	{
-		return this._mValue;
-	}
+  Game_TimerABS.prototype.getMaxValue = function()
+  {
+    return this._mValue;
+  }
 
-	Game_TimerABS.prototype.getValue = function()
-	{
-		return this._value;
-	}
+  Game_TimerABS.prototype.getValue = function()
+  {
+    return this._value;
+  }
 
-	Game_TimerABS.prototype.setMaxTime = function(frameCount)
-	{
-		frameCount = Math.abs(Math.round(frameCount));
-		this._mValue = frameCount;
-		if(this._value > this._mValue)
-			this._value = this._mValue;
-	}
+  Game_TimerABS.prototype.setMaxTime = function(frameCount)
+  {
+    frameCount = Math.abs(Math.round(frameCount));
+    this._mValue = frameCount;
+    if(this._value > this._mValue)
+      this._value = this._mValue;
+  }
 
-	Game_TimerABS.prototype.reset = function()
-	{
-		this._value = 0;
-	}
+  Game_TimerABS.prototype.reset = function()
+  {
+    this._value = 0;
+  }
 
-	Game_TimerABS.prototype.isReady = function()
-	{
-		return (this._value >= this._mValue);
-	}
+  Game_TimerABS.prototype.isReady = function()
+  {
+    return (this._value >= this._mValue);
+  }
 
-	Game_TimerABS.prototype.start = function(frameCount)
-	{
-		this._value = 0;
-		this._mValue = Math.abs(Math.round(frameCount));
-		this._paused = false;
-	}
+  Game_TimerABS.prototype.start = function(frameCount)
+  {
+    this._value = 0;
+    this._mValue = Math.abs(Math.round(frameCount));
+    this._paused = false;
+  }
 
-	Game_TimerABS.prototype.stop = function()
-	{
-		this.start(0);
-	}
+  Game_TimerABS.prototype.stop = function()
+  {
+    this.start(0);
+  }
 
-	Game_TimerABS.prototype.pause = function()
-	{
-		if(this._paused)
-			return;
-		if(this._mValue == 0)
-			return;
-		this._paused = true;
-	}
+  Game_TimerABS.prototype.pause = function()
+  {
+    if(this._paused)
+      return;
+    if(this._mValue == 0)
+      return;
+    this._paused = true;
+  }
 
-	Game_TimerABS.prototype.resume = function()
-	{
-		this._paused = false;
-	}
+  Game_TimerABS.prototype.resume = function()
+  {
+    this._paused = false;
+  }
 
-	Game_TimerABS.prototype.update = function()
-	{
-		this.updateDelta();
-		if(!this.isReady())
-		{
-			if(!this._paused)
-			{
-				if(this._value < this._mValue)
-					this._value += (AlphaABS.SYSTEM.FRAMES_PER_SECOND * this._delta);
-			}
-		}
-	}
-
-	Game_TimerABS.prototype.updateDelta = function() {
-			var now = Date.now();
-			this._delta = (now - this._lastTick)/1000.0;
-			this._lastTick = now;
-	};
-	//END Game_TimerABS
+  Game_TimerABS.prototype.update = function()
+  {
+    if(!this.isReady())
+    {
+      if(!this._paused)
+      {
+        if(this._value < this._mValue)
+          this._value += 1;
+      }
+    }
+  }
+  //END Game_TimerABS
 //------------------------------------------------------------------------------
 
 
@@ -5829,6 +5783,8 @@ AlphaABS.register(Game_SVector);
 	function Sprite_CharacterABS() {
     	this.initialize.apply(this, arguments);
 	}
+
+	AlphaABS.register(Sprite_CharacterABS);
 
 	Sprite_CharacterABS.prototype = Object.create(Sprite_Character.prototype);
 	Sprite_CharacterABS.prototype.constructor = Sprite_CharacterABS;
@@ -6519,15 +6475,18 @@ AlphaABS.register(Game_SVector);
 	}
 
 	//NEW
-	Game_Player.prototype.setTarget = function(target) {
-		this._absParams.target = target;
-		if(!target) {
-			this._resetTarget();
-		} else {
-			BattleManagerABS.UI().controlPanel().setIconAt(3, 'toTarget');
-			BattleManagerABS.UI().controlPanel().disableItemAt(0, false);
-			BattleManagerABS.UI().controlPanel().disableItemAt(1, false);
-		}
+	Game_Player.prototype._resetTarget = function() {
+	  this.stopFollowMode();
+	  this.interruptCast();
+	  this._absParams.autoAttackMode = false;
+	  if(BattleManagerABS.UI()) {
+	    if(BattleManagerABS.UI().controlPanel()) {
+	      BattleManagerABS.UI().controlPanel().disableItemAt(0, true);
+	      BattleManagerABS.UI().controlPanel().disableItemAt(1, true);
+	      BattleManagerABS.UI().controlPanel().setIconAt(3, 'toMouse');
+	    }
+	  }
+	  this._changeState('free');
 	}
 
 	//NEW
@@ -6880,13 +6839,33 @@ AlphaABS.register(Game_SVector);
 		this.requestMotion('sleep');
 	}
 
+	//NEW
+	Game_Player.prototype.setTarget = function(target) {
+		this._absParams.target = target;
+		if(!target) {
+			this._resetTarget();
+		} else {
+			if(BattleManagerABS.UI()) {
+				if(BattleManagerABS.UI().controlPanel()) {
+				BattleManagerABS.UI().controlPanel().setIconAt(3, 'toTarget');
+				BattleManagerABS.UI().controlPanel().disableItemAt(0, false);
+				BattleManagerABS.UI().controlPanel().disableItemAt(1, false);
+				}
+			}
+		}
+	}
+
 	Game_Player.prototype._resetTarget = function() {
 		this.stopFollowMode();
 		this.interruptCast();
 		this._absParams.autoAttackMode = false;
-		BattleManagerABS.UI().controlPanel().disableItemAt(0, true);
-		BattleManagerABS.UI().controlPanel().disableItemAt(1, true);
-		BattleManagerABS.UI().controlPanel().setIconAt(3, 'toMouse');
+		if(BattleManagerABS.UI()) {
+			if(BattleManagerABS.UI().controlPanel()) {
+				BattleManagerABS.UI().controlPanel().disableItemAt(0, true);
+				BattleManagerABS.UI().controlPanel().disableItemAt(1, true);
+				BattleManagerABS.UI().controlPanel().setIconAt(3, 'toMouse');
+			}
+		}
 		this._changeState('free');
 	}
 
@@ -15463,4 +15442,4 @@ AlphaABS.register(Game_SVector);
 	})();
 //------------------------------------------------------------------------------
 
-//Plugin Alpha_ABS automatic build by MVPluginBuilder. 09.01.2018
+//Plugin Alpha_ABS automatic build by MVPluginBuilder. 19.01.2018
