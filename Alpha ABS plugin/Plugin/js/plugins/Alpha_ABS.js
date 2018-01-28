@@ -400,7 +400,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.version = 110;
-AlphaABS.build = 758; //(19.01.2018)
+AlphaABS.build = 759; //(28.01.2018)
 
 AlphaABS.LIBS = {};
 
@@ -408,7 +408,7 @@ AlphaABS.register = function(library) {
   this.LIBS[library.name] = library;
 };
 
-//var DEV = DEV || {}; //For detailed console log
+var DEV = DEV || {}; //For detailed console log
 
 
 //==========================================================================================================================================================
@@ -9400,7 +9400,7 @@ AlphaABS.register(Game_SVector);
 //------------------------------------------------------------------------------
 	var _Window_ItemList_isEnabled = Window_ItemList.prototype.isEnabled;
 	Window_ItemList.prototype.isEnabled = function(item) {
-		if(item.occasion == 1 && item.meta.ABS) {
+		if(item && item.occasion == 1 && item.meta.ABS) {
 			return false;
 		} else
 	    	return _Window_ItemList_isEnabled.call(this, item);
@@ -9434,6 +9434,7 @@ AlphaABS.register(Game_SVector);
     Window_ItemList.prototype.drawItemNumber = function(item, x, y, width) {
 	    _Window_ItemList_drawItemNumber.call(this, item, x, y, width);
 	    if(this._category != 'item') return;
+      if(!item) return;
 	    var index = $gameParty.leader().skillIndexOnUI(item.id, true);
         if(index >= 0) {
         	this.changeTextColor(Color.ORANGE.CSS);
@@ -15442,4 +15443,4 @@ AlphaABS.register(Game_SVector);
 	})();
 //------------------------------------------------------------------------------
 
-//Plugin Alpha_ABS automatic build by MVPluginBuilder. 19.01.2018
+//Plugin Alpha_ABS automatic build by MVPluginBuilder. 28.01.2018

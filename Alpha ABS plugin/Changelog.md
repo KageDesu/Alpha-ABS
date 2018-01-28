@@ -1,6 +1,9 @@
 # Version 1.1  
 ## Builds:  
 
+**759** - (28.01.2018)
+> - fixed bug: game crush when press action button in the empty inventory
+
 **758** - (19.01.2018)
 > - fixed bug: enemy AI bug with spawn timer
 > - tested with 1.6.0
