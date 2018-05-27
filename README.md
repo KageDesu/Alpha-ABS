@@ -1,16 +1,16 @@
 # Alpha ABS
 Active battle system "Alpha" for RPG Maker MV.
 
->State: **Beta**  
->Version: 1.2  
+#### Version 1.2
+>State: **Beta**   
 >Last build: 800 (26.05.2018)    
->[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Changelog.md)  
+>[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%201.2%20Beta/Changelog.md)  
 
-> **If you update from 1.0 to 1.1 you must complete [full plugin installation](https://www.youtube.com/watch?v=1wXL39bwx0g), because version 1.1 has some new graphic files.**
+> **Before try 1.2 Beta check new [documentation](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%201.2%20Beta/Manual/Alpha%20ABS%2012.pdf)**
 
 > [Update 1.2 video overview](https://www.youtube.com/watch?v=qKERMqVNRcQ&t)
 
-
+#### Version 1.1
 >State: **Stable**  
 >Version: 1.1  
 >Last build: 759 (28.01.2018)    
