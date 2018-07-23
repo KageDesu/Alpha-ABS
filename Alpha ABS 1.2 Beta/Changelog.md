@@ -1,6 +1,10 @@
 # Version 1.2  
 ## Builds:  
 
+**901** - (23.07.2018)
+
+> - fixed small issues  
+
 **900** - (23.07.2018)
 
 > - fixed bug: game crush after load ABS map with enemy in revive state
