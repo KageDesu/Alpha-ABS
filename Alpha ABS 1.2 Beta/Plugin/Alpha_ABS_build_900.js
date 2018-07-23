@@ -10392,7 +10392,7 @@ function Game_SkillABS() {
 
   Game_SkillABS.prototype.playStartSound = function (point) {
     if (this.startSound) {
-      if (point != null && BattleManagerABS.isABSAudio())
+      if (point != null && AlphaABS.LIBS.BattleManagerABS && AlphaABS.LIBS.BattleManagerABS.isABSAudio())
         AudioManager.playSeAt(this.startSound, point);
       else
         AudioManager.playSe(this.startSound);
