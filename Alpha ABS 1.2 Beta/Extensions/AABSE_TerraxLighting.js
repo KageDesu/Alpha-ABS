@@ -6,7 +6,7 @@
  //=============================================================================
  // Alpha_ABS_Extension_TerraxLightingSupport
  //=============================================================================
- //Version 1.0 (22.07.2018)
+ //Version 1.1 (01.08.2018)
 
  /*:
   * @author Pheonix KageDesu
@@ -43,7 +43,7 @@
     var xyLightArray = [];
 
     var _setLightAt = function (tiletype, x, y, radius, color, isOn, bright, isFlicker) {
-        bright = KD_Core.SDK.check(bright, 0.0);
+        bright = KDCore.SDK.check(bright, 0.0);
         var isValidColor = /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
         if (!isValidColor) {
             color = '#FFFFFF';
@@ -132,8 +132,8 @@
 
     Game_Map.prototype.setLight = function (x, y, radius, color, bright, isFlicker) {
         try {
-            bright = KD_Core.SDK.check(bright, 0.0);
-            isFlicker = KD_Core.SDK.check(isFlicker, false);
+            bright = KDCore.SDK.check(bright, 0.0);
+            isFlicker = KDCore.SDK.check(isFlicker, false);
             _setLightAt(700, x, y, radius, color, true, bright, isFlicker);
         } catch (e) {
             console.error(e);
