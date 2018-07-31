@@ -1,6 +1,10 @@
 # Version 1.2  
 ## Builds:  
 
+**902** - (31.07.2018)
+
+> - fixed small issues
+
 **901** - (23.07.2018)
 
 > - fixed small issues  
