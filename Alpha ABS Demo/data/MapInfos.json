@@ -2,11 +2,11 @@
 null,
 {"id":1,"expanded":true,"name":"Home","order":6,"parentId":8,"scrollX":628,"scrollY":391},
 {"id":2,"expanded":false,"name":"EventTemplates","order":2,"parentId":3,"scrollX":628,"scrollY":391},
-{"id":3,"expanded":false,"name":"Initial","order":1,"parentId":0,"scrollX":628,"scrollY":391},
-{"id":4,"expanded":false,"name":"Field","order":3,"parentId":0,"scrollX":820,"scrollY":1057},
+{"id":3,"expanded":true,"name":"Initial","order":1,"parentId":0,"scrollX":605.5,"scrollY":347.5},
+{"id":4,"expanded":false,"name":"Field","order":3,"parentId":0,"scrollX":820.5,"scrollY":1057.5},
 null,
-{"id":6,"expanded":false,"name":"TrainCamp","order":7,"parentId":8,"scrollX":1508,"scrollY":813},
+{"id":6,"expanded":false,"name":"TrainCamp","order":7,"parentId":8,"scrollX":1500.5,"scrollY":705.5},
 {"id":7,"expanded":false,"name":"Battle","order":4,"parentId":0,"scrollX":620,"scrollY":383},
-{"id":8,"expanded":false,"name":"TutorialStage","order":5,"parentId":0,"scrollX":628,"scrollY":391},
+{"id":8,"expanded":true,"name":"TutorialStage","order":5,"parentId":0,"scrollX":628,"scrollY":391},
 {"id":9,"expanded":true,"name":"Skills","order":8,"parentId":8,"scrollX":916,"scrollY":813}
 ]

@@ -16,10 +16,10 @@
 			},
 			{
 			"id": "MapNote2",
-			"title": "Tab key|Клавиша Tab",
+			"title": "Q key|Клавиша Q",
 			"iconSymbol": 193,
-			"text" : "Tab key - choose nearest target. Also you can switch between targets with tab key.", 
-			"textRU": "Вы можете выбрать ближайшую цель при помощи клавиши Tab. Также вы можете переключаться между целями.",
+			"text" : "Q key - choose nearest target. Also you can switch between targets with Q key.", 
+			"textRU": "Вы можете выбрать ближайшую цель при помощи клавиши Q. Также вы можете переключаться между целями.",
 			"picture" : ""
 			}
 			]

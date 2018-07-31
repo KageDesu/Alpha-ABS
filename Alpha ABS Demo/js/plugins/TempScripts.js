@@ -3,12 +3,13 @@
 //=============================================================================
 
 /*:
- * @plugindesc This is temp scripts for DEMO
+ * @plugindesc This is temp scripts for DEMO (ONLY!)
  * @author Pheonix KageDesu.
  *
  *
- * @help Don't use this plugins in your projects, it's not complete and testet.
- * If you like some from this file, write me message, perhaps i can create normal plugin
+ * @help DONT USE THIS FILE IN YOUR PROJECT!!!!! 
+ * WILL BE A LOT OF BUGS!!! 
+ * THIS IS ONLY FOR ABS DEMO GAME
  *
  */
  
@@ -17,12 +18,27 @@
  * @author Pheonix KageDesu.
  *
  *
- * @help Не используйте скрипты из этого плагина в своих проектах. 
- * Все скрипты тут написаны криво и предназначены только для проекта Alpha ABS Demo.  
+ * @help НЕ ИСПОЛЬЗУЙТЕ ЭТО В СВОЁМ ПРОЕКТЕ!!! 
+ * БУДЕТ КУЧА ОШИБОК!!! 
+ * ЭТО ТОЛЬКО ДЛЯ ДЕМО ИГРЫ!!!
  *
  */
 
- "use strict";
+"use strict";
+
+SDK._isRu = null; //Don't use this
+SDK.isRU = function () {
+    if (this._isRu == null) {
+        this._isRu = 0;
+        var language = window.navigator.userLanguage || window.navigator.language;
+        if (language) {
+            if (language.toLowerCase().contains('ru'))
+                this._isRu = 1;
+        }
+    }
+    return this._isRu;
+};
+
 if(!PLATFORM) throw new Error('Requires JSPlatform ver 1.2 or above');
 var SDK = PLATFORM.SDK;
 var Color = PLATFORM.Color;
@@ -715,10 +731,10 @@ Game_Event.prototype.setupPageSettings = function() {
 
 (function() {
 
-	var NotifyMachine = PLATFORM.LIB.NotifyMachine;
-	var ItemLineSprite = PLATFORM.LIB.ItemLineSprite;
+	var NotifyMachine = AlphaABS.LIBS.NotifyMachine;
+    var ItemLineSprite = AlphaABS.LIBS.ItemLineSprite;
 
-	ImageManager.getIcon(ImageManager.ICON_PATH, 'mission', 32);
+	//ImageManager.getIcon(ImageManager.ICON_PATH, 'mission', 32);
 
 	var _notifyMachine = null;
 	var addMission = function(id) {
@@ -787,7 +803,7 @@ Game_Event.prototype.setupPageSettings = function() {
         }
 
         _drawIcon() {
-            SDK.drawIcon(0,0,this._iconSymbol,this._drawSurface.bitmap, 32);
+            this._drawSurface.bitmap.drawIcon(0, 0, this._iconSymbol, 32);
         }
     }
 
@@ -957,7 +973,7 @@ Game_Event.prototype.setupPageSettings = function() {
         }
 
         update() {
-            super();
+            //super();
             if(this._started) {
                 /*this.width = this.windowWidth();
                 this.height = this.windowHeight();
