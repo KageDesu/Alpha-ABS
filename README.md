@@ -3,14 +3,18 @@ Active battle system "Alpha" for RPG Maker MV.
 
 #### Version 1.2
 >State: **Beta**   
->Last build: 902 (31.07.2018)    
+>Last public build: 903 (03.08.2018)  
+>Last private build: 903 (03.08.2018)    
 >[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%201.2%20Beta/Changelog.md)  
 
-> **Before try 1.2 Beta check new [documentation](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%201.2%20Beta/Manual/Alpha%20ABS%2012.pdf)**  
-> **Required MV version 1.5.1 and above**  
-> **Plugin targeting for MV version 1.6.1**  
+**For download private builds join me on [Patreon](https://www.patreon.com/KageDesu)**
 
-> [Update 1.2 video overview](https://www.youtube.com/watch?v=qKERMqVNRcQ&t)
+**Before try 1.2 Beta check new [documentation](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%201.2%20Beta/Manual/Alpha%20ABS%2012.pdf)**  
+
+> **Required MV version 1.5.1 and above**  
+> **Recommended MV 1.6.1 and above**  
+
+[Update 1.2 video overview](https://www.youtube.com/watch?v=qKERMqVNRcQ&t)
 
 #### Version 1.1
 >State: **Stable**  
@@ -58,7 +62,8 @@ Video guide on [YouTube](https://www.youtube.com/watch?v=1wXL39bwx0g)
 
 More info see in the documentation file [AlphaABS.pdf](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%20plugin/Manual/Alpha%20ABS.pdf)
 
-You can use plugin in your commercial project, but if you sold >=50 copies, you need purchase commercial license for 12$.  
+**You can use plugin in your commercial project, but if you sold >=50 copies, you need purchase commercial license for 15$. **
 
 ### If you like it
-You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6).
+You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6).  
+Or you can join me on [Patreon](https://www.patreon.com/KageDesu)

@@ -1,6 +1,10 @@
 # Version 1.2  
 ## Builds:  
 
+**903** - (3.08.2018)
+> - fixed small Issues
+> - fixed bug with AI parameter `escapeOnBattle:1`
+
 **902** - (31.07.2018)
 
 > - fixed small issues
