@@ -1,6 +1,19 @@
 # Version 1.2  
 ## Builds:  
 
+**910** - (7.08.2018)
+> - fixed small Issues
+> - fixed bug:  the game could lose fps in auto-attack mode by the player
+> - new plugin parameter `Player Damage Outline`  
+![image](https://github.com/KageDesu/TestRepo/blob/master/Build910Params.png)   
+![image](https://github.com/KageDesu/TestRepo/blob/master/Build910Param2.png)  
+> - new plugin parameter `Spell zone image`   
+![image](https://github.com/KageDesu/TestRepo/blob/master/Build910Param1.png)
+> - new ABS parameter for skills and items `<impulse: X>` - you can set impulse force to skill for knockback enemy or to bring them closer
+> - **Multi hit** - now skill can hit enemy multi times (RPG Maker MV parameter `Repeat` is now come back like it do in original MV)
+
+
+
 **903** - (3.08.2018)
 > - fixed small Issues
 > - fixed bug with AI parameter `escapeOnBattle:1`
