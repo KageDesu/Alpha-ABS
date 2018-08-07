@@ -9,7 +9,7 @@ Active battle system "Alpha" for RPG Maker MV.
 >State: **Stable**   
 >Last public build: 903 (03.08.2018)  
 >Last private build: 910 (07.08.2018)    
->[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%201.2%20Beta/Changelog.md)  
+>[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Alpha%20ABS%201.2/Changelog.md)  
 
 **For download private builds join me on [Patreon](https://www.patreon.com/KageDesu)**
 
