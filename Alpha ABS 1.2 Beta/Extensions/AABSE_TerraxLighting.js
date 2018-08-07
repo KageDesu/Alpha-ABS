@@ -6,7 +6,7 @@
  //=============================================================================
  // Alpha_ABS_Extension_TerraxLightingSupport
  //=============================================================================
- //Version 1.1 (01.08.2018)
+ //Version 1.2 (03.08.2018)
 
  /*:
   * @author Pheonix KageDesu
@@ -36,7 +36,7 @@
 
     AlphaABS.SYSTEM.EXTENSIONS.LIGHT = true;
 
-    var LOG = new KDCore.DevLog("EX_Audio");
+    var LOG = new KDCore.DevLog("Lighting");
     LOG.applyExtensionColors();
     LOG.p("Inited");
 
