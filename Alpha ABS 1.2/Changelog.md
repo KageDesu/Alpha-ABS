@@ -1,6 +1,22 @@
 # Version 1.2  
 ## Builds:  
 
+**915** - (14.08.2018)
+> - fixed issues with images loading from plugin parameters
+> - fixed bug: enemy looting not working after calling common event on enemy
+> - fixed bug: players not gains EXP after enemy killing
+> - fixed bug: enemy full HP regeneration after battle
+> - fixed bug: enemy with <noMove:1> not changes direction
+> - no more ballon popUp 'Zzz' when enemy in stun (not moving or sleep)
+> - new abs param `<cEonStart:X>` for States. Call common event Id (x) when stated applies to the target  
+![image](https://github.com/KageDesu/TestRepo/blob/master/915_event.png)
+> - new parameters for player transfering after death:  
+>> `Game Over Map Position`  
+>> `Game Over Common Event` - Common event will called after Player death  
+>> `Transfer character direction`   
+![image](https://github.com/KageDesu/TestRepo/blob/master/915_deadMapParams.png)
+
+
 **910** - (7.08.2018)
 > - fixed small Issues
 > - fixed bug:  the game could lose fps in auto-attack mode by the player
