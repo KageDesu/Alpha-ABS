@@ -2,7 +2,7 @@
 ## Builds:  
 
 **924** - (22.08.2018)
-> - new feature : `Solid Regions System` ![video](https://youtu.be/5gGV6htF4Kg)
+> - new feature : `Solid Regions System` (https://youtu.be/5gGV6htF4Kg)
 > - new plugin parameter `Solid Regions` - id's map regions for obstacles for enemy and spells
 > - new abs parameter `<ignoreObstacles:X>` for skills (items) - allowing ignore solid regions on Map
 > - new abs parameter `<ignoreObstacles:X>` for enemies - allowing enemies see through solid regions
