@@ -1,6 +1,16 @@
 # Version 1.2  
 ## Builds:  
 
+**924** - (22.08.2018)
+> - new feature : `Solid Regions System` ![video](https://youtu.be/5gGV6htF4Kg)
+> - new plugin parameter `Solid Regions` - id's map regions for obstacles for enemy and spells
+> - new abs parameter `<ignoreObstacles:X>` for skills (items) - allowing ignore solid regions on Map
+> - new abs parameter `<ignoreObstacles:X>` for enemies - allowing enemies see through solid regions
+> - new abs parameter `<impulseRandom:X>` for skills (items) - combined with `<impulse: X>`, allowing make impulse in random direction  
+> new abs parameter `<heavy:X>` for enemies - if this parameter = 1, the enemy will be ignoring impulse effect
+> - fixed: HP and MP regeneration PopUp always been displayed
+> - fixed bug: dead enemy lost they position on map and can be looted many times when player transfering on the map
+
 **915** - (14.08.2018)
 > - fixed issues with images loading from plugin parameters
 > - fixed bug: enemy looting not working after calling common event on enemy
