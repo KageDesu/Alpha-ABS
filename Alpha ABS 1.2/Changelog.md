@@ -1,6 +1,17 @@
 # Version 1.2  
 ## Builds:  
 
+**936** - (30.08.2018)
+> - fixed bug: ABS parameters not changed when player change weapons
+> - fixed bug: Wrong Level Up animation when someone in Party is leveling up
+> - fixed bug: After death player can be still invisible on other Map
+> - new plugin parameter `Party experience` - now you can change how will the experience be shared in the group
+> - new feature: `Enemy Spawning`  - you can spawn enemies on Map with plugin command
+>> - new plugin parameter `Enemy Spawn Map Id` - The map ID of the map you are using to store spawnable enemy
+>> - new plugin command `ABS spawn [Id] [x] [y]` - spawn Enemy with Id in X and Y
+>> - new plugin command `ABS spawn [Id] [region Id]` - spawn Enemy with Id in random place in Region  
+![image](https://github.com/KageDesu/TestRepo/blob/master/936_spawn.png)
+
 **924** - (22.08.2018)
 > - new feature : `Solid Regions System` (https://youtu.be/5gGV6htF4Kg)
 > - new plugin parameter `Solid Regions` - id's map regions for obstacles for enemy and spells
