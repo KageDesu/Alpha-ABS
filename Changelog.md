@@ -1,6 +1,17 @@
 # Version 1.2  
 ## Builds:  
 
+**944** - (8.09.2018)
+> - AI optimization
+> - new abs parameter `<repeatDelay:X>` allows set delay for skill (item) that use repeat option between multi hits in millisecond (default 120)
+> - new abs parameter `<castTimeFormula>` allows set formula for calculate casting time of skill (item). Formula format like `reloadParam` for weapons (see User Manual)
+> - fixed bug: party members did not follow the player after change map from ABS to normal
+> - fixed bug: after transfering between different sizes ABS maps pathfinding did not work properly
+> - fixed bug: player image did not disappeared when player get in transport
+> - fixed bug: some skills animations did not work if player has not target
+> - fixed bug: skills information not updated when player learn new skills
+> - fixed small Issues
+
 **936** - (30.08.2018)
 > - fixed bug: ABS parameters not changed when player change weapons
 > - fixed bug: Wrong Level Up animation when someone in Party is leveling up
