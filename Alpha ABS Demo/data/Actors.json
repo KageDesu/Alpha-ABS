@@ -1,7 +1,0 @@
-[
-null,
-{"id":1,"battlerName":"Actor1_1","characterIndex":0,"characterName":"AlphaDemoActors","classId":1,"equips":[0,1,2,3,0],"faceIndex":0,"faceName":"AlphaDemoActors","traits":[],"initialLevel":1,"maxLevel":99,"name":"Player","nickname":"","note":"","profile":""},
-{"id":2,"battlerName":"AlphaDemoActor_3","characterIndex":2,"characterName":"AlphaDemoActors","classId":2,"equips":[0,0,0,0,0],"faceIndex":2,"faceName":"AlphaDemoActors","traits":[],"initialLevel":1,"maxLevel":1,"name":"Eldrick","nickname":"","note":"NOT FOR GAME","profile":"Teacher"},
-{"id":3,"battlerName":"AlphaDemoActor_2","characterIndex":1,"characterName":"AlphaDemoActors","classId":3,"equips":[3,0,0,0,4],"faceIndex":1,"faceName":"AlphaDemoActors","traits":[],"initialLevel":1,"maxLevel":5,"name":"Oblivion","nickname":"","note":"","profile":""},
-{"id":4,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""}
-]
