@@ -2,6 +2,7 @@
 Active battle system "Alpha" for RPG Maker MV.
 
 [Plugin WebPage](https://kagedesuworkshop.blogspot.com/p/alpha-abs.html)
+[Wiki](https://github.com/KageDesu/Alpha-ABS/wiki)
 
 #### Version 1.2
 
