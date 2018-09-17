@@ -1,6 +1,17 @@
 # Version 1.2  
 ## Builds:  
 
+**946** - (17.09.2018)
+> - fixed bug: followers not follow the player after transfer from ABS to ABS map
+> - fixed bug: player and party got experience when monsters killed each other
+> - fixed bug: `<stack>` parameter not working with `<ammo>`
+> - fixed bug: game crush with YEP_SaveCore plugin
+> - fixed bug: images for some UI elements not loading from plugin parameters
+> - new abs param `<cEonEnd:X>` for States. Call common event Id (x) when the state ends
+> - added line for `multi hit` skills in popup description window
+> - Starting with this build skills or weapons with multi charges create allowed only without consuming ammo. To do this, a new parameter will be introduced
+
+
 **944** - (8.09.2018)
 > - AI optimization
 > - new abs parameter `<repeatDelay:X>` allows set delay for skill (item) that use repeat option between multi hits in millisecond (default 120)
