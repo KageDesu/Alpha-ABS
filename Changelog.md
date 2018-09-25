@@ -1,6 +1,17 @@
 # Version 1.2  
 ## Builds:  
 
+**950** - (25.09.2018)
+> - fixed major bug with AI and multithreading
+> - fixed bug: invisible enemies will appears after transfer from ABS to ABS map
+> - fixed bug: activated by command enemy don't fighting
+> - fixed bug: in rare cases, the save game file did not want to load with erased ABS enemies on map
+> - fixed bug: some skills and items sounds not playing
+> - new feature `Firearms system` (https://youtu.be/ncW4RAWWggs)
+>> - new ABS parameter (only for weapons) `<firearm:1>` - activate firearm system when player equip this weapon
+>> - new plugin parameter for change keyboard key for firearm weapon magazine reload
+
+
 **946** - (17.09.2018)
 > - fixed bug: followers not follow the player after transfer from ABS to ABS map
 > - fixed bug: player and party got experience when monsters killed each other
