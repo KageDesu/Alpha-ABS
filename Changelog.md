@@ -7,9 +7,9 @@
 > - fixed bug: firearm can be reloaded on non ABS map
 > - fixed bug: control panel functions (like rotate, jump) work on non ABS map
 > - fixed: game followers transparent glitch on ABS map
-> - added firearm panel settings to plugin parameters
-> new feature **No Target System** (_beta_) - you can create melee weapons that do not require a selected target to perform attack. Attacks perform on Attack button press (or on left mouse click on enemy)
->> - new ABS parameter (only for weapons) `<noTarget:1>`  activate no target weapon mode when player equip this weapon
+> - added firearm panel settings to plugin parameters  
+> - new feature **No Target System** (_beta_) - you can create melee weapons that do not require a selected target to perform attack. Attacks perform on Attack button press (or on left mouse click on enemy)  
+>> - new ABS parameter (only for weapons) `<noTarget:1>`  activate no target weapon mode when player equip this weapon  
 ![](https://github.com/KageDesu/TestRepo/blob/master/2018-10-09_19-37-11.png)
 
 ```diff
