@@ -10,11 +10,11 @@ Active battle system "Alpha" for RPG Maker MV.
 
 >State: **Stable**   
 >Last public build: 944 (8.09.2018)  
->Last private build: 950 (25.09.2018)    
+>Last private build: 955 (9.10.2018)  
 >[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Changelog.md)  
 
 **For download last build see [Release](https://github.com/KageDesu/Alpha-ABS/releases) section**   
-*For download private builds join me on [Patreon](https://www.patreon.com/KageDesu)*
+*For download private builds and get unique plugin features join me on [Patreon](https://www.patreon.com/KageDesu)*
 
  >[Documentation](https://www.dropbox.com/s/9prsj8ydayt4vqj/Alpha%20ABS%2012.pdf?dl=0)  
  >[Demo Game](https://www.dropbox.com/s/ous5sotyl31f6r6/AlphaABS_Demo.rar?dl=0)
@@ -33,4 +33,4 @@ Active battle system "Alpha" for RPG Maker MV.
 
 ### If you like it
 You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6).  
-Or you can join me on [Patreon](https://www.patreon.com/KageDesu) and get updates first
+Or you can join me on [Patreon](https://www.patreon.com/KageDesu) and get unique plugins features

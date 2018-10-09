@@ -1,6 +1,26 @@
 # Version 1.2  
 ## Builds:  
 
+**955**  - (9.10.2018)
+> - fixed issues with save and load game
+> - fixed bug: repeated firearm reloading
+> - fixed bug: firearm can be reloaded on non ABS map
+> - fixed bug: control panel functions (like rotate, jump) work on non ABS map
+> - fixed: game followers transparent glitch on ABS map
+> - added firearm panel settings to plugin parameters
+> new feature **No Target System** (_beta_) - you can create melee weapons that do not require a selected target to perform attack. Attacks perform on Attack button press (or on left mouse click on enemy)
+
+```diff
++ only for Patrons
+```
+
+> -  new feature `Mini HP bars` - display HP bars above enemies and allies on ABS map  
+>> - new plugin parameter `Show Mini HP Bars` - mini HP bar show mode
+>> - new plugin parameter `Mini Bars Settings` - for configurate mini HP bars
+>> - new enemy ABS parameter `<showHP:1>` - for always display HP bar above enemy
+
+
+
 **950** - (25.09.2018)
 > - fixed major bug with AI and multithreading
 > - fixed bug: invisible enemies will appears after transfer from ABS to ABS map
