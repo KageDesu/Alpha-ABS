@@ -9,13 +9,16 @@
 > - fixed: game followers transparent glitch on ABS map
 > - added firearm panel settings to plugin parameters
 > new feature **No Target System** (_beta_) - you can create melee weapons that do not require a selected target to perform attack. Attacks perform on Attack button press (or on left mouse click on enemy)
+>> - new ABS parameter (only for weapons) `<noTarget:1>`  activate no target weapon mode when player equip this weapon
+![](https://github.com/KageDesu/TestRepo/blob/master/2018-10-09_19-37-11.png)
 
 ```diff
-+ only for Patrons
++ Only for Patrons
 ```
-
-> -  new feature `Mini HP bars` - display HP bars above enemies and allies on ABS map  
+> - new feature `Mini HP bars` - display HP bars above enemies and allies on ABS map  
+![](https://github.com/KageDesu/TestRepo/blob/master/2018-10-09_19-24-57.png)
 >> - new plugin parameter `Show Mini HP Bars` - mini HP bar show mode
+![](https://github.com/KageDesu/TestRepo/blob/master/2018-10-09_19-14-35.png)
 >> - new plugin parameter `Mini Bars Settings` - for configurate mini HP bars
 >> - new enemy ABS parameter `<showHP:1>` - for always display HP bar above enemy
 
