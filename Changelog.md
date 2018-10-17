@@ -1,6 +1,14 @@
 # Version 1.2  
 ## Builds:  
 
+**965** - (17.10.2018)
+> - fixed small issues
+> - fixed bug: enemy no longer active after returning to spawn point (lost sing of player)  
+> - fixed glitch: player can reload firearm when it is full loaded
+> - new feature **Motion System** - [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/Motion-System)
+> - updated feature **No Target System** - [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/No-Target-Weapons)
+
+
 **955**  - (9.10.2018)
 > - fixed issues with save and load game
 > - fixed bug: repeated firearm reloading
