@@ -49,6 +49,7 @@
   BattleManagerABS.onMapLoaded = function () {
     if (this._isABSMap && $gameMap.isABS()) { //Если переход между АБС картами, то не делаем StopABS, а только prepare Заного
       if (this._absMapId != $gameMap.mapId()) {
+        $gameTroop.deactivateABS();
         $gameTroop.initABS(); //Need restart
         this._absMapId = $gameMap.mapId();
       }
@@ -89,8 +90,10 @@
   BattleManagerABS.stopABS = function () {
     LOG.p("Manager : ABS Map destroy");
     BattleManagerABS.clearABS();
+    $gameTroop.deactivateABS();
     SMouse.setTrack(false);
     $gamePlayer.stopABS();
+    SlowUpdateManager.clearAll();
   };
 
   BattleManagerABS.initABS = function () {
@@ -321,14 +324,13 @@
 
   BattleManagerABS.canUseSkillByAmmo = function (skill) {
     try {
-      var result = true;
-      if (skill.isStackType() && !skill.isAutoReloadStack()) {
-        result = !skill.isNeedReloadStack();
+      if(skill.isFirearm()) {
+        return !skill.isNeedReloadStack();
       }
-      if (!skill.isStackType() && skill.isNeedAmmo()) {
-        result = $gameParty.numItems($dataItems[skill.ammo]) > 0;
+      if(skill.isNeedAmmo()) {
+        return $gameParty.numItems($dataItems[skill.ammo]) > 0;
       }
-      return result;
+      return true;
     } catch (e) {
       console.error(e);
       return false;
@@ -338,6 +340,9 @@
   BattleManagerABS.canUseABSSkillNow = function (who, target, skill) {
     try {
       if (!skill) return false;
+      if(skill.isNoTarget()) {
+        return this.canUseSkillByTimer(skill) && this.canUseSkillByAmmo(skill);
+      }
       return this.canUseSkillByTarget(who, target, skill) &&
         this.canUseSkillByRange(who, target, skill) &&
         this.canUseSkillByTimer(skill) && this.canUseSkillByAmmo(skill);

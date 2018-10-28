@@ -80,6 +80,7 @@ LOGW.setColors(Color.ORANGE, Color.BLACK.getLightestColor(100));
   $.STRING_SKILL_INFO_RECOVER = 'Recover ';
   $.STRING_SKILL_INFO_DRAIN = 'Drain ';
   $.STRING_SKILL_INFO_MELEE = 'Melee ';
+  $.STRING_SKILL_INFO_REPEATS = 'Multi Hits: ';
 
 
   $.STRING_WARNING_COMMON = "This command can't be executed on ABS map";

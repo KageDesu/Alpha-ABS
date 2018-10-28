@@ -10,7 +10,7 @@ Imported.AlphaABS = true;
 
 var AlphaABS = {};
 AlphaABS.Version = '1.2';
-AlphaABS.Build = 944;
+AlphaABS.Build = 980;
 
 AlphaABS.Versions = {
   'Alpha ABS': AlphaABS.Version + ' : ' + AlphaABS.Build,
@@ -40,6 +40,8 @@ AlphaABS.register = function (library) {
   SceneManager.onError = function (e) {
     SceneManager._printABSInfo();
     _SceneManager_onError_ABS.call(this, e);
+    if (!Utils.isNwjs()) return;
+    require('nw.gui').Window.get().showDevTools();
   };
 
   var _JsonEx_decode = JsonEx._decode;

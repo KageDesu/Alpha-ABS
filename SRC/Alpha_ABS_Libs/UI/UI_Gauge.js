@@ -53,7 +53,7 @@
       this._gaugeWidth = Math.floor(
         (100 * this._currentValue / this._maxValue) * ((this.bitmap.width - 2) / 100));
     else
-      this._gaugeWidth = this.bitmap.width;
+      this._gaugeWidth = this.bitmap.width - 2;
   };
 
   UI_Gauge.prototype.setValue = function (value) {

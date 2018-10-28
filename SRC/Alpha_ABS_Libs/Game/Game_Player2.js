@@ -19,58 +19,75 @@
     };
 
     Game_Player.prototype.getABSMapData = function (mapId, enemyId) {
-        var candidates = this._absParams.absMapData.filter(item => item.mapId == mapId && item.enemyId == enemyId);
+        var candidates = this._absParams.absMapData.filter(function (item) {
+            return (item.mapId == mapId && item.enemyId == enemyId);
+        });
         if (candidates.length > 0) {
             return candidates[0];
         }
         return null;
     };
 
-    //! Experemental
-    Game_Player.prototype.setNoTargetMode = function () {
-        this._absParams._noTargetMode = true;
+    //?[NEW]
+    Game_Player.prototype.inABSMotion = function () {
+        if (this.ABSParams() == null)
+            return false;
+        return this.ABSParams().absMotion != null;
     };
 
-    var _Game_Player_update = Game_Player.prototype.update;
-    Game_Player.prototype.update = function (sceneActive) {
-        _Game_Player_update.call(this, sceneActive);
-        if (this._absParams._noTargetMode == true)
-            this._updateNEWFUNCS(sceneActive);
-    };
-
-    Game_Player.prototype._updateNEWFUNCS = function (sceneActive) {
-        if (!sceneActive) return;
-        if (!this.battler()) return;
-
-        var SMouse = AlphaABS.UTILS.SMouse;
-        //this.turnTowardCharacter(SMouse.getMousePosition());
-        //console.log(SMouse.getMousePosition());
-
-        if (TouchInput.isTriggered()) {
-            console.log('attack no target');
-            var t = this.battler();
-            t.makeActions();
-            t.action(0).setAttack();
-            //THIS IS PROTOTYPE FOR ABS:0 with range 1 (melee weapon)
-            var target = null; //THIS IS NOT USED SELECTED TARGET
-            //TRY FIND TARGET 
-            var inRadius = AlphaABS.UTILS.inRadius(this, 2, $gameTroop.membersABS());
-            if (inRadius.length > 0) {
-                inRadius.forEach(element => { //WARNING: 1.5.1 not support
-                    if (AlphaABS.UTILS.inFront($gamePlayer, element)) {
-                        target = element;
-                        console.log('target in front!');
-                    }
-                });
-            }
-            var BattleProcessABS = AlphaABS.LIBS.BattleManagerABS.battleProcess();
-            BattleProcessABS.performBattleAction(this, target);
-            t.performCurrentAction();
-            t.performAttack();
+    //?[NEW]
+    Game_Player.prototype._updateABSMotion = function () {
+        if (this.battler() == null) return;
+        if (this.battler().isNeedABSMotionRefresh()) {
+            this.refreshABSMotion();
+            this.battler().onABSMotionRefresh();
         }
-
+        if (this.battler().isNeedABSMotionAction()) {
+            this.battler().onABSMotionActionDone();
+            var motion = this.ABSParams().absMotion;
+            if(motion != null) {
+                motion.applyMotionAction();
+            }
+        }
     };
 
+    //?[NEW]
+    Game_Player.prototype.refreshABSMotion = function () {
+        if (this._absParams.absMotion != null) {
+            this._absParams.absMotion.clearMotion();
+            this._absParams.absMotion = null;
+        }
+        if (this.battler().isHasABSMotion()) {
+            this._absParams.absMotion = new AlphaABS.LIBS.ABSMotion();
+            var skill = this.battler()._firstBattleABSSkill();
+            this._absParams.absMotion.setMotion(skill.motion, skill.motionOffset, this);
+            this.refreshABSMotionState(this.inBattle());
+        }
+    };
+
+    //?[NEW]
+    Game_Player.prototype.refreshABSMotionState = function (toState) {
+        if (this._absParams.absMotion != null) {
+            if (toState == true) {
+                this._absParams.absMotion.applyMotionState();
+            } else {
+                this._absParams.absMotion.applyMotionIdle();
+            }
+        }
+    };
+
+    //?[NEW]
+    Game_Player.prototype.refreshABS = function () {
+        this.refreshABSMotion();
+    };
+
+    //?[NEW]
+    Game_Player.prototype.isAlive = function () {
+        if(this.battler()) {
+            return this.battler().isAlive();
+        }
+        return false;
+    };
 
 })();
 

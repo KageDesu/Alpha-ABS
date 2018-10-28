@@ -54,7 +54,7 @@
     this.clearResult();
     pkd_GameBattler_regenerateAll.call(this);
     if (this.isAlive()) {
-      if(this.hp < this.mhp || this.mp < this.mmp)
+      if (this.hp < this.mhp || this.mp < this.mmp)
         PopInfoManagerABS.makeDamagePopUp(this);
     }
   };
@@ -114,7 +114,7 @@
 
   //NEW
   Game_Battler.prototype.skillABS_byAction = function (action) {
-    if (action.item())
+    if (action != null && action.item())
       return this.skillABS_byId(action.item().id, action.isItem());
     else
       return null;
@@ -182,7 +182,7 @@
     Game_BattlerBase.prototype.addNewState.call(this, stateId);
     if (this._states.include(stateId)) {
       PopInfoManagerABS.makeStatePopUp(this, stateId, false);
-      if(AlphaABS.isABS())
+      if (AlphaABS.isABS())
         this._checkStateCommonEvent(stateId);
     }
   };
@@ -193,11 +193,10 @@
       var state = $dataStates[stateId];
       if (state) {
         if (state.meta.cEonStart > 0) {
-          if (this.isPlayer()) {
-            $gamePlayer.startCommonEventABS(state.meta.cEonStart);
-          } else {
-            this._startCommonEventOnAI(state.meta.cEonStart);
-          }
+          this._startCommonEventFromState(state.meta.cEonStart);
+        }
+        if (state.meta.cEonEnd > 0) {
+          this._registerCommonEventOnStateEnd(stateId, state.meta.cEonEnd);
         }
       }
     } catch (e) {
@@ -206,14 +205,45 @@
   };
 
   //?[NEW]
+  Game_Battler.prototype._startCommonEventFromState = function (evId) {
+    if (this.isPlayer()) {
+      $gamePlayer.startCommonEventABS(evId);
+    } else {
+      this._startCommonEventOnAI(evId);
+    }
+  };
+
+  //?[NEW]
+  Game_Battler.prototype._registerCommonEventOnStateEnd = function (stateId, evId) {
+    if (!this._onEndStateEvents)
+      this._onEndStateEvents = {};
+    this._onEndStateEvents[stateId] = evId;
+  };
+
+    //@[ALIAS]
+    var _alias_Game_Battler_removeState = Game_Battler.prototype.removeState;
+    Game_Battler.prototype.removeState = function (stateId) {
+      _alias_Game_Battler_removeState.call(this, stateId);
+      try {
+        if (this._onEndStateEvents) {
+        if (this._onEndStateEvents[stateId]) {
+          this._startCommonEventFromState(this._onEndStateEvents[stateId]);
+          this._onEndStateEvents[stateId] = null;
+        }
+      }
+      } catch(error) {
+        AlphaABS.error(error,' while start commonEvent on state end');
+      }
+    };
+
+  //?[NEW]
   Game_Battler.prototype._startCommonEventOnAI = function (commonEventId) {
     var all = BattleManagerABS.getAllBotsOnMap();
     for (var i = 0; i < all.length; i++) {
       var bot = all[i];
       if (bot.battler() == this) {
-        "BOT FINDED ".p(bot.name());
         bot.startCommonEvent(commonEventId);
-        break;
+        return;
       }
     }
   };
@@ -233,4 +263,20 @@
   Game_Battler.prototype._initBattleSkills = function () {
     this._absParams.battleSkillsABS = new Game_SkillManagerABS();
   };
+
+    //?[NEW]
+    Game_Battler.prototype.requestABSMotionAction = function () {
+      this._absParams._needABSMotionAction = true;
+    };
+
+    //?[NEW]
+    Game_Battler.prototype.onABSMotionActionDone = function () {
+      this._absParams._needABSMotionAction = false;
+    };
+
+    //?[NEW]
+    Game_Battler.prototype.isNeedABSMotionAction = function () {
+      return (this._absParams._needABSMotionAction == true);
+    };
+
 })();

@@ -12,9 +12,18 @@ do ->
             @startCommonEvent @behaviorModel().cEonDeath
         if @inBattle() and @canFight()
             @_performRageCalculation who if @canRage()
+        if @_checkCanShowByParameters()
+            @showHpBarABS() unless @ABSParams().selected
+            setTimeout (=>
+                try
+                    @hideHpBarABS() unless @ABSParams().selected == true
+                catch
+
+                ), 1000
         return
 
     Game_AIBot::gainExpProcess = (whoKill) ->
+        return if whoKill.battler().isEnemy()
         exp = @battler().exp()
         if AlphaABS.Parameters.isLoaded()
             expMode = AlphaABS.Parameters.get_PartyExpMode()
@@ -26,6 +35,9 @@ do ->
     Game_AIBot::onReturnEnd = ->
         @_absParams.active = true
         @_onBattleEnd()
+        @initABS()
+        @showHpBarABS() if @isNeedHpBarShow()
+        @refreshABSMotion()
         return
 
     Game_AIBot::onSwitchToFreeState = ->
@@ -36,7 +48,13 @@ do ->
         return
 
     Game_AIBot::onSwitchToReturnState = ->
-        @_deactivate()
+        #@_deactivate()
+        if AlphaABS.BattleManagerABS.getPlayerTarget() == this
+                AlphaABS.BattleManagerABS.setPlayerTarget null
+        @_absParams.active = false
+        @_resetTarget()
+        @_stateMachine.deactivate() if @_stateMachine?
+        @refreshABSMotion()
         @LOG.p 'Return to ' + @getHomePosition().toString()
         return
 
@@ -49,6 +67,9 @@ do ->
     Game_AIBot::onSwitchToDeadState = ->
         @_absParams.allyToSearch = null
         @_moveType = 0
+        if @inABSMotion()
+            @_absParams.absMotion.clearMotion()
+            @_absParams.absMotion = null
         @_changeEventToDeadState()
         @refresh()
         @_deactivate()

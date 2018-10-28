@@ -89,17 +89,7 @@
   Game_Player.prototype.onGameLoad = function () {
     LOG.p("PL : On Game Load");
     this.battler().onGameLoad();
-  };
-
-  //NEW
-  Game_Player.prototype._resetTarget = function () {
-    this.stopFollowMode();
-    this.interruptCast();
-    this._absParams.autoAttackMode = false;
-    BattleUI.disableOnControlPanel(0);
-    BattleUI.disableOnControlPanel(1);
-    BattleUI.changeRotateIconToMouse();
-    this._changeState('free');
+    this.refreshABSMotion();
   };
 
   //NEW
@@ -128,6 +118,8 @@
     this.followers().forEach(function (f) {
       f.initABS();
     }, this);
+    this.battler().reloadFirearm();
+    this.refreshABSMotion();
   };
 
   //NEW
@@ -140,6 +132,7 @@
     this._absParams.dead = false;
     this._absParams.useAStar = false;
     $gameParty.stopABS();
+    this.refreshABSMotion();
   };
 
   //NEW
@@ -221,6 +214,7 @@
     this._absParams.inBattle = true;
     this._absParams.inBattleTimer = new Game_TimerABS();
     this._absParams.inBattleTimer.start(120);
+    this.refreshABSMotionState(true);
   };
 
   //NEW
@@ -229,6 +223,7 @@
     //BattleManagerABS.alertOnUI(Consts.STRING_ALERT_OUTBATTLE);
     this._absParams.inBattle = false;
     this._absParams.inBattleTimer = null;
+    this.refreshABSMotionState(false);
   };
 
   //NEW
@@ -277,18 +272,7 @@
 
     switch (index) {
       case 0:
-        if (this._absParams.autoAttackMode) {
-          this.turnTowardCharacter(this.target());
-        } else {
-          if (this._turnAutoAttack()) {
-            BattleUI.touchOnControlPanel(index);
-            BattleUI.selectOnControlPanel(index);
-          } else {
-            BattleUI.diselectOnControlPanel(index);
-            if (this.target() == null)
-              BattleUI.disableOnControlPanel(index);
-          }
-        }
+        this._onAttackClick();
         break;
       case 1: //Follow Mode
         var followAllowed = AlphaABS.Parameters.isFollowAllowed();
@@ -305,7 +289,7 @@
         }
         break;
       case 2:
-        var jumpAllowed = AlphaABS.Parameters.isJumpAllowed();
+        var jumpAllowed = AlphaABS.Parameters.isJumpAllowed() && !this._absJumpOffByUAPI;
         if (jumpAllowed == true) {
           if (this.canMove()) {
             if (Imported.YEP_SmartJump == true) {
@@ -334,7 +318,7 @@
         }
         break;
       case 3:
-        var rotateAllowed = AlphaABS.Parameters.isRotateAllowed();
+        var rotateAllowed = AlphaABS.Parameters.isRotateAllowed() && !this._absRotateOffByUAPI;
         if (rotateAllowed == true) {
           if (this.canMove()) {
             if (this._absParams.state == 'free' && !this._absParams.targetFollowMode) {
@@ -350,7 +334,7 @@
         }
         break;
       case 4:
-        var weapAllowed = AlphaABS.Parameters.isWeaponsAllowed();
+        var weapAllowed = AlphaABS.Parameters.isWeaponsAllowed() && !this._absWeapOffByUAPI;
         if (weapAllowed == true) {
           if (this.canMove()) {
             if (!this.battler().isFavWeapExists()) return;
@@ -471,7 +455,8 @@
     this.interruptCast();
     this._absParams.target = null;
     this._absParams.autoAttackMode = false;
-    BattleUI.disableOnControlPanel(0);
+    if (!this.battler().skillABS_attack().isNoTarget())
+      BattleUI.disableOnControlPanel(0);
     BattleUI.disableOnControlPanel(1);
     BattleUI.changeRotateIconToMouse();
     this._changeState('free');
@@ -479,7 +464,6 @@
 
   Game_Player.prototype._changeState = function (newState) {
     this._absParams.state = newState;
-
     switch (newState) {
       case 'free':
         this._stopTargetSelect();
@@ -510,10 +494,18 @@
     LOG.p("PL : Perform! " + this._absParams.currentAction.name());
     var selfAction = false;
     if (this._absParams.currentAction.isVectorType()) {
-      if (this._absParams.currentAction.isVectorTypeR())
+      if (this._absParams.currentAction.isVectorTypeR()) {
         BattleProcessABS.startPostBattleAction(this, new PointX(TouchInput.x, TouchInput.y).convertToMap(), this.battler().action(0), this._absParams.currentAction);
-      else
-        BattleProcessABS.startPostBattleAction(this, this.target(), this.battler().action(0), this._absParams.currentAction);
+      }
+      else {
+        var target = this.target();
+        if(this._absParams.currentAction.isNoTarget()) {
+          target = this._findEndPointForVectorSkill();
+        } 
+        if (this.target() != null)
+          this.turnTowardCharacter(this.target());
+        BattleProcessABS.startPostBattleAction(this, target, this.battler().action(0), this._absParams.currentAction);
+      }
     } else {
       if (this._absParams.currentAction.isRadiusType()) {
         if (this._absParams.currentAction.isNeedTarget()) {
@@ -645,18 +637,18 @@
 
   Game_Player.prototype._processOnPlayerDead = function () {
     try {
-        var deadEventId = AlphaABS.Parameters.get_DeadMapCommonEventId();
-        if(deadEventId > 0) {
-          if($dataCommonEvents[deadEventId]) {
-            this.startCommonEventABS(deadEventId);
-          }
+      var deadEventId = AlphaABS.Parameters.get_DeadMapCommonEventId();
+      if (deadEventId > 0) {
+        if ($dataCommonEvents[deadEventId]) {
+          this.startCommonEventABS(deadEventId);
         }
-        var deadMapId = AlphaABS.Parameters.get_DeadMapId();
-        if (deadMapId > 0) {
-          this._processOnPlayerDeadMap(deadMapId);
-        } else {
-          SceneManager.goto(Scene_Gameover);
-        }
+      }
+      var deadMapId = AlphaABS.Parameters.get_DeadMapId();
+      if (deadMapId > 0) {
+        this._processOnPlayerDeadMap(deadMapId);
+      } else {
+        SceneManager.goto(Scene_Gameover);
+      }
     } catch (e) {
       console.error(e);
       SceneManager.goto(Scene_Gameover);
@@ -670,11 +662,11 @@
     this.reserveTransfer(AlphaABS.Parameters.get_DeadMapId(), position.X, position.Y, direction, 0);
     this.battler().gainHp(1);
     this._absParams.deadTimer = null;
-    setTimeout(function() {
+    setTimeout(function () {
       try {
         $gamePlayer.requestMotion('none');
       } catch (error) {
-        
+
       }
     }, 1000);
   };
@@ -705,7 +697,12 @@
             skill.playStartSound(null);
             t.performAttack();
             this.refreshBattleState();
+            AlphaABS.BattleUI.refreshFirearmPanel();
           } else {
+            if (skill.isFirearm()) {
+              this.battler().reloadFirearm();
+              AlphaABS.BattleUI.refreshFirearmPanel();
+            }
             LOG.p("PL : Skill need ammo!");
             BattleManagerABS.alertOnUI(Consts.STRING_ALERT_NOCHARGES);
           }
@@ -719,6 +716,7 @@
   };
 
   Game_Player.prototype._update_input = function () {
+    if (!AlphaABS.isABS()) return;
     if (Input.isTriggered(AlphaABS.LIBS.IKey.WC())) {
       if ($gameMap.isABS()) {
         this.touchControlAt(4);
@@ -755,6 +753,11 @@
       if (Input.isTriggered(AlphaABS.LIBS.IKey.TS())) {
         var t = BattleManagerABS.nextPlayerTarget();
         if (t) BattleManagerABS.setPlayerTarget(t);
+      }
+
+      if (Input.isTriggered(AlphaABS.LIBS.IKey.WR())) {
+        this.battler().reloadFirearm();
+        return;
       }
 
     } else {
@@ -857,18 +860,23 @@
     var t = this._absParams.currentAction;
     if (BattleManagerABS.canUseSkillByTimer(t)) {
       if (t.isNeedTarget()) {
-        if (this.target()) {
-          if (BattleManagerABS.canUseSkillByRange(this, this.target(), t)) {
-            this._changeState('action');
-            return;
-          } else {
-            LOG.p("PL : Can't use, target too far");
-            BattleManagerABS.alertOnUIbySym('toFar');
-
-          }
+        if(t.isNoTarget()) {
+          this._changeState('action');
+          return;
         } else {
-          LOG.p("PL : Can't use, need target");
-          BattleManagerABS.alertOnUIbySym('noTarget');
+          if (this.target()) {
+            if (BattleManagerABS.canUseSkillByRange(this, this.target(), t)) {
+              this._changeState('action');
+              return;
+            } else {
+              LOG.p("PL : Can't use, target too far");
+              BattleManagerABS.alertOnUIbySym('toFar');
+
+            }
+          } else {
+            LOG.p("PL : Can't use, need target");
+            BattleManagerABS.alertOnUIbySym('noTarget');
+          }
         }
       } else {
         this._changeState('action');
@@ -1007,6 +1015,20 @@
       }
     }
   };
+
+  //?[NEW]
+  Game_Player.prototype.isNoTargetAttackMode = function () {
+    var b = this.battler();
+    if (b == null) return false;
+    var absSkill = b.skillABS_attack();
+    return absSkill.isNoTarget();
+  };
+
+  //?[NEW]
+  Game_Player.prototype.onMouseAttackOnTarget = function () {
+      if(this.target() == null) return;
+      this._onMouseAttackOnTarget();
+  }; 
 
   //END Game_Player
   //------------------------------------------------------------------------------

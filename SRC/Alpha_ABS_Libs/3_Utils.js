@@ -37,6 +37,79 @@ AlphaABS.UTILS = {};
     }
   };
 
+  $.isFrontNeighbor = function(charA, charB) {
+    var points = AlphaABS.UTILS._getNeighborPoints(charA);
+    if (points.length > 0) {
+      var a = AlphaABS.UTILS.inPoint(points[0], charB);
+      var b = AlphaABS.UTILS.inPoint(points[1], charB);
+      return a || b;
+    }
+    return false;
+  };
+
+  $._getNeighborPoints = function (charA) {
+    try {
+      var d = charA.direction();
+      var result = [];
+      switch (d) {
+        case 8:
+          result.push(new PointX(charA.x + 1, charA.y - 1));
+          result.push(new PointX(charA.x - 1, charA.y - 1));
+          break;
+        case 4:
+          result.push(new PointX(charA.x - 1, charA.y - 1));
+          result.push(new PointX(charA.x - 1, charA.y + 1));
+          break;
+        case 6:
+          result.push(new PointX(charA.x + 1, charA.y - 1));
+          result.push(new PointX(charA.x + 1, charA.y + 1));
+          break;
+        case 2:
+          result.push(new PointX(charA.x + 1, charA.y + 1));
+          result.push(new PointX(charA.x - 1, charA.y + 1));
+          break;
+        default:
+          return result;
+      }
+      return result;
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
+  };
+
+  $.getEndPointFromCharToRange = function(charA, range) {
+    try {
+      if(range == 0) {
+        return charA.toPoint();
+      }
+      var d = charA.direction();
+      var result = [];
+      var startPoint = charA.toPoint();
+      var endPoint = null;
+      switch (d) {
+        case 8:
+          endPoint = new PointX(startPoint.x, startPoint.y - range);
+          break;
+        case 4:
+          endPoint = new PointX(startPoint.x - range, startPoint.y);
+          break;
+        case 6:
+          endPoint = new PointX(startPoint.x + range, startPoint.y);
+          break;
+        case 2:
+          endPoint = new PointX(startPoint.x, startPoint.y + range);
+          break;
+        default:
+          break;
+      }
+      return endPoint;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  };
+
   $.createLineBetweenPoints = function(point1, point2) {
     var line = [];
     var tempPoint = point1;

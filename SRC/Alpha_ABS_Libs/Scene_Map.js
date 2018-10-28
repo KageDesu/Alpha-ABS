@@ -14,6 +14,7 @@
         SceneManager.goto(Scene_Gameover);
         return;
       }
+      $gameParty.refreshABS();
     }
     $gameTemp.transferedByDeathABS = false;
   };
@@ -58,6 +59,7 @@
       $gamePlayer.prepareABS();
       if (AlphaABS.BattleUI.isUI())
         AlphaABS.BattleUI.getUI().hide();
+      $gameParty.terminateABSSession();
     }
     _Scene_Map_stop.call(this);
   };
@@ -112,8 +114,11 @@
     }
 
     if (TouchInput.isCancelled()) {
-      BattleManagerABS.setPlayerTarget(null);
-      $gameMap.ABSParams().menuClickCount++;
+      if (BattleManagerABS.getPlayerTarget() == null) {
+        $gameMap.ABSParams().menuClickCount++;
+      } else {
+        BattleManagerABS.setPlayerTarget(null);
+      }
     }
 
     if (TouchInput.isTriggered() || this._touchCount > 0) {
@@ -130,6 +135,7 @@
               $gamePlayer.touchSkillAt(indexT[1]);
             if (indexT[0] == 'panel')
               $gamePlayer.touchControlAt(indexT[1]);
+            return;
           } else {
             var selected = null;
             var t = this._spriteset.spritesABS();
@@ -155,7 +161,14 @@
                 $gameMap.ABSParams().menuClickCount = 0;
               } else {
                 $gamePlayer.stopFollowMode();
-                $gameTemp.setDestination(x, y);
+                if ($gamePlayer.isNoTargetAttackMode()) {
+                  $gamePlayer.onMouseAttackOnTarget();
+                  if (!$gamePlayer._isRangeToTargetGood())
+                    $gameTemp.setDestination(x, y);
+                } else {
+                  $gameTemp.setDestination(x, y);
+                }
+                $gamePlayer.stopFollowMode();
               }
             } else {
               $gamePlayer.stopFollowMode();
@@ -174,7 +187,7 @@
   Scene_Map.prototype.isMenuCalled = function () {
     if ($gameMap.isABS())
       if (BattleManagerABS.getPlayerTarget() == null &&
-        $gameMap.ABSParams().menuClickCount > 1) {
+        $gameMap.ABSParams().menuClickCount > 0) {
         return TouchInput.isCancelled() || Input.isTriggered('menu');
       } else
         return Input.isTriggered('menu');

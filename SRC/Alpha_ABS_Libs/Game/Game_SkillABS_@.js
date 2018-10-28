@@ -33,6 +33,13 @@ function Game_SkillABS() {
     ABSSkillLoader.loadUserParams(this);
     ABSSkillLoader.loadSelfMetaParams(this);
     this._checkParams();
+    if(this.img != 0 && this.img != null && this.img != 'null') {
+      try {
+        ImageManager.loadPicture(this.img);
+      } catch (error) {
+        AlphaABS.error(error, ' load ABS skill <IMG> parameter');
+      }
+    }
   };
 
   // * Расчитать формулу можно только на Battler
@@ -46,8 +53,8 @@ function Game_SkillABS() {
           var time = caster._calculateABSSkillReloadParam(this.castTimeFormula);
           return time;
         }
-      } catch(error) {
-        AlphaABS.error(error,' info');
+      } catch (error) {
+        AlphaABS.error(error, ' info');
       }
       return 120;
     }
@@ -62,12 +69,11 @@ function Game_SkillABS() {
   };
 
   Game_SkillABS.prototype.playStartSound = function (point) {
-    if (this.startSound) {
-      if (point != null && AlphaABS.LIBS.BattleManagerABS && AlphaABS.LIBS.BattleManagerABS.isABSAudio())
-        AudioManager.playSeAt(this.startSound, point);
-      else
-        AudioManager.playSe(this.startSound);
-    }
+    this._playSoundAt(this.startSound, point);
+  };
+
+  Game_SkillABS.prototype.playReloadSound = function (point) {
+    this._playSoundAt(this.reloadSound, point);
   };
 
   Game_SkillABS.prototype.startCast = function (caster) {
@@ -148,17 +154,26 @@ function Game_SkillABS() {
     }
   };
 
-  Game_SkillABS.prototype.reloadStack = function () {
-    if (!this.isStackType()) return;
-    this.resetCast();
-    LOG.p("Stack reload manual " + this.skill().name + " reload time " + this.stackTime);
-    this.timer.start(this.stackTime);
-    this._stackNeedReload = false;
-    //Don't need post use because stackTime > 0
+  Game_SkillABS.prototype.reloadFirearm = function (count) {
+    if (!this.isFirearm()) return;
+    this._currentStack = count;
+    if (this._currentStack > 0) {
+      this.resetCast();
+      LOG.p("Firearm reload " + this.skill().name + " reload time " + this.stackTime);
+      this.timer.start(this.stackTime);
+      this.playReloadSound();
+      this._stackNeedReload = false;
+    } else {
+      this._stackNeedReload = true;
+    }
+    if(this._currentStack == null)
+      this._currentStack = 0;
   };
 
   Game_SkillABS.prototype.onUse = function () {
-    if (this.isStackType()) {
+    if (this.isFirearm()) {
+      this._onUseFirearm();
+    } else if (this.isStackType()) {
       this._onUseStackType();
     } else
       this._onUseNormal();
@@ -184,19 +199,19 @@ function Game_SkillABS() {
     LOG.p("On use " + this.skill().name + " reload time " + this.reloadTimeA);
     this.timer.start(this.reloadTimeA);
 
-    if (this.isNeedAmmo()) {
+    if (this.isNeedAmmo() && !this.isFirearm()) {
       $gameParty.loseItem($dataItems[this.ammo], 1, true);
     }
 
     if (this.getCastTime() == 0 && this.reloadTimeA == 0) {
       LOG.p("Skill " + this.skill().name + " use PostUse");
-      this.timer.start(60); //Post Use
+      this.timer.start(20); //Post Use
     }
   };
 
   Game_SkillABS.prototype.postUse = function () { //Delay between skill activation (called when another skill is start)
     if (this.isReady() && this.skillId != 1) { //Attack not need postUse
-      this.timer.start(60);
+      this.timer.start(20);
       LOG.p("Skill " + this.skill().name + " use PostUse");
     }
   };
@@ -206,33 +221,6 @@ function Game_SkillABS() {
   Game_SkillABS.prototype._checkParams = function () {
 
     ABSSkillLoader.checkParams(this);
-
-    if (this.stack == 1) {
-      this.stack = 2;
-      LOGW.p("Skill " + this.name() + " stack minimum 2!");
-    }
-
-    if (this.stackTime <= 0) {
-      if (this.stack > 1) {
-        this.stackTime = this.reloadTime * this.stack * 2;
-        LOGW.p("Skill " + this.name() + " You use stack withou stackTime param, stackTime set automaticaly = " + this.stackTime);
-      }
-    }
-
-    if (this.stackTime > 0) {
-      if (this.stack == 0) {
-        LOGW.p("Skill " + this.name() + " if you use stackTime param, you need stack param too, param not active!");
-        this.stackTime = 0;
-      } else {
-        if (this.ammo > 0) { //ID of item
-          this._currentStack = 0;
-          this._stackNeedReload = true;
-        } else {
-          this._currentStack = this.stack;
-          this._stackNeedReload = false;
-        }
-      }
-    }
 
     if (this.reloadParam != null) {
       //If i can use 'with' keyword in strict mode, this is not happened :(

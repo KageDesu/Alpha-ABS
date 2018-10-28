@@ -32,7 +32,7 @@
         this._inBattleBitmap = AlphaABS.DATA.IMG.IconInBattle.bitmap;
         this._maskBitmap = AlphaABS.DATA.IMG.InBattleMask.bitmap;
       }
-      this.faceSize = this._isShowFace ? 86 : 4;
+      this.faceSize = 86; //this._isShowFace ? 86 : 4;
     }
 
     refresh() { //Этот метод вызывается вручную
@@ -158,17 +158,20 @@
 
     _drawPlayerFace() {
       this.spriteFace.bitmap.clear();
-      if (!this._isShowFace) return;
-      var faceName = $gamePlayer.battler().faceName();
-      var faceIndex = $gamePlayer.battler().faceIndex();
-      var bitmap = ImageManager.loadFace(faceName);
-      bitmap.addLoadListener(function () {
-        var pw = Window_Base._faceWidth;
-        var ph = Window_Base._faceHeight;
-        var sx = faceIndex % 4 * pw;
-        var sy = Math.floor(faceIndex / 4) * ph;
-        this.spriteFace.bitmap.blt(bitmap, sx, sy, pw, ph, this.faceX, this.faceY, this.faceSize, this.faceSize);
-      }.bind(this));
+      if(this._isShowFace == true) {
+        var faceName = $gamePlayer.battler().faceName();
+        var faceIndex = $gamePlayer.battler().faceIndex();
+        var bitmap = ImageManager.loadFace(faceName);
+        bitmap.addLoadListener(function () {
+          var pw = Window_Base._faceWidth;
+          var ph = Window_Base._faceHeight;
+          var sx = faceIndex % 4 * pw;
+          var sy = Math.floor(faceIndex / 4) * ph;
+          this.spriteFace.bitmap.blt(bitmap, sx, sy, pw, ph, this.faceX, this.faceY, this.faceSize, this.faceSize);
+        }.bind(this));
+      } else {
+
+      }
     }
 
     _drawPlayerLevel() {

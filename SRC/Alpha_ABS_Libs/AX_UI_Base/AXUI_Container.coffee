@@ -51,8 +51,9 @@ do ->
             s -= @spacing
             @_placer = new Sprite(new Bitmap(s, s))
             super.addChild @_placer
-            @items.forEach (item) =>
-                @_placer.addChild(item) if item.visible == true
+            pl  = @_placer
+            @items.forEach (item) ->
+                pl.addChild(item) if item.visible == true
             return
 
         _visItemsLength: ->
@@ -84,7 +85,6 @@ do ->
 
         _refreshPlace: ->
             return unless @_placer?
-            "PLACING".p()
             if @isVertical()
                 @_refreshPlaceVertical()
             else

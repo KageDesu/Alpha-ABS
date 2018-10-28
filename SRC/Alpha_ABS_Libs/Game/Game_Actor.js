@@ -126,9 +126,13 @@
   Game_Actor.prototype.performAttack = function () {
     var weapons = this.weapons();
     var wtypeId = weapons[0] ? weapons[0].wtypeId : 0;
-    var attackMotion = $dataSystem.attackMotions[wtypeId];
-    if (attackMotion) {
-      this.startWeaponAnimation(attackMotion.weaponImageId);
+    if(this.isHasABSMotion()) {
+      this.requestABSMotionAction();
+    } else {
+      var attackMotion = $dataSystem.attackMotions[wtypeId];
+      if (attackMotion) {
+        this.startWeaponAnimation(attackMotion.weaponImageId);
+      }
     }
   };
 
@@ -286,41 +290,18 @@
 
   Game_Actor.prototype.stopABS = function () {
     Game_Battler.prototype.stopABS.call(this);
+    this._unloadLastFirearm();
     if (this._absParams.stackSkillExists) {
       this._absParams.stackSkillExists = false;
-      this._absParams.battleSkillsABS.all().forEach(function (skill) {
-        if (skill.isStackType() && !skill.isAutoReloadStack()) {
-          if (!skill.isNeedReloadStack()) {
-            var item = $dataItems[skill.ammo];
-            $gameParty.gainItem(item, skill._currentStack);
-            skill.chargeStack(-skill.stack);
-          }
-        }
-      }.bind(this));
     }
   };
 
   Game_Actor.prototype._prepareABSSkill = function (absSkill) {
     Game_Battler.prototype._prepareABSSkill.call(this, absSkill);
-    if (absSkill.isNeedAmmo()) {
-      this._absParams.stackSkillExists = true;
-      LOG.p("Skill " + absSkill.name() + " need Ammo " + $dataItems[absSkill.ammo].name);
-      this._reloadABSSkill(absSkill);
-    }
   };
 
   //NEW
   Game_Actor.prototype.refreshABSSkills = function () {
-    if (this._absParams.stackSkillExists) {
-      this._absParams.battleSkillsABS.all().forEach(function (skill) {
-        if (skill.isStackType() && !skill.isAutoReloadStack()) {
-          if (skill.isNeedReloadStack()) {
-            this._reloadABSSkill(skill);
-          }
-        }
-      }.bind(this));
-    }
-
     var skillsAll = this._absParams.battleSkillsABS.all();
     for (var i = skillsAll.length - 1; i > 0; i--) {
       var item = skillsAll[i];
@@ -337,32 +318,9 @@
     }
   };
 
-  //TODO:Тогда надо и возвращять снаряды, когда ABS закончился
-  Game_Actor.prototype._reloadABSSkill = function (absSkill) {
-    LOG.p("Start reload " + absSkill.name());
-    var item = $dataItems[absSkill.ammo];
-    if ($gameParty.hasItem(item)) {
-      var count = $gameParty.numItems(item);
-      LOG.p("Party has item " + count + ", need to reload " + absSkill.stack);
-      var d = absSkill.chargeStack(count);
-      LOG.p("Stack charged, item used " + (d > 0) ? (count - d) : count);
-      if (d > 0) count = count - d;
-      $gameParty.loseItem(item, count);
-      absSkill.reloadStack();
-    } else {
-      LOG.p("Party has not items");
-    }
-  };
-
   Game_Actor.prototype.performCurrentAction = function () {
     Game_Battler.prototype.performCurrentAction.call(this);
-    var skill = this.skillABS_byAction(this.action(0));
-    if (skill.isStackType() && !skill.isAutoReloadStack()) {
-      if (skill.isNeedReloadStack()) {
-        LOG.p("Stack reload manual start");
-        this._reloadABSSkill(skill);
-      }
-    }
+
   };
 
   var _Game_Actor_displayLevelUp = Game_Actor.prototype.displayLevelUp;
@@ -428,27 +386,138 @@
     if (this._absParams.needWeaponCheck) {
       this._checkAdditionSkills();
       if ($gameMap.isABS()) {
-        this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
-        LOG.p("PL : Check weapon skill");
-        if (this.weapons().length > 0) {
-          var w = this.weapons()[0];
-          if (w.meta.ABS) {
-            if (w.meta.ABS == 0) {
-              this._absParams.battleSkillsABS.all()[0].loadExternal(w.meta);
-            }
-            if (w.meta.ABS == 1) {
-              this._absParams.battleSkillsABS.all()[0].loadExternal(w.meta, 1);
-            }
-          } else {
-            this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
-          }
-        } else {
-          this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
-        }
+        this._refreshWeaponABS();
         this._absParams.needWeaponCheck = false;
         AlphaABS.BattleUI.refreshWeaponIconAt(0);
       }
     }
+  };
+
+  //?[NEW]
+  Game_Actor.prototype.checkAutoReloadFirearm = function (item) {
+    var skill = this._firstBattleABSSkill();
+    if (!skill.isFirearm()) return;
+    if (!skill.isNeedReloadStack()) return;
+    if (item.id == skill.ammo) {
+      this.reloadFirearm();
+    }
+  };
+
+  //?[NEW]
+  Game_Actor.prototype._refreshWeaponABS = function () {
+    this._unloadLastFirearm();
+    this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
+    LOG.p("PL : Check weapon skill");
+    if (this.weapons().length > 0) {
+      var w = this.weapons()[0];
+      if (w.meta.ABS) {
+        if (w.meta.ABS == 0) {
+          this._firstBattleABSSkill().loadExternal(w.meta);
+        }
+        if (w.meta.ABS == 1) {
+          this._firstBattleABSSkill().loadExternal(w.meta, 1);
+        }
+        if (w.meta.firearm == 1) {
+          LOG.p("Firearm finded!");
+          this._changeFirearm();
+          AlphaABS.BattleUI.showFirearmPanel();
+        }
+      } else {
+        this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
+      }
+    } else {
+      this._absParams.battleSkillsABS.all()[0] = new Game_SkillABS(this.attackSkillId());
+    }
+    this.refreshABSMotion();
+    AlphaABS.BattleUI.refresh();
+  };
+
+  //?[NEW]
+  Game_Actor.prototype.refreshABSMotion = function () {
+      this._absParams._isNeedABSMotionRefresh = true;
+  };
+
+  //?[NEW]
+  Game_Actor.prototype.isNeedABSMotionRefresh = function () {
+      return (this._absParams._isNeedABSMotionRefresh == true);
+  };
+
+  //?[NEW]
+  Game_Actor.prototype.onABSMotionRefresh = function () {
+      this._absParams._isNeedABSMotionRefresh = false;
+  };
+
+  //?[NEW]
+  Game_Actor.prototype.isHasABSMotion = function () {
+      var skill = this._firstBattleABSSkill();
+      return skill.isHasMotion();
+  };
+
+  //?[NEW]
+  Game_Actor.prototype._unloadLastFirearm = function () {
+    var lastSkill = this._firstBattleABSSkill();
+    if (lastSkill.isFirearm()) {
+      this._absParams._lastFirearmWeaponData = [lastSkill._currentStack, lastSkill.ammo];
+      this.unloadFirearm();
+      lastSkill.reloadFirearm(0);
+    }
+  };
+
+  //?[NEW]
+  Game_Actor.prototype._firstBattleABSSkill = function () {
+    return this._absParams.battleSkillsABS.all()[0];
+  };
+
+  //?[NEW]
+  Game_Actor.prototype._changeFirearm = function () {
+    if (!this.isPlayer()) return;
+    this.reloadFirearm();
+  };
+
+  //?[NEW]
+  Game_Actor.prototype.unloadFirearm = function () {
+    if (this._absParams._lastFirearmWeaponData != null) {
+      var itemsCountFromStack = this._absParams._lastFirearmWeaponData[0];
+      if (itemsCountFromStack > 0) {
+        var ammoItem = $dataItems[this._absParams._lastFirearmWeaponData[1]];
+        $gameParty._noNotifyABS = true;
+        $gameParty.gainItem(ammoItem, itemsCountFromStack);
+        LOG.p("Firearm unloaded to inventory " + itemsCountFromStack);
+        $gameParty._noNotifyABS = false;
+      }
+      this._absParams._lastFirearmWeaponData = null;
+    }
+    AlphaABS.BattleUI.refresh();
+  };
+
+  //?[NEW]
+  Game_Actor.prototype.reloadFirearm = function () {
+    var skill = this._firstBattleABSSkill();
+    if (!skill.isFirearm()) return;
+    if (!skill.isReady()) return;
+    if (skill._currentStack == skill.stack) return;
+    if (skill._currentStack > 0) {
+      this._absParams._lastFirearmWeaponData = [skill._currentStack, skill.ammo];
+      this.unloadFirearm();
+      skill.reloadFirearm(0);
+    }
+    var ammoItem = $dataItems[skill.ammo];
+    var itemsCount = $gameParty.numItems(ammoItem);
+    LOG.p("Try reload firearm " + itemsCount);
+    if (itemsCount >= skill.stack) {
+      $gameParty.loseItem(ammoItem, skill.stack);
+      skill.reloadFirearm(skill.stack);
+    } else {
+      if (itemsCount > 0) {
+        skill.reloadFirearm(itemsCount);
+        $gameParty.loseItem(ammoItem, itemsCount);
+      } else {
+        LOG.p("Try reload firearm : NO AMMO");
+        AlphaABS.BattleManagerABS.alertOnUIbySym('noAmmo');
+        skill.reloadFirearm(0);
+      }
+    }
+    AlphaABS.BattleUI.refresh();
   };
 
   //NEW

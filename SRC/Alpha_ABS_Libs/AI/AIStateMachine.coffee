@@ -4,18 +4,14 @@
 #---------------------------------------------------------------------------
 do ->
     class AIStateMachine
-        constructor: () ->
+        constructor: (evId) ->
             @_bot = null
             @_state = ""
             @_freeStateLogic = new AlphaABS.LIBS.AIStateFree()
             @_searchStateLogic = new AlphaABS.LIBS.AIStateSearch()
             @_returnStateLogic = new AlphaABS.LIBS.AIStateReturn()
             @_battleStateLogic = new AlphaABS.LIBS.AIStateBattle()
-            @_createSlowUpdateThread()
-
-        _createSlowUpdateThread: ->
-            clearInterval @_slowUpdateThread if @_slowUpdateThread?
-            @_slowUpdateThread = setInterval(@slowUpdate.bind(@), 300)
+            @_slowUpdateActive = false
 
         slowUpdate: () ->
             try
@@ -30,25 +26,21 @@ do ->
             catch e
                 console.error e
     
-        refreshThread: ->
-            @_createSlowUpdateThread()
+        activateSlowUpdate: -> @_slowUpdateActive = true
 
         deactivate: ->
-            clearInterval @_slowUpdateThread
 
         onGameSave: ->
-            clearInterval @_slowUpdateThread
             @_bot = null
 
         onGameLoad: ->
-            @refreshThread()
 
         update: (bot) ->
             return unless @_setup bot
             if @_bot.inActive() then @_updateInActiveMode() unless @_checkDeadState()
             else
                 @_updateInNoActiveMode()
-            #@_bot = null
+            do @slowUpdate unless @_slowUpdateActive
             return
 
         _setup: (bot) ->

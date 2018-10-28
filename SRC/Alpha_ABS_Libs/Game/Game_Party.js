@@ -4,6 +4,7 @@
   //------------------------------------------------------------------------------
   //NEW
   Game_Party.prototype.initABS = function () {
+    this._membersABS = null;
     this.members().forEach(function (member) {
       member.initABS();
     });
@@ -12,7 +13,7 @@
   };
 
   Game_Party.prototype.membersABS = function () {
-    if (this._membersABS == undefined) {
+    if (!this._membersABS) {
       this._membersABS = [];
       var bots = $gamePlayer.followers();
       bots.forEach(function (item) {
@@ -42,12 +43,30 @@
     return null;
   };
 
+
+  //?[NEW]
+  Game_Party.prototype.terminateABSSession = function () {
+    this.membersABS().forEach(function (e) {
+      e.onGameSave();
+    });
+  };
+
+  //?[NEW]
   Game_Party.prototype.stopABS = function () {
     this.selectOnMap(null);
     this.membersABS().forEach(function (e) {
       e.stopABS();
     });
-    this._membersABS = [];
+    this._membersABS = null;
+  };
+
+  //?[NEW]
+  Game_Party.prototype.refreshABS = function () {
+    this._membersABS = null;
+    this.membersABS().forEach(function (e) {
+      e.refreshABS();
+    });
+    $gamePlayer.refreshABS();
   };
 
   Game_Party.prototype.selectOnMap = function (who) {
@@ -58,7 +77,7 @@
   };
 
   Game_Party.prototype.gainExpForAllABS = function (exp, shared) {
-    if(shared == true) {
+    if (shared == true) {
       exp = Math.round(exp / (this.membersABS().length + 1));
     }
     $gamePlayer.battler().gainExp(exp);
@@ -87,20 +106,30 @@
   var _Game_Party_gainItem = Game_Party.prototype.gainItem;
   Game_Party.prototype.gainItem = function (item, amount, includeEquip) {
     _Game_Party_gainItem.call(this, item, amount, includeEquip);
-    if ($gameMap.isABS()) {
-      if (amount > 0 && !this._noNotifyABS) {
-        AudioManager.playSe({
-          name: 'Equip2',
-          pan: 0,
-          pitch: 140,
-          volume: 90
-        });
-        AlphaABS.BattleUI.pushItemOnPanel(item);
-      }
+    try {
+      if ($gameMap.isABS()) {
+        if (amount > 0 && !this._noNotifyABS) {
+          AudioManager.playSe({
+            name: 'Equip2',
+            pan: 0,
+            pitch: 140,
+            volume: 90
+          });
+        }
+        if (amount > 0) {
+          AlphaABS.BattleUI.pushItemOnPanel(item);
+          AlphaABS.BattleUI.refresh();
+          if (!$gamePlayer.inBattle()) {
+            $gamePlayer.battler().checkAutoReloadFirearm(item);
+          }
+        }
 
-      if (DataManager.isWeapon(item)) {
-        AlphaABS.BattleUI.refreshWeaponCircle();
+        if (DataManager.isWeapon(item)) {
+          AlphaABS.BattleUI.refreshWeaponCircle();
+        }
       }
+    } catch (error) {
+      AlphaABS.error(error, ' gain item to party');
     }
   };
 

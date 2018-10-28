@@ -20,6 +20,7 @@ do ->
         _applyBattleActionState: ->
 
         _updateApproachState: ->
+            "BOT MISSING".p() unless @_bot 
             @_bot.changeStateToReturn() if AlphaABS.LIBS.AILogicManager.inOutReturnRange @_bot
 
         _updatePrepareActionState: ->

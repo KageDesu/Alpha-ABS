@@ -47,7 +47,7 @@
                     if (img._image == null && defaultImgBitmap) {
                         object[paramName] = defaultImgBitmap;
                     } else {
-                        this.convertImage(object, paramName);
+                        object[paramName] = img;
                     }
                 }
             } catch (e) {
@@ -127,6 +127,9 @@
         }
         get_UIE_PlayerCastBar() {
             return this._get_UIE_BasicElement('UIE_Player_Cast');
+        }
+        get_UIE_PlayerFirearm() {
+            return this._get_UIE_BasicElement('UIE_Player_FirearmPanel');
         }
         get_UI_PlayerDamageColor() {
             var name = "UI_PlayerDamageColor";
@@ -312,24 +315,31 @@
                 this._loadStandartBindingKeys();
         }
         _loadStandartBindingKeys() {
-            var keys = [];
-            keys[0] = this.getString('Controls_Key_cpW');
-            keys[1] = this.getString('Controls_Key_cpD');
-            keys[2] = this.getString('Controls_Key_cpS');
-            keys[3] = this.getString('Controls_Key_cpA');
+            try {
+                var keys = [];
+                keys[0] = this.getString('Controls_Key_cpW');
+                keys[1] = this.getString('Controls_Key_cpD');
+                keys[2] = this.getString('Controls_Key_cpS');
+                keys[3] = this.getString('Controls_Key_cpA');
 
-            keys[4] = this.getString('Controls_Key_cpE');
-            keys[5] = this.getString('Controls_Key_tS');
+                keys[4] = this.getString('Controls_Key_cpE');
+                keys[5] = this.getString('Controls_Key_tS');
 
-            keys[6] = this.getString('Controls_Key_scW');
-            keys[7] = this.getString('Controls_Key_scD');
-            keys[8] = this.getString('Controls_Key_scS');
-            keys[9] = this.getString('Controls_Key_scA');
+                keys[6] = this.getString('Controls_Key_scW');
+                keys[7] = this.getString('Controls_Key_scD');
+                keys[8] = this.getString('Controls_Key_scS');
+                keys[9] = this.getString('Controls_Key_scA');
 
-            for (var i = 0; i < 8; i++) {
-                keys[i + 10] = this.getString('Controls_Key_sp' + (i + 1));
+                for (var i = 0; i < 8; i++) {
+                    keys[i + 10] = this.getString('Controls_Key_sp' + (i + 1));
+                }
+
+                keys[18] = this.getString("Controls_Key_wr");
+
+                AlphaABS.LIBS.IKey.loadKeyConfig(keys);
+            } catch(error) {
+                AlphaABS.error(error,' load user key binding');
             }
-            AlphaABS.LIBS.IKey.loadKeyConfig(keys);
         }
         isFollowAllowed() {
             return this._get_BooleanFromCacheWithDefault("Controls_KeyAllowed_Follow", true);
@@ -342,6 +352,39 @@
         }
         isWeaponsAllowed() {
             return this._get_BooleanFromCacheWithDefault("Controls_KeyAllowed_Weapons", true);
+        }
+
+        get_EnemyMiniHpBarOption() {
+            var name = "Show Mini HP Bars";
+            return this.getFromCacheOrInit(name, function () {
+                var result = 0;
+                var object = this.getString(name);
+                switch (object) {
+                    case "Never":
+                        result = 0;
+                        break;
+                    case "Always":
+                        result = 1;
+                        break;
+                    case "Only for selected":
+                        result = 2;
+                        break;
+                    default:
+                        result = 0;
+                        break;
+                }
+                return result;
+            });
+        }
+
+        get_UIE_MiniHPBar() {
+            var name = "UIE_Mini_Bar";
+            return this.getFromCacheOrInit(name, function () {
+                var object = this.getObject(name);
+                this._convertGaugeElements(object);
+                object.Visible = true; // * Видимость настраивается другим параметром, поэтому всегда true
+                return object;
+            });
         }
     }
 

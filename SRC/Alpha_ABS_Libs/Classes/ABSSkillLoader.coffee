@@ -72,6 +72,8 @@ do ->
     # * Проверяет и преобразует параметры
     ABSSkillLoader.checkParams = (_) ->
         ABSSkillLoader._checkByType _
+        ABSSkillLoader._checkNoTarget _
+        ABSSkillLoader._checkFirearm _
         ABSSkillLoader._checkStack _
         ABSSkillLoader._convertParams _
         ABSSkillLoader._checkFormulas _

@@ -60,6 +60,19 @@
     return this._characterSpritesABS;
   };
 
+  //?[NEW]
+  Spriteset_Map.prototype.getSpriteForCharacter = function (character) {
+      try {
+          if (this._spritePlayerABS.character() == character)
+            return this._spritePlayerABS;
+          var sprites = this.spritesABS();
+          return sprites.find(spr => spr.character() == character);
+      } catch (error) {
+        
+      }
+      return null;
+  };
+
   //NEW
   Spriteset_Map.prototype.initABS = function () {
     this.spritesABS().forEach(function (item) {
@@ -85,10 +98,10 @@
 
   //?NEW
   Spriteset_Map.prototype.refreshAfterABS = function () {
-     this._characterSprites.forEach(function(char){
-        this._tilemap.removeChild(char);
-     }.bind(this));
-     this.createCharacters();
+    this._characterSprites.forEach(function (char) {
+      this._tilemap.removeChild(char);
+    }.bind(this));
+    this.createCharacters();
   };
 
   //PRIVATE

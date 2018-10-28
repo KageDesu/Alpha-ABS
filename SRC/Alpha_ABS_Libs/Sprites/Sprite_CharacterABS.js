@@ -180,6 +180,7 @@
     var t = this._absParams.damages;
     if (t.length > 0) {
       for (var i = 0; i < t.length; i++) {
+        t[i].z = 10;
         t[i].update();
       }
       if (!t[0].isPlaying()) {
@@ -220,6 +221,9 @@
     this._absParams.spriteSelect.visible = this._character.ABSParams().selected;
     this._absParams.spriteSelect.x = this.x;
     this._absParams.spriteSelect.y = this.y;
+    if(this._character.inABSMotion()) {
+      this._absParams.spriteSelect.y -= this._absMotionOffset();
+    }
   
     if (this.isAlly()) {
       this._absParams.spriteSelect.visible = this._character.isSelected();
@@ -323,7 +327,6 @@
   };
 
 
-  //TODO:Объекты POPUP и машины устарели!!!
   Sprite_CharacterABS.prototype._setupPopUpExp = function () {
     if (!this._absParams.popUpMachineExp) {
       this._absParams.popUpMachineExp = new ABS.ABSObject_PopUpMachine(0, 0, this.patternWidth(), 4, this.parent);
@@ -470,6 +473,11 @@
 
   Sprite_CharacterABS.prototype._getCenterPoint = function () { //Центральная точка
     return new PointX(this.x, this.y - this.patternHeight() / 2);
+  };
+
+  //?[NEW]
+  Sprite_CharacterABS.prototype.getStartPointToVector = function () {
+      return this._getCenterPoint().convertToMap();
   };
 
   //END Sprite_CharacterABS

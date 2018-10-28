@@ -95,9 +95,11 @@
         cEonDeath: 0, //Common Event ID when Death
         returnType: 0, //Тип возвращения (0 - быстрый, 1 - обычный, 2 - стоит на месте)
         teamId: 1, //Команда
-        rage: 1, //Может агрится
-        ignoreObstacles: 0, //Игнорирует регионы препядствий (видит сквозь стены)
-        heavy: 0 //Нельзя сдвинуь импульсом (1 - нельзя, 0 - можно)
+        rage: true, //Может агрится
+        ignoreObstacles: false, //Игнорирует регионы препядствий (видит сквозь стены)
+        heavy: false, //Нельзя сдвинуь импульсом (1 - нельзя, 0 - можно)
+        showHP: false, //Показывать полоску здоровья над врагом всегда (0 - нет, 1 - да)
+        motion: false
       }, //END Zero template
       { //Template for Ally
         viewRadius: 5,
@@ -113,9 +115,11 @@
         cEonDeath: 0,
         returnType: 1,
         teamId: 0,
-        rage: 0,
-        ignoreObstacles : 0,
-        heavy: 0
+        rage: false,
+        ignoreObstacles: false,
+        heavy: false,
+        showHP: false,
+        motion: false
       }
     ]
   );
@@ -123,7 +127,7 @@
   SDK.setConstant(Game_AIBehavior, 'PARAMS', ['viewRadius', 'returnRadius', 'escapeOnBattle',
     'canSearch', 'noFight', 'reviveTime', 'regen', 'slow', 'agressive',
     'noMove', 'noEmote', 'cEonStart', 'cEonDeath', 'cEonEnd', 'returnType',
-    'teamId', 'rage', 'ignoreObstacles', 'heavy'
+    'teamId', 'rage', 'ignoreObstacles', 'heavy', 'showHP', 'motion', 'motionOffset'
   ]);
 
   //END Game_AIBehavior

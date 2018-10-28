@@ -1,10 +1,17 @@
+/////////////////////////////////////////////////////////////////////////////
+//╒═════════════════════════════════════════════════════════════════════════╛
+// ■ Game_Character.js
+//╒═════════════════════════════════════════════════════════════════════════╛
+/////////////////////////////////////////////////////////////////////////////
 (function () {
+    //@[ALIAS]
     var _Game_Character_initMembers = Game_Character.prototype.initMembers;
     Game_Character.prototype.initMembers = function () {
         _Game_Character_initMembers.call(this);
         this._absParams = {};
         this._absParams.animationABS = 0;
         this._absParams.useAStar = false;
+        this._needShowABSHpBar = false;
     };
 
     //NEW
@@ -63,7 +70,7 @@
             return t;
         }
     };
-        
+
     //?NEW
     Game_Character.prototype.onApplyImpulseForce = function (x, y, d) {
         if ((x === 1 || x === -1 || x === 0) && (y === 1 || y === -1 || y === 0)) {
@@ -96,5 +103,90 @@
         this.jump(x, y);
         this.setDirection(ld);
     };
-    
+
+    //?[NEW]
+    Game_Character.prototype.hideHpBarABS = function () {
+        this._needShowABSHpBar = false;
+    };
+
+    //?[NEW]
+    Game_Character.prototype.showHpBarABS = function () {
+        this._needShowABSHpBar = true;
+    };
+
+    //?[NEW]
+    Game_Character.prototype.isHpBarVisible = function () {
+        return (this._needShowABSHpBar == true);
+    };
+
+    //?[NEW]
+    Game_Character.prototype.inABSMotion = function () {
+        return false;
+    };
+
+    //@[ALIAS]
+    var _alias_Game_Character_updatePattern = Game_Character.prototype.updatePattern;
+    Game_Character.prototype.updatePattern = function () {
+        try {
+            if (this.inABSMotion()) {
+                var motion = this.ABSParams().absMotion;
+                if (motion.inAction()) {
+                    this._pattern = motion.motionPattern(this._pattern);
+                    motion.onActionDone();
+                } else {
+                    _alias_Game_Character_updatePattern.call(this);
+                    if (!this.hasStepAnime() && this._stopCount > 0) {   
+                    } else
+                        this._pattern = motion.motionPattern(this._pattern);
+                }
+            } else
+                _alias_Game_Character_updatePattern.call(this);
+        } catch (error) {
+            AlphaABS.warning(error, ' when try play ABS motion');
+            _alias_Game_Character_updatePattern.call(this);
+        }
+    };
+
+    //@[ALIAS]
+    var _alias_Game_Character_update = Game_Character.prototype.update;
+    Game_Character.prototype.update = function () {
+        _alias_Game_Character_update.call(this);
+        this._updateABSMotion();
+    };
+
+    //?[NEW]
+    Game_Character.prototype._updateABSMotion = function () {
+        // * EMPTY
+    };
+
+    //?[NEW]
+    Game_Character.prototype.findMySprite = function () {
+        if (SceneManager.isCurrentSceneIsMap()) {
+            try {
+                var spriteset = SceneManager._scene._spriteset;
+                if(spriteset != null) {
+                    return spriteset.getSpriteForCharacter(this);
+                }
+                
+            } catch (error) {
+                AlphaABS.waring('Cant find sprite of battler');
+            }
+
+        }
+        return null;
+    };
+
+    //?[NEW]
+    Game_Character.prototype.getStartPointToVector = function () {
+        var mySprite = this.findMySprite();
+        if (mySprite == null) {
+            return this.toPoint();
+        } else {
+            return mySprite.getStartPointToVector();
+        }
+    };
+
 })();
+// ■ END Game_Character.js
+//---------------------------------------------------------------------------
+/////////////////////////////////////////////////////////////////////////////

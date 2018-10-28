@@ -26,7 +26,6 @@ do ->
             @aiName =  @_absParams.battler.name()
             @LOG.setColors Color.BLUE, Color.BLACK.getLightestColor(225)
             @LOG.p("AI inited " + @aiName)
-
             @_absParams.motion = null
             @_absParams.deactivatedByDead = false
             @_absParams.behavior.loadAlly()
@@ -34,7 +33,7 @@ do ->
             @setThrough false
             @_createSlowUpdateThread()
         else
-           @_deactivate()
+            @_deactivate()
 
     Game_AI2Bot::_createSlowUpdateThread = ->
             @_slowUpdateThread = setInterval(@slowUpdate.bind(@), 500)
@@ -49,6 +48,13 @@ do ->
         catch e
             console.error e
         
+    #?NEW
+    Game_AI2Bot::refreshABS = ->
+        clearInterval @_slowUpdateThread
+        @_createSlowUpdateThread()
+        @changeStateToFree()
+        @refreshABSMotion()
+
     #?OVER Super
     Game_AI2Bot::onGameSave = ->
         Game_AIBot::onGameSave.call @
@@ -59,12 +65,14 @@ do ->
         Game_AIBot::onGameLoad.call @
         clearInterval @_slowUpdateThread
         @_createSlowUpdateThread()
+        @refreshABSMotion()
 
     Game_AI2Bot::stopABS = () ->
         @_deactivate()
         if @_absParams.battler?
             @_absParams.battler.stopABS()
             @_absParams.battler = null
+        @refreshABSMotion()
     
     #OVER Super
     Game_AI2Bot::chaseCharacter = (character) -> #*EMPTY
@@ -76,6 +84,7 @@ do ->
     Game_AI2Bot::update = () ->
         Game_Character::update.call @
         #TODO: MoveSpeed и directionFix не должно быть как у Game_Player если в бою
+        @setTransparent($gamePlayer.isTransparent())
         @_updateABS()
         @_updateDeadState()
 
@@ -88,11 +97,11 @@ do ->
     #OVER I
     Game_AI2Bot::_updateABS = () ->
         if @inActive()
-             @battler().updateABS()
-             @_stateMachine.update this
-             @_performPursuitTarget() if @pursuitTarget
-        else
-            @_deactivate()
+            @battler().updateABS()
+            @_stateMachine.update this
+            @_performPursuitTarget() if @pursuitTarget
+        #else
+        #    @_deactivate()
 
     Game_AI2Bot::_performPursuitTarget = () ->
         @_absParams.useAStar = true
@@ -100,6 +109,12 @@ do ->
             @moveTypeTowardTarget()
             #@turnTowardCharacter @target()
 
+    __super_deactivate = Game_AI2Bot::_deactivate
+    Game_AI2Bot::_deactivate = ->
+        __super_deactivate.call @
+        @hideHpBarABS()
+        @refreshABSMotion()
+        SlowUpdateManager.clear @_absParams.partyIndex + 900
 
     #NEW
     Game_AI2Bot::checkCollisionWithPlayer = () -> @checkCollisionWith $gamePlayer unless @inBattle()
@@ -131,7 +146,10 @@ do ->
     Game_AI2Bot::initABS = () ->
         if @_absParams.battler?
             @battler().initABS()
+            SlowUpdateManager.register(900 + @_absParams.partyIndex, @_stateMachine, 300)
             @_absParams.active = true
+            @showHpBarABS() if @isNeedHpBarShow()
+            @refreshABSMotion()
             @changeStateToFree()
 
 
@@ -150,6 +168,7 @@ do ->
         @_onBattleEnd() if @inBattle()
 
     Game_AI2Bot::onSwitchToReturnState = ->
+        @_resetTarget()
         @LOG.p 'Return'
 
     Game_AI2Bot::onSwitchToSearchState = ->
@@ -232,5 +251,43 @@ do ->
         __interface_method_performAction.call this
         @battler().performAttack() if @battler().action(0).isAttack()
         return
+
+    #$[OVER I]
+    Game_AI2Bot::isNeedHpBarShow = ->
+        Game_AIBot::isNeedHpBarShow.call @
+
+    #$[OVER I]
+    Game_AI2Bot::selectOnMap = (isSelect) ->
+        Game_AIBot::selectOnMap.call @, isSelect
+
+    Game_AI2Bot::refreshABSMotion =  ->
+        if @_absParams.absMotion?
+            @_absParams.absMotion.clearMotion()
+            @_absParams.absMotion = null
+        return unless @battler()
+        if @battler().isHasABSMotion()
+            @_absParams.absMotion = new AlphaABS.LIBS.ABSMotion()
+            skill = @battler()._firstBattleABSSkill()
+            @_absParams.absMotion.setMotion(skill.motion, skill.motionOffset, this)
+            @_absParams.absMotion.applyMotionIdle()
+
+    Game_AI2Bot::inABSMotion = -> @battler()? and @_absParams.absMotion?
+
+    Game_AI2Bot::_updateABSMotion = ->
+        return unless @inABSMotion()
+        if @battler().isNeedABSMotionRefresh()
+            @refreshABSMotion()
+            @battler().onABSMotionRefresh()
+
+        if @battler().isNeedABSMotionAction()
+            @battler().onABSMotionActionDone()
+            @_absParams.absMotion.applyMotionAction() if @_absParams.absMotion?
+
+    Game_AI2Bot::refreshABSMotionState  = (toState) ->
+        return unless @inABSMotion()
+        if toState == true
+            @_absParams.absMotion.applyMotionState()
+        else
+            @_absParams.absMotion.applyMotionIdle()
 
     return

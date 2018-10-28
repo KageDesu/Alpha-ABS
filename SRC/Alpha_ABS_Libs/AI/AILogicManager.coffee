@@ -68,12 +68,24 @@ do ->
             return AlphaABS.BattleManagerABS.canUseSkillByRange bot, target, action if target
         return false
 
-    AILogicManager.isUsableABSSkill = (absSkill) ->
+    AILogicManager.isUsableABSSkill = (absSkill, isEnemy) ->
+        return AILogicManager.isUsableABSSkillForEnemy(absSkill) if isEnemy is true
+        return AILogicManager.isUsableABSSkillForAlly(absSkill)
+
+    AILogicManager.isUsableABSSkillForEnemy = (absSkill) ->
         return false if absSkill.isZoneType()
         return false if absSkill.isRadiusType()
         return false if absSkill.isNeedAmmo()
         return false if absSkill.isVectorTypeR()
-        return false if absSkill.isStackType() and !absSkill.isAutoReloadStack()
+        return false if absSkill.isFirearm()
+        true
+
+    AILogicManager.isUsableABSSkillForAlly = (absSkill) ->
+        return false if absSkill.isZoneType()
+        return false if absSkill.isRadiusType()
+        return false if absSkill.isVectorTypeR()
+        return false if absSkill.isFirearm()
+        #TODO: Firearm for ally
         true
 
     AlphaABS.register AILogicManager

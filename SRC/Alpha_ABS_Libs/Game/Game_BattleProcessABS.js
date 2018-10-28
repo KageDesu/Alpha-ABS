@@ -55,8 +55,18 @@
           LOG.p("Battle : Start Radius Action by Vector");
           this._centerPoint = t.target;
           this._processAction(t.subject, null, t.action);
-        } else
-          this._processAction(t.subject, t.target, t.action);
+        } else {
+          if(t.skill.isNoTarget()) {
+            if(sVector._target != null) {
+              this._processAction(t.subject, sVector._target, t.action);
+            } else {
+              this._centerPoint = t.target;
+              this._processAction(t.subject, null, t.action);
+            }
+          } else {
+            this._processAction(t.subject, t.target, t.action);
+          }
+        }
       } catch (e) {
         console.error(e);
       } finally {
@@ -246,6 +256,12 @@
           this._requestAnimation(targets, subject.battler().attackAnimationId1());
         } else {
           var animId = action.item().animationId;
+          /*if(this._skill.isVectorType() && this._skill.isNoTarget()) {
+            if(targets.length == 0) {
+              this._requestMapAnimation(animId);
+              return;
+            }
+          }*/
           if (this._skill.isZoneType() || this._skill.isRadiusType() || this._skill.isVectorTypeR()) {
             this._requestMapAnimation(animId);
           } else {

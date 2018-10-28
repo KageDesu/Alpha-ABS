@@ -153,6 +153,9 @@
         if(this._checkLayerTouch(this._layerControlPanel)) {
           return ['panel', this.spriteControlPanel.checkTouch()];
         }
+        if (this.spriteFirearmBar && this.spriteFirearmBar.isTouched()) {
+          return ['firearm', true];
+        }
         return null;
       }
 
@@ -181,7 +184,8 @@
       }
 
       refreshSkillPanel() {
-        this.spriteSkillPanel.refresh();
+        if(this.spriteSkillPanel)
+          this.spriteSkillPanel.refresh();
       }
 
       terminate() {
@@ -215,8 +219,12 @@
             });
           } else {
             this.itemsBar.update();
-          }
+            if (this.spriteFirearmBar) {
+              this.spriteFirearmBar.update();
+            }
 
+          }
+          
           if(this._sCircle)
                     this._sCircle.update();
         }
@@ -226,6 +234,19 @@
         if($gamePlayer.battler() == null) return;
         this._refreshSkillPanelVisibility();
         this.refreshSkillPanel();
+      }
+
+      refreshFirearmPanel() {
+        if (this.spriteFirearmBar && this.spriteFirearmBar.visible == true) {
+          this.spriteFirearmBar.refresh();
+        }
+      }
+
+      showFirearmPanel() {
+        if (this.spriteFirearmBar) {
+          this.spriteFirearmBar.show();
+          this.spriteFirearmBar.refresh();
+        }
       }
 
       _refreshSkillPanelVisibility() {
@@ -314,6 +335,7 @@
         this._createAlertBar();
         this._createItemsBar();
         this._createFavWeapCircle();
+        this._createFirearmBar();
       }
 
       _createUIContainers() {
@@ -542,6 +564,8 @@
           this.addChild(itemsBarC);
         this.itemsBar.refresh();
         this._moveElements.push(['itemsBar', itemsBarC]);
+
+        this._createFirearmContainer();
       }
 
       _createItemsBar() {

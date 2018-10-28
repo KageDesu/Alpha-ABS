@@ -120,7 +120,7 @@
     _drawAmmoCount() {
       if (this._absSkill == null) return;
       this.spriteAmmoCount.bitmap.clear();
-      if (this._absSkill.isNeedAmmo()) {
+      if (this._absSkill.isNeedAmmo() && !this._absSkill.isFirearm()) {
         var b = this.spriteAmmoCount.bitmap;
         var count = $gameParty.numItems($dataItems[this._absSkill.ammo]);
         var c = b.textColor;

@@ -44,6 +44,7 @@ do ->
             @LOG.p 'Store home position: ' + @getHomePosition().toString() if @getHomePosition()?
             @startCommonEvent @behaviorModel().cEonStart
             @rageContainer().addDealer(@target()) if @canRage()
+            @refreshABSMotionState(true)
             return
 
         onReturnEnd: ->
@@ -55,9 +56,12 @@ do ->
             @startCommonEvent @behaviorModel().cEonEnd
             @rageContainer().clear() if @canRage()
             @changeStateToFree()
+            @refreshABSMotion()
+            @refreshABSMotionState(false)
             return
 
         onSwitchToFreeState: ->
+            @refreshABSMotion()
             @LOG.p 'In free state'
             @clearTarget()
             return

@@ -8,7 +8,7 @@ do ->
     DefaultKeyConfig = ['w', 'd', 's', 'a',
         'e', 'q',
         'w', 'd', 's', 'a',
-        '1', '2', '3', '4', '5', '6', '7', '8'
+        '1', '2', '3', '4', '5', '6', '7', '8', 'r'
     ]
 
     UNSAFE = ['q', 'w', 'x', 'z', 'space']
@@ -71,13 +71,15 @@ do ->
     IKey.SP_7 = -> KEYS_GAME[16]
     IKey.SP_8 = -> KEYS_GAME[17]
 
+    IKey.WR = -> KEYS_GAME[18]
+
     IKey.loadDefaultKeyConfig = () ->
         @loadKeyConfig DefaultKeyConfig.slice 0 #Clone
 
     IKey.loadKeyConfig = (keyBindingsArray) ->
         KEYS_RAW = keyBindingsArray
         for i in [0...KEYS_RAW.length]
-            KEYS_GAME[i] = IKey.convertUnsafeSymbols KEYS_RAW[i]
+            KEYS_GAME[i] = IKey.convertUnsafeSymbols KEYS_RAW[i] if KEYS_RAW[i]?
         return
 
     IKey.convertUnsafeSymbols = (symbol) ->
@@ -111,6 +113,8 @@ do ->
         return KEYS_RAW[15] if symbol == IKey.SP_6()
         return KEYS_RAW[16] if symbol == IKey.SP_7()
         return KEYS_RAW[17] if symbol == IKey.SP_8()
+
+        return KEYS_RAW[18] if symbol == IKey.WR()
         return ""
 
     IKey.isTriggeredWeapCircleIndex = () ->

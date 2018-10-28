@@ -120,7 +120,7 @@
 	var pkd_SceneBoot_start = Scene_Boot.prototype.start;
 	Scene_Boot.prototype.start = function () {
 		pkd_SceneBoot_start.call(this);
-		LOGW.p("Inited v " + AlphaABS.Version + " build " + AlphaABS.Build + " on MV " + Utils.RPGMAKER_VERSION);
+		AlphaABS.printVersionInfo();
 		if (!AlphaABS.Parameters.isLoaded()) {
 			LOGW.p("Warning! Plugin parameters not finded, used default settings");
 		} else {
@@ -128,6 +128,7 @@
 		}
 		AlphaABS.ApplyExtraPluginsSupport();
 		BattleManagerABS.init();
+		SlowUpdateManager.init();
 	};
 	//END Scene_Boot
 	//------------------------------------------------------------------------------
@@ -149,6 +150,13 @@
 		if (message)
 			AlphaABS._errorLog.p(message);
 		console.error(error);
+		if (!Utils.isNwjs()) return;
+		require('nw.gui').Window.get().showDevTools();
+	};
+
+	AlphaABS.warning = function (error, message) {
+		LOGW.p("Warning! " + message);
+		console.warn(error);
 	};
 
 })();

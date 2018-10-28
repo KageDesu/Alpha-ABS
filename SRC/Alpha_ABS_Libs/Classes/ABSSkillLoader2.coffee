@@ -13,6 +13,7 @@ do ->
         'light',
         'castTimeFormula',
         'startSound',
+        'motion',
         'reloadSound', # * LAST STRING PARAMETER, add above it new string parameters
         'vSpeed',
         'range',
@@ -32,7 +33,12 @@ do ->
         'impulse',
         'ignoreObstacles',
         'impulseRandom',
-        'repeatDelay'
+        'repeatDelay',
+        'firearm',
+        'noTarget',
+        'motionOffset',
+        'swing',
+        'pierce'
     ]
 
     ABSSkillLoader.PARTICLES = [
@@ -52,7 +58,8 @@ do ->
             castTime: 0,
             reloadTime: 0,
             reloadParam: null,
-            directionFix: 0
+            directionFix: 0,
+            noTarget: 0
         },
         { # * 1 - VECTOR
             range: 6,
@@ -64,7 +71,8 @@ do ->
             img: 'null',
             light: null,
             lightSize: 100,
-            directionFix: 0
+            directionFix: 0,
+            noTarget: 0
         },
         { # * 2 - RADIUS
             range: 6,
@@ -73,14 +81,16 @@ do ->
             castTime: 0,
             reloadTime: 120,
             reloadParam: null,
-            directionFix: 0
+            directionFix: 0,
+            noTarget: 0
         },
         {   # * 3 - ZONE
             castTime: 0,
             needTarget: false,
             reloadTime: 120,
             reloadParam: null,
-            directionFix: 0
+            directionFix: 0,
+            noTarget: 0
         }
     ]
     return

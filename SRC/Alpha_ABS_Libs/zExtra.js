@@ -123,8 +123,8 @@ AlphaABS.ApplyExtraPluginsSupport = (function () {
         try {
             var _Scene_File_performActionLoad_YEP = Scene_File.prototype.performActionLoad;
             Scene_File.prototype.performActionLoad = function () {
-                if (BattleManagerABS._isABSMap == true) {
-                    BattleManagerABS.stopABS();
+                if (AlphaABS.LIBS.BattleManagerABS._isABSMap == true) {
+                    AlphaABS.LIBS.BattleManagerABS.stopABS();
                 }
                 _Scene_File_performActionLoad_YEP.call(this);
             };

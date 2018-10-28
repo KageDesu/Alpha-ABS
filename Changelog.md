@@ -1,6 +1,17 @@
 # Version 1.2  
 ## Builds:  
 
+**980** - (28.10.2018)  
+> - fixed many small issues
+> - added API for script calls. [Check WiKi](https://github.com/KageDesu/Alpha-ABS/wiki/Script--Calls-API)  
+> - updated feature **No Target System** - [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/No-Target-Weapons)
+>> - `<noTarget>` works with  <ABS:1> weapons  
+>> - `<pierce:X>` - X - limits of pierced enemies in a row  
+>> - `<noTarget>` works with <ABS:1> skill types  
+>> - now enemies can use too `<ABS:1> <noTarget>` skills
+> - <ABS:1> skill type graphic now can be animated (use sprite sheet format image file) [Check WiKi](https://github.com/KageDesu/Alpha-ABS/wiki/How-set-animated--ABS:1--type-skill)
+
+
 **965** - (17.10.2018)
 > - fixed small issues
 > - fixed bug: enemy no longer active after returning to spawn point (lost player)

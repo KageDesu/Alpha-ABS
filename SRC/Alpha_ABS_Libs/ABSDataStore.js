@@ -1,4 +1,3 @@
-//BUILDER_COMPRESS_ME
 (function () {
     AlphaABS.DATA = {};
 

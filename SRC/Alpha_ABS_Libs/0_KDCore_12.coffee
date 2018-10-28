@@ -4,7 +4,7 @@
 #---------------------------------------------------------------------------
 #![THIS LIBRARY ONLY FOR ALPHA ABS with MV < 1.6.1 SUPPORT]
 KDCore = KDCore || {}
-KDCore.Version = '1.1A'
+KDCore.Version = '1.2A'
 KDCore.LIBS = {}
 KDCore.register = (library) -> @LIBS[library.name] = library
 
@@ -302,7 +302,7 @@ do ->
             @
 
         applyLibraryColors: ->
-            @setColors new Color(22, 120, 138, 0), Color.WHITE
+            @setColors new Color(22, 120, 138, 0), Color.BLACK
             @
 
         setColors: (color, backColor) ->
@@ -327,7 +327,7 @@ do ->
         _printText: (text) ->
             text = @prefix + " : " + text
             if @_isUsingColor()
-               @_printTextWithColors text
+                @_printTextWithColors text
             else
                 console.log text
 

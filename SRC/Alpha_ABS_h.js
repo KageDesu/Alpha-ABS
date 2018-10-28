@@ -18,13 +18,29 @@
 
 /*:
  * @author Pheonix KageDesu
- * @plugindesc v1.2.944 The real-time action battle system
+ * @plugindesc v1.2.980 The real-time action battle system
  * 
  * @help
+ * 
+ * Web Page: 
+ * https://kagedesuworkshop.blogspot.com/p/alpha-abs.html
+ * Wiki Page: 
+ * https://github.com/KageDesu/Alpha-ABS/wiki
+ * Patreon Page: 
+ * https://www.patreon.com/KageDesu
+ * YouTube Channel:
+ * https://www.youtube.com/channel/UCA3R61ojF5vp5tGwJ1YqdgQ?
+ * 
+ * Thanks to all my patrons!
  * Plugin supporters:
  *  - Donald Derrick
- *  - Ilya Chkoliar (https: //elushisgaming.club/)
+ *  - Ilya Chkoliar (https://elushisgaming.club/)
  *  - Elindos Phar
+ *  - Sarcastic Sloth (https://sarcasticsloth42.wixsite.com/avillainstale)
+ * 
+ * [!] Please read Wiki Page for more information and documentation
+ * 
+ * === === === === === === === === === === === === === === === === ===
  * 
  * @requiredAssets audio/se/Equip2
  * @requiredAssets audio/se/Coin
@@ -145,13 +161,20 @@
  * @require 1
  * @desc image when you select spell hit zone on ground, 96 x 96 px, empty for default image
  *
+ * @param UIE_Player_FirearmPanel
+ * @parent UI_Elements
+ * @text Player firearm panel
+ * @type struct<UIEBasicElement>
+ * @default {"Visible":"true","Position":"{\"X\":\"\",\"Y\":\"\"}"}
+ * 
  * @param UI_PlayerDamageColor
  * @parent UI_Elements
  * @text Player Damage Outline
  * @type string
  * @default #FF0000
  * @desc HEX value or empty
- *
+ * 
+ * 
  * @param Strings
  * @default --------------------
  *
@@ -536,7 +559,11 @@
  * @text Melee
  * @default Melee
  *
- *
+ * @param STRING_SKILL_INFO_REPEATS
+ * @parent Strings_SpellInfo
+ * @type String
+ * @text Multi Hits
+ * @default Multi Hits: 
  *
  *
  *
@@ -561,8 +588,6 @@
  * @on Yes
  * @off No
  * @default false
- *
- *
  *
  *
  *
@@ -672,6 +697,12 @@
  * @text Target Select Key
  * @type string
  * @default q
+ * 
+ * @param Controls_Key_wr
+ * @parent Controls
+ * @text Firearm reload key
+ * @type string
+ * @default r
  *
  * @param Controls_Skills_panel
  * @parent Controls
@@ -871,221 +902,228 @@
  *
 */
 /*~struct~UIEPosition:
-* @param X
-* @type number
-*
-* @param Y
-* @type number
-*/
+ * @param X
+ * @type number
+ *
+ * @param Y
+ * @type number
+ */
 /*~struct~UIEGradient:
-* @param Color 1
-* @type string
-* @desc HEX value
-*
-* @param Color 2
-* @type string
-* @desc HEX value
-*/
+ * @param Color 1
+ * @type string
+ * @desc HEX value
+ *
+ * @param Color 2
+ * @type string
+ * @desc HEX value
+ */
 /*~struct~UIEPlayerStatus:
-* @param Position
-* @type struct<UIEPosition>
-*
-* @param Visible
-* @type boolean
-* @on Yes
-* @off No
-*
-* @param Portrait
-* @type boolean
-* @on Visible
-* @off Hidden
-*
-* @param In battle Icon
-* @type file
-* @dir img/
-* @require 1
-* @desc empty for default image
-*
-* @param Mask
-* @type file
-* @dir img/
-* @require 1
-* @desc empty for default image
-*
-* @param Level
-* @type boolean
-* @on Visible
-* @off Hidden
-*
-* @param Background
-* @type file
-* @dir img/
-* @require 1
-* @desc empty for default image
-*
-*/
+ * @param Position
+ * @type struct<UIEPosition>
+ *
+ * @param Visible
+ * @type boolean
+ * @on Yes
+ * @off No
+ *
+ * @param Portrait
+ * @type boolean
+ * @on Visible
+ * @off Hidden
+ *
+ * @param In battle Icon
+ * @type file
+ * @dir img/
+ * @require 1
+ * @desc empty for default image
+ *
+ * @param Mask
+ * @type file
+ * @dir img/
+ * @require 1
+ * @desc empty for default image
+ *
+ * @param Level
+ * @type boolean
+ * @on Visible
+ * @off Hidden
+ *
+ * @param Background
+ * @type file
+ * @dir img/
+ * @require 1
+ * @desc empty for default image
+ *
+ */
 /*~struct~UIEBar:
-* @param Font Name
-* @type string
-*
-* @param Color
-* @type struct<UIEGradient>
-*
-* @param Background Color
-* @type string
-* @desc HEX value
-*
-* @param Visible
-* @type boolean
-* @on Yes
-* @off No
-*
-* @param Show value
-* @type boolean
-* @on Visible
-* @off Hidden
-*/
+ * @param Font Name
+ * @type string
+ *
+ * @param Color
+ * @type struct<UIEGradient>
+ *
+ * @param Background Color
+ * @type string
+ * @desc HEX value
+ *
+ * @param Visible
+ * @type boolean
+ * @on Yes
+ * @off No
+ *
+ * @param Show value
+ * @type boolean
+ * @on Visible
+ * @off Hidden
+ */
 /*~struct~UIEEnemyTarget:
-* @param Font Name
-* @type string
-*
-* @param Visible
-* @type boolean
-* @on Yes
-* @off No
-*
-* @param Position
-* @type struct<UIEPosition>
-*
-* @param Name
-* @type boolean
-* @on Show
-* @off Not
-* @desc Show name or not?
-*
-* @param HP_text
-* @text Show HP in
-* @type select
-* @default %
-* @option %
-* @option Value
-*
-* @param HP Bar
-* @type struct<UIEBar>
-*
-* @param Back_color
-* @text Background Color
-* @type string
-* @desc HEX value or empty
-*
-* @param Mask
-* @type file
-* @dir img/
-* @require 1
-* @desc empty for default image
-*
-* @param Selected_Image
-* @text Selected
-* @type file
-* @dir img/
-* @require 1
-* @desc empty for default image
-*
-* @param Selected_Color
-* @parent Selected_Image
-* @text Selected Color
-* @type string
-* @desc HEX value or empty
-*/
+ * @param Font Name
+ * @type string
+ *
+ * @param Visible
+ * @type boolean
+ * @on Yes
+ * @off No
+ *
+ * @param Position
+ * @type struct<UIEPosition>
+ *
+ * @param Name
+ * @type boolean
+ * @on Show
+ * @off Not
+ * @desc Show name or not?
+ *
+ * @param HP_text
+ * @text Show HP in
+ * @type select
+ * @default %
+ * @option %
+ * @option Value
+ *
+ * @param HP Bar
+ * @type struct<UIEBar>
+ *
+ * @param Back_color
+ * @text Background Color
+ * @type string
+ * @desc HEX value or empty
+ *
+ * @param Mask
+ * @type file
+ * @dir img/
+ * @require 1
+ * @desc empty for default image
+ *
+ * @param Selected_Image
+ * @text Selected
+ * @type file
+ * @dir img/
+ * @require 1
+ * @desc empty for default image
+ *
+ * @param Selected_Color
+ * @parent Selected_Image
+ * @text Selected Color
+ * @type string
+ * @desc HEX value or empty
+ */
 /*~struct~UIEPlayerSpellPanel:
-* @param Visible
-* @type boolean
-* @on Yes
-* @off No
-*
-* @param Position
-* @type struct<UIEPosition>
-*
-* @param Image
-* @type file
-* @dir img/
-* @require 1
-* @desc File or empty
-*
-* @param AutoHide
-* @type boolean
-* @on Yes
-* @off No
-* @desc Auto hide skill panel when actor has no skills
-*/
+ * @param Visible
+ * @type boolean
+ * @on Yes
+ * @off No
+ *
+ * @param Position
+ * @type struct<UIEPosition>
+ *
+ * @param Image
+ * @type file
+ * @dir img/
+ * @require 1
+ * @desc File or empty
+ *
+ * @param AutoHide
+ * @type boolean
+ * @on Yes
+ * @off No
+ * @desc Auto hide skill panel when actor has no skills
+ */
 /*~struct~UIEPlayerHotBar:
-* @param Visible
-* @type boolean
-* @on Yes
-* @off No
-*
-* @param Position
-* @type struct<UIEPosition>
-*
-* @param Orientation
-* @type select
-* @default Vertical
-* @option Vertical
-* @option Horizontal
-*
-* @param Item1
-* @text Attack
-* @type boolean
-* @on Visible
-* @off Hidden
-*
-* @param Item2
-* @text Follow
-* @type boolean
-* @on Visible
-* @off Hidden
-*
-* @param Item3
-* @text Jump
-* @type boolean
-* @on Visible
-* @off Hidden
-*
-* @param Item4
-* @text Rotate
-* @type boolean
-* @on Visible
-* @off Hidden
-*
-* @param Item5
-* @text Favorite Weapons
-* @type boolean
-* @on Visible
-* @off Hidden
-*/
+ * @param Visible
+ * @type boolean
+ * @on Yes
+ * @off No
+ *
+ * @param Position
+ * @type struct<UIEPosition>
+ *
+ * @param Orientation
+ * @type select
+ * @default Vertical
+ * @option Vertical
+ * @option Horizontal
+ *
+ * @param Item1
+ * @text Attack
+ * @type boolean
+ * @on Visible
+ * @off Hidden
+ *
+ * @param Item2
+ * @text Follow
+ * @type boolean
+ * @on Visible
+ * @off Hidden
+ *
+ * @param Item3
+ * @text Jump
+ * @type boolean
+ * @on Visible
+ * @off Hidden
+ *
+ * @param Item4
+ * @text Rotate
+ * @type boolean
+ * @on Visible
+ * @off Hidden
+ *
+ * @param Item5
+ * @text Favorite Weapons
+ * @type boolean
+ * @on Visible
+ * @off Hidden
+ */
 /*~struct~UIEMessagePanel:
-* @param Visible
-* @type boolean
-* @on Yes
-* @off No
-*
-* @param Position
-* @type struct<UIEPosition>
-*
-* @param Font Name
-* @type string
-*
-* @param Text Color
-* @type string
-* @desc HEX value
-*/
+ * @param Visible
+ * @type boolean
+ * @on Yes
+ * @off No
+ *
+ * @param Position
+ * @type struct<UIEPosition>
+ *
+ * @param Font Name
+ * @type string
+ *
+ * @param Text Color
+ * @type string
+ * @desc HEX value
+ */
 /*~struct~UIEBasicElement:
-* @param Visible
-* @type boolean
-* @on Yes
-* @off No
-*
-* @param Position
-* @type struct<UIEPosition>
-*/
-
+ * @param Visible
+ * @type boolean
+ * @on Yes
+ * @off No
+ *
+ * @param Position
+ * @type struct<UIEPosition>
+ */
+/*~struct~UIEBarMini:
+ * @param Color
+ * @type struct<UIEGradient>
+ *
+ * @param Background Color
+ * @type string
+ * @desc HEX value
+ */

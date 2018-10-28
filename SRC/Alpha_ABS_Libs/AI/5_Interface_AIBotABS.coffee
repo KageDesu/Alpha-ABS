@@ -41,5 +41,15 @@ do ->
             @clearTarget()
             @changeStateToFree()
 
+        refreshABSMotionState: ->
+
+        refreshABSMotion: ->
+
+        _checkCanShowByParameters: ->
+            return false unless AlphaABS.Parameters.isLoaded()
+            showWhenSelect = AlphaABS.Parameters.get_EnemyMiniHpBarOption() == 2
+            return showWhenSelect == true
+            false
+
     AlphaABS.LIBS.Interface_AIBotABS = Interface_AIBotABS
     return

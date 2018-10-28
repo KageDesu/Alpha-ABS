@@ -15,19 +15,23 @@ do ->
         return
 
     Game_AIBot::_checkActiveState = ->
-        list = @list()
-        i = 0
-        while i < list.length
-            item = list[i]
-            comment = ""
-            comment = item.parameters[0] if item.code == 108
-            if comment.indexOf('<noActive') >= 0
-                regex = /<noActive\s?:\s?(.+?)>/
-                match = regex.exec(comment)
-                if match && SDK.checkSwitch match[1]
-                    @_absParams.activateSwitch = match[1]
-                    return false
-            i++
+        try
+            return if @isErased()
+            list = @list()
+            i = 0
+            while i < list.length
+                item = list[i]
+                comment = ""
+                comment = item.parameters[0] if item.code == 108
+                if comment.indexOf('<noActive') >= 0
+                    regex = /<noActive\s?:\s?(.+?)>/
+                    match = regex.exec(comment)
+                    if match && SDK.checkSwitch match[1]
+                        @_absParams.activateSwitch = match[1]
+                        return false
+                i++
+        catch e
+            AlphaABS.error e, ' while checking active state'
         true
 
     Game_AIBot::_checkDieSwitch = ->

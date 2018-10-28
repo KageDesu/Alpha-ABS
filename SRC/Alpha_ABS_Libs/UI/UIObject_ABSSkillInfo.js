@@ -142,6 +142,12 @@
                 }
             }
 
+            var repeats = this._skill.skill().repeats;
+            if (repeats > 1) {
+                this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_REPEATS, value_color, repeats, 'left');
+                this._nextLine();
+            }
+
             if (this._skill.isNeedCast()) {
                 this._drawPair(text_color, AlphaABS.SYSTEM.STRING_SKILL_INFO_CAST, value_color,
                     SDK.decimalAdjust('round', this._skill.getCastTime($gamePlayer.battler()) / AlphaABS.BattleManagerABS.TURN, -1) +

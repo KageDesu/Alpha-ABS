@@ -28,11 +28,30 @@
     this._inBattle = true;
   };
 
+  //?[NEW]
+  Game_Troop.prototype.deactivateABS = function () {
+    try {
+      var members = this.membersABS();
+      if (members != null) {
+        members.forEach(function (member) {
+          member._deactivate();
+        }.bind(this));
+      }
+    } catch (error) {
+      AlphaABS.error(error, ' deactivateABS');
+    }
+    this._inBattle = false;
+  };
+
   //NEW
   Game_Troop.prototype.onTurnEnd = function () {
-    this._enemiesABS.forEach(function (e) {
-      e.onTurnEnd();
-    });
+    try {
+      this._enemiesABS.forEach(function (e) {
+        e.onTurnEnd();
+      });
+    } catch (error) {
+      AlphaABS.error(error, ' onTurnEnd');
+    }
   };
 
   Game_Troop.prototype.aliveMembersABS = function () {

@@ -7,7 +7,7 @@ do ->
     String::LOG = ->
         if (__TMP_LOG__ == null)
             __TMP_LOG__ = new KDCore.DevLog("TMP")
-            __TMP_LOG__.setColors Color.MAGENTA, Color.BLACK.getLightestColor(230)
+            __TMP_LOG__.setColors Color.WHITE, Color.BLACK.getLightestColor(20)
         __TMP_LOG__.p(@)
         return
 
@@ -28,5 +28,7 @@ do ->
         
 
     return
+
+__tObject = null
 # ■ END DevExt.coffee
 #---------------------------------------------------------------------------

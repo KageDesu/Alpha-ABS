@@ -152,7 +152,8 @@
   var _Game_Interpreter_command201 = Game_Interpreter.prototype.command201;
   Game_Interpreter.prototype.command201 = function () {
     if (AlphaABS.Parameters.get_AllowTransferState() == true) {
-      $gamePlayer.stopABS();
+      if(AlphaABS.isABS())
+        $gamePlayer.stopABS();
       return _Game_Interpreter_command201.call(this);
     } else {
       if ($gameParty.inBattle()) {

@@ -2,6 +2,8 @@
 
   var PointX = AlphaABS.UTILS.PointX;
 
+  // vscode-fold=#
+
   class UIObject_SkillPanelItem extends Sprite {
     constructor(index) {
       super(new Bitmap(40, 40));

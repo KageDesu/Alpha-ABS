@@ -119,6 +119,9 @@
         },
         name: function() {
             return this.aiName;
+        },
+        isNeedHpBarShow: function () {
+            return false;
         }
     };
 

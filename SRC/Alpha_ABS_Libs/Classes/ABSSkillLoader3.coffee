@@ -36,7 +36,55 @@ do ->
             _.range = ABSSkillLoader.TEMPLATES[2].range if _.range is 0
         return
 
+    ABSSkillLoader._checkNoTarget = (_) ->
+        _.noTarget = 0 if _.type is 2 || _.type is 3
+        return if _.noTarget == 0
+        _.range = 1 if _.range == 0
+        if _.range == 1
+            _.pierce = false
+        if _.range > 1
+            _.swing = false
+        #_.firearm = 0
+        _.directionFix = 1
+        return
+
+    ABSSkillLoader._checkFirearm = (_) ->
+        return unless _.isFirearm()
+        unless _.isNeedAmmo()
+            _.firearm = 0
+            LOGW.p(_.skill().name + " Firearm weapon should be with <Ammo> parameter!")
+            return
+
     ABSSkillLoader._checkStack = (_) ->
+        if _.stack is 1
+            _.stack = 2
+            LOGW.p("Skill " + _.name() + " stack minimum 2!")
+        ABSSkillLoader._autoCalculateStackTime(_) if _.stackTime <= 0 and _.stack > 1
+        if _.stackTime > 0 and _.stack is 0
+            LOGW.p("Skill " + _.name() +
+                " if you use stackTime param, you need stack param too, param not active!")
+            _.stackTime = 0
+        ABSSkillLoader._checkAmmoForStack(_) if _.stackTime > 0 and _.firearm is 0
+        return
+
+    ABSSkillLoader._autoCalculateStackTime = (_) ->
+        _.stackTime = _.reloadTime * _.stack * 2
+        text = " You use stack withou stackTime param, stackTime set automaticaly = " + _.stackTime
+        LOGW.p "Skill" + _.name() + text
+        return
+
+    ABSSkillLoader._checkAmmoForStack = (_) ->
+        if _.ammo > 0 and _.firearm is 0
+            text = " You use stack with ammo, is forbidden"
+            LOGW.p "Skill" + _.name() + text
+            _.ammo = 0
+        if _.firearm is 0
+            _._currentStack = _.stack
+            _._stackNeedReload = no
+        else
+            _._currentStack = 0
+            _._stackNeedReload = yes
+        return
 
     ABSSkillLoader._convertParams = (_) ->
         _.directionFix = true if _.directionFix > 0
@@ -50,7 +98,7 @@ do ->
             name: sound,
             pan: 0,
             pitch: 100,
-            valume: 100
+            volume: 100
         }
 
     ABSSkillLoader._checkFormulas = (_) ->

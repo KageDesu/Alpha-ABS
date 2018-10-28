@@ -38,6 +38,12 @@ do ->
 
     BattleUI.refreshWeaponCircle = () -> @_ui?.weapCircleRefresh()
 
+    BattleUI.showFirearmPanel = () -> @_ui?.showFirearmPanel()
+
+    BattleUI.refreshFirearmPanel = () -> @_ui?.refreshFirearmPanel()
+
+    BattleUI.firearmPanel = -> @_ui?.spriteFirearmBar
+
     BattleUI.refresh = () -> @_ui?.refresh()
 
     BattleUI.pushExpOnPanel = (expCount) ->

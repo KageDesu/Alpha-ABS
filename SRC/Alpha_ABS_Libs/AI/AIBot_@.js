@@ -22,7 +22,7 @@ function Game_AIBot() {
   Game_AIBot.prototype.initialize = function (mapId, eventId, enemyId) {
     Game_Event.prototype.initialize.call(this, mapId, eventId);
     this.initializeABS();
-    this._stateMachine = new AlphaABS.LIBS.AIStateMachine();
+    this._stateMachine = new AlphaABS.LIBS.AIStateMachine(eventId);
     this.LOG.p("AI inited " + $dataEnemies[enemyId].name + " at " + this.toPoint().toString());
     this.aiName = $dataEnemies[enemyId].name;
     this._absParams.enemyId = enemyId;
