@@ -1,6 +1,21 @@
 # Version 1.2  
 ## Builds:  
 
+**990** - (18.11.2018)
+> - fixed small issues
+> - new UI elements customization system through JSON files
+>> - now it works only with a new `Items Notify panel`, in the future it will be expanded for all UI elements
+> - updated UI element `Items Notify panel`
+>> - supports any items name length
+>> - supports different styles (through JSON customization)
+> - new feature: select nearest enemy as target (default key  `F`)  
+> - fixed: select next target (`Q` key by default) now select targets by distance from nearest to farther
+
+```diff
++ Only for Patrons
+```
+> - Text Font loader. `.ttf` fonts files in `fonts/` folder will be load in game automatically and can be used to customize UI elements with new customization system. **(Works only on PC or MAC)**
+
 **980** - (28.10.2018)  
 > - fixed many small issues
 > - added API for script calls. [Check WiKi](https://github.com/KageDesu/Alpha-ABS/wiki/Script--Calls-API)  
