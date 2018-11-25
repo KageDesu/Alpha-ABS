@@ -1,6 +1,19 @@
 # Version 1.2  
 ## Builds:  
 
+**996** - (24.11.2018)  
+> - fixed bug: Items Notify `stayTime` JSON parameter not works  
+> - add new Items Notify JSON parameter `margin` - space between lines  
+> - new UI elements - UI Buttons [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/UI-Buttons-JSON-Configuration)
+> - added many new `uAPI Script calls` [Check WiKi](https://github.com/KageDesu/Alpha-ABS/wiki/Script--Calls-API)  
+
+```diff
++ Only for Patrons
+```
+
+> - Custom UI Buttons
+
+
 **990** - (18.11.2018)
 > - fixed small issues
 > - new UI elements customization system through JSON files
