@@ -1,0 +1,62 @@
+[
+    {
+        "linesNavigation": 2,
+        "linesMargin": 0,
+        "statesPerLine": 4,
+        "statesNavigation": 3,
+        "statesMargin": -14,
+        "stateTimeTextPosition": 0,
+        "stateAfterActionText": "A"
+    },
+    {
+        "id": 0,
+        "fontName": null,
+        "fontSize": 18,
+        "italy": false,
+        "fontOutlineWidth": 2,
+        "fontOutlineColor": "#000000",
+        "iconSize": 30,
+        "changeFontSize": 20,
+        "colorA": null,
+        "colorB": null,
+        "opacity": 0,
+        "gType": 0,
+        "textColor": "#caca00",
+        "addToHeight": 0,
+        "addToWidth": 0
+    },
+    {
+        "id": 1,
+        "fontName": null,
+        "fontSize": 22,
+        "italy": false,
+        "fontOutlineWidth": 2,
+        "fontOutlineColor": "#000000",
+        "iconSize": 30,
+        "changeFontSize": 22,
+        "colorA": null,
+        "colorB": null,
+        "opacity": 0,
+        "gType": 0,
+        "textColor": "#d533b0",
+        "addToHeight": 0,
+        "addToWidth": 0
+    },
+    {
+        "id": 2,
+        "fontName": "Consolas",
+        "fontSize": 20,
+        "italy": true,
+        "fontOutlineWidth": 2,
+        "fontOutlineColor": "#000000",
+        "iconSize": 30,
+        "changeFontSize": 22,
+        "colorA": null,
+        "colorB": null,
+        "opacity": 0,
+        "gType": 0,
+        "textColor": "#44bb2b",
+        "addToHeight": 0,
+        "addToWidth": 0
+    }
+]

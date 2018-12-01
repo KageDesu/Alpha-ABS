@@ -1,0 +1,64 @@
+[
+    {
+        "navigation": 1,
+        "anchor": 1,
+        "stayTime": 40,
+        "margin": 0
+    },
+    {
+        "fontName": null,
+        "fontSize": 18,
+        "italy": false,
+        "fontOutlineWidth": 2,
+        "fontOutlineColor": "#000000",
+        "iconSize": 26,
+        "changeFontSize": 22,
+        "colorA": "#000000",
+        "colorB": null,
+        "opacity": 100,
+        "gType": 0,
+        "textColor": "#ffffff"
+    },
+    {
+        "fontName": null,
+        "fontSize": 18,
+        "italy": false,
+        "fontOutlineWidth": 2,
+        "fontOutlineColor": "#000000",
+        "iconSize": 26,
+        "changeFontSize": 22,
+        "colorA": "#000000",
+        "colorB": null,
+        "opacity": 100,
+        "gType": 0,
+        "textColor": "#800080"
+    },
+    {
+        "fontName": null,
+        "fontSize": 20,
+        "italy": false,
+        "fontOutlineWidth": 3,
+        "fontOutlineColor": "#000000",
+        "iconSize": 26,
+        "changeFontSize": 22,
+        "colorA": "#000000",
+        "colorB": null,
+        "opacity": 100,
+        "gType": 0,
+        "textColor": "#caca00"
+    },
+    {
+        "fontName": null,
+        "fontSize": 18,
+        "italy": false,
+        "fontOutlineWidth": 2,
+        "fontOutlineColor": "#000000",
+        "iconSize": 26,
+        "changeFontSize": 22,
+        "colorA": "#000000",
+        "colorB": null,
+        "opacity": 100,
+        "gType": 0,
+        "textColor": "#ffffff"
+    }
+]
