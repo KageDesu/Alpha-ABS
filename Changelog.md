@@ -1,6 +1,16 @@
 # Version 1.2  
 ## Builds:  
 
+**998** - (01.12.2018)  
+> - new UI elements - UI Status Panel [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/Status-Panel-JSON-Configuration)
+
+```diff
++ Only for Patrons
+```
+
+> - Custom UI styles for states  
+
+
 **996** - (24.11.2018)  
 > - fixed bug: Items Notify `stayTime` JSON parameter not works  
 > - add new Items Notify JSON parameter `margin` - space between lines  
