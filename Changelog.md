@@ -1,6 +1,25 @@
 # Version 1.2  
 ## Builds:  
 
+**1018** [Test only] - (21.01.2019)
+> - new UI element - Actor Cast progress bars
+> - improved pathfinding algorithm  
+> - some fixes and small changes  
+
+**1015** [Test only] - (15.01.2019)  
+> - new UI element - Target panel
+> - new UI element - Target states panel
+> - fixed bug in default UI Buttons settings
+> - new .JSON configuration file: `EnemyStatusPanelSettings.json`
+> - new parameters for .JSON file StatesPanelSettings: `maxLines`, `textVisible`
+> - new parameters for Enemies: `faceName`, `faceIndex` - used for image *(optional)*
+> - many fixes and small changes  
+
+**1010** [Test only] - (9.01.2019)  
+> - new UI element - Actor Panel  
+> - fixed bug with target selection keys  
+> - many fixes and small changes
+
 **998** - (01.12.2018)  
 > - new UI elements - UI Status Panel [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/Status-Panel-JSON-Configuration)
 
