@@ -28,7 +28,7 @@ Active battle system "Alpha" for RPG Maker MV.
 (Attribution Non-Commercial Share Alike, cc by-nc-sa)   
 
 
-**For using plugin in commercial project you need purchase license for 18$.**  
+**For using plugin in commercial project you need purchase license for 24$.**  
 **If you want buy commercial license, email me at pheonix17@mail.ru**  
 
 ### If you like it
