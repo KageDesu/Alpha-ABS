@@ -1,6 +1,31 @@
 # Version 1.2  
 ## Builds:  
 
+**1036** - (15.03.2019)
+> - fixed bug : black rain
+> - fixed bug: Skills with `<noTarget>` and `<castTime>` caused an error _Target too far_
+> - new plugin command `ABS spawnV [Id] [varID] [varID]` - spawn Enemy with Id in X and Y from Variables
+> - new plugin parameter `Use advanced pathfinding?`
+> - new plugin parameter `Auto bind new items to the Skill panel?`
+> - many small changes
+
+```diff
++ Only for Patrons
+```
+
+> - new UI element - Skill information window  
+[Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/Skill-Information-Window-JSON-Configuration)
+> - new plugin parameter `Use old style skill info window?`
+
+**1030** [Test only] - (21.02.2019)
+> - new UI element - Notifications
+> - new UI element - Enemy Cast Bar
+> - new UI element - Weapon cool down timer
+> - many small changes
+
+**1024** [Test only] - (9.02.2019)
+> - new UI element - Spells panel
+
 **1018** [Test only] - (21.01.2019)
 > - new UI element - Actor Cast progress bars
 > - improved pathfinding algorithm  
@@ -21,7 +46,7 @@
 > - many fixes and small changes
 
 **998** - (01.12.2018)  
-> - new UI elements - UI Status Panel [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/Status-Panel-JSON-Configuration)
+> - new UI elements - UI Status Panel  [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/Status-Panel-JSON-Configuration)
 
 ```diff
 + Only for Patrons
