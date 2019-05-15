@@ -1,0 +1,28 @@
+[
+    {
+        "position": [
+            8,
+            4
+        ],
+        "visible": true,
+        "backgroundImg": "ActorPortraitBackground",
+        "foregroundImg": "ActorPortraitForeground",
+        "maskImg": "ActorPortraitMask",
+        "useMask": true,
+        "flipFace": true,
+        "faceSize": 72
+    },
+    {
+        "position": [
+            442,
+            16
+        ],
+        "visible": true,
+        "backgroundImg": "EnemyPortraitBackground",
+        "foregroundImg": "EnemyPortraitForeground",
+        "maskImg": "EnemyPortraitMask",
+        "useMask": true,
+        "flipFace": false,
+        "faceSize": 54
+    }
+]

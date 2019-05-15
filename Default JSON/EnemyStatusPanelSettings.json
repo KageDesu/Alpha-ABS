@@ -1,0 +1,34 @@
+[
+    {
+        "position": [
+            450,
+            57
+        ],
+        "linesNavigation": 2,
+        "linesMargin": 0,
+        "statesPerLine": 6,
+        "maxLines": 1,
+        "statesNavigation": 3,
+        "statesMargin": -30,
+        "stateTimeTextPosition": 0,
+        "stateAfterActionText": "A"
+    },
+    {
+        "id": 0,
+        "fontName": null,
+        "textVisible": false,
+        "fontSize": 12,
+        "italy": false,
+        "fontOutlineWidth": 2,
+        "fontOutlineColor": "#000000",
+        "iconSize": 18,
+        "changeFontSize": 12,
+        "colorA": null,
+        "colorB": null,
+        "opacity": 0,
+        "gType": 0,
+        "textColor": "#caca00",
+        "addToHeight": 0,
+        "addToWidth": 0
+    }
+]

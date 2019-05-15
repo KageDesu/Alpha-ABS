@@ -1,0 +1,63 @@
+[{
+    "position": [
+        4,
+        52
+    ],
+    "foregroundImg": "WeaponIconForeground",
+    "iconSize": 26,
+    "defaultIcon": 77,
+    "iconMarginX": 0,
+    "iconMarginY": 0,
+    "visible": true,
+    "textZoneWidth": 50,
+    "textZoneHeight": 30,
+    "text": {
+        "visible": true,
+        "marginX": 5,
+        "marginY": 14,
+        "position": "left",
+        "outlineColor": null,
+        "outlineWidth": 1,
+        "fontFace": "KhmerUIb",
+        "textColor": "#e0cfbf",
+        "fontSize": 14,
+        "fontItalic": false
+    },
+    "disabledTextColor": "#F00000",
+    "text2ZoneWidth": 30,
+    "text2ZoneHeight": 30,
+    "text2": {
+        "visible": true,
+        "marginX": 6,
+        "marginY": -6,
+        "position": "right",
+        "outlineColor": null,
+        "outlineWidth": 1,
+        "fontFace": "KhmerUIb",
+        "textColor": "#cfc971",
+        "fontSize": 14,
+        "fontItalic": false
+    },
+    "disabledText2Color": "#F00000",
+    "specialText2Color": "#53b2f4",
+    "hover": {
+        "color": "#FFFFFF",
+        "power": 1.2
+    },
+    "pulse": {
+        "power": 2,
+        "duration": 20,
+        "colorA": "#008000",
+        "colorB": "#8080FF"
+    },
+    "recharge": {
+        "width": 22,
+        "height": 22,
+        "marginX": 2,
+        "marginY": 2,
+        "opacity": 150,
+        "colorA": null,
+        "colorB": null,
+        "colorC": null
+    }
+}]

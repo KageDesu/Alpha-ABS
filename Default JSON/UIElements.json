@@ -1,0 +1,146 @@
+[{
+        "id": "empty",
+        "position": [
+            0,
+            0
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1,
+        "textZoneWidth": 100,
+        "textZoneHeight": 30,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 3,
+            "fontFace": null,
+            "textColor": "#FFFFFF",
+            "fontSize": 16,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "ActorLevel",
+        "position": [
+            56,
+            52
+        ],
+        "visible": true,
+        "backgroundImg": "ActorLevelCircle",
+        "backgroundOpacity": 210,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#d5b88e",
+            "fontSize": 12,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "EnemyLevel",
+        "position": [
+            434,
+            54
+        ],
+        "visible": true,
+        "backgroundImg": "EnemyLevelCircle",
+        "backgroundOpacity": 210,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#d5b88e",
+            "fontSize": 10,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "ActorInBattleIcon",
+        "position": [
+            56,
+            52
+        ],
+        "visible": true,
+        "backgroundImg": "InBattleIcon2",
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": {
+            "visible": false,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 3,
+            "fontFace": null,
+            "textColor": "#FFFFFF",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "EnemyName",
+        "position": [
+            300,
+            10
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": 140,
+        "textZoneHeight": 20,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "right",
+            "outlineColor": "#000000",
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#987e24",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    }
+]

@@ -1,0 +1,184 @@
+[
+    {
+        "id": "hp",
+        "position": [
+            78,
+            20
+        ],
+        "visible": true,
+        "fillImg": "HPGaugeFill",
+        "foregroundImg": "HPGaugeForeground",
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 200,
+        "maskImg": "HPGaugeMask",
+        "useMask": true,
+        "text": {
+            "visible": true,
+            "marginX": 10,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Acme",
+            "textColor": "#cabeb2",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "mp",
+        "position": [
+            80,
+            42
+        ],
+        "visible": true,
+        "fillImg": "MPGaugeFill",
+        "foregroundImg": "MPGaugeForeground",
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 200,
+        "maskImg": "MPGaugeMask",
+        "useMask": true,
+        "text": {
+            "visible": true,
+            "marginX": 10,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Acme",
+            "textColor": "#cabeb2",
+            "fontSize": 12,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "tp",
+        "position": [
+            68,
+            60
+        ],
+        "visible": true,
+        "fillImg": "TPGaugeFill",
+        "foregroundImg": "MPGaugeForeground",
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 200,
+        "maskImg": "MPGaugeMask",
+        "useMask": true,
+        "text": {
+            "visible": true,
+            "marginX": 20,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Acme",
+            "textColor": "#cabeb2",
+            "fontSize": 12,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "hpE",
+        "position": [
+            300,
+            28
+        ],
+        "visible": true,
+        "fillImg": "EnemyHPGaugeFill",
+        "foregroundImg": "EnemyHPGaugeForeground",
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 100,
+        "maskImg": "EnemyHPGaugeMask",
+        "useMask": true,
+        "text": {
+            "visible": true,
+            "marginX": -10,
+            "marginY": 0,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#cabeb2",
+            "fontSize": 12,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "cb",
+        "position": [
+            24,
+            18
+        ],
+        "visible": true,
+        "fillImg": "PlayerCastGaugeForeground",
+        "foregroundImg": null,
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 120,
+        "maskImg": null,
+        "useMask": false,
+        "text": {
+            "visible": false,
+            "marginX": 10,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Acme",
+            "textColor": "#cabeb2",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "cbE",
+        "position": [
+            14,
+            10
+        ],
+        "visible": true,
+        "fillImg": "EnemyCastGaugeForeground",
+        "foregroundImg": null,
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 120,
+        "maskImg": null,
+        "useMask": false,
+        "text": {
+            "visible": false,
+            "marginX": 10,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Acme",
+            "textColor": "#cabeb2",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "miniHp",
+        "position": [
+            -27,
+            -8
+        ],
+        "visible": true,
+        "fillImg": "MiniHPGaugeFill",
+        "foregroundImg": null,
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 120,
+        "maskImg": null,
+        "useMask": false,
+        "text": {
+            "visible": false,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#cabeb2",
+            "fontSize": 8,
+            "fontItalic": false
+        }
+    }
+]

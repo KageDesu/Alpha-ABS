@@ -1,0 +1,77 @@
+[
+    {
+        "threadUpdateMS": 30,
+        "maxItems": 8,
+        "visibleWhenEmpty": true
+    },
+    {
+        "position": [
+            "(Graphics.width / 2) - 160",
+            "Graphics.height - 44"
+        ],
+        "positionInMenu": [
+            "(Graphics.width / 2) - 160",
+            "Graphics.height - 44"
+        ],
+        "itemSize": 39,
+        "itemsMargin": 1,
+        "isVertical": false,
+        "itemsAlign": 0,
+        "visible": true
+    },
+    {
+        "backgroundImg": "SkillSlot",
+        "iconSize": 30,
+        "iconMarginX": 5,
+        "iconMarginY": 4,
+        "textZoneWidth": 50,
+        "textZoneHeight": 30,
+        "visible": true,
+        "text": {
+            "visible": true,
+            "marginX": 5,
+            "marginY": 14,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 1,
+            "fontFace": "KhmerUIb",
+            "textColor": "#e0cfbf",
+            "fontSize": 14,
+            "fontItalic": false
+        },
+        "disabledTextColor": "#F00000",
+        "text2ZoneWidth": 30,
+        "text2ZoneHeight": 30,
+        "text2": {
+            "visible": true,
+            "marginX": 6,
+            "marginY": -6,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 1,
+            "fontFace": "KhmerUIb",
+            "textColor": "#cfc971",
+            "fontSize": 14,
+            "fontItalic": false
+        },
+        "disabledText2Color": "#F00000",
+        "specialText2Color": "#53b2f4",
+        "hover": {
+            "color": "#FFFFFF",
+            "power": 1.2
+        },
+        "pulse": {
+            "power": 4,
+            "duration": 20,
+            "colorA": "#008000",
+            "colorB": "#8080FF"
+        },
+        "recharge": {
+            "width": 32,
+            "height": 32,
+            "marginX": 5,
+            "marginY": 4,
+            "opacity": 80
+        }
+    }
+]

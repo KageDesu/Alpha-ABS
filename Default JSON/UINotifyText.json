@@ -1,0 +1,31 @@
+[{
+    "position": [
+        "(Graphics.width / 2) -220",
+        510
+    ],
+    "visible": true,
+    "backgroundImg": "NotifyBackground",
+    "topImg": "NotifySeparator",
+    "topImgMarginX": 0,
+    "topImgMarginY": -7,
+    "bottomImg": "NotifySeparator",
+    "bottomImgMarginX": 0,
+    "bottomImgMarginY": 28,
+    "textZoneWidth": 450,
+    "textZoneHeight": 32,
+    "text": {
+        "visible": true,
+        "marginX": 0,
+        "marginY": 0,
+        "position": "center",
+        "outlineColor": null,
+        "outlineWidth": 2,
+        "fontFace": "KhmerUI",
+        "textColor": "#dea878",
+        "fontSize": 16,
+        "fontItalic": false
+    },
+    "textAppearDuration": 30,
+    "appearDuration": 5,
+    "notifyShowDuration": 120
+}]

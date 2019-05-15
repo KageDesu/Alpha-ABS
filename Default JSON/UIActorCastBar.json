@@ -1,0 +1,58 @@
+[
+    {
+        "position": [
+            "(Graphics.width / 2) - 105",
+            "Graphics.height - 120"
+        ],
+        "visible": true,
+        "backgroundImg": "PlayerCastBarBackground",
+        "gaugeName": "cb",
+        "iconSize": 22,
+        "iconMarginX": 0,
+        "iconMarginY": 2,
+        "valuesSeparateSymbol": "/ ",
+        "secondsSymbol": "s",
+        "textSkillName": {
+            "textBoxWidth": 120,
+            "textBoxHeight": 18,
+            "visible": true,
+            "marginX": 24,
+            "marginY": -2,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#e0cfbf",
+            "fontSize": 14,
+            "fontItalic": false
+        },
+        "textValue1": {
+            "textBoxWidth": 30,
+            "textBoxHeight": 18,
+            "visible": true,
+            "marginX": 150,
+            "marginY": -2,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#e0cfbf",
+            "fontSize": 14,
+            "fontItalic": false
+        },
+        "textValue2": {
+            "textBoxWidth": 30,
+            "textBoxHeight": 18,
+            "visible": true,
+            "marginX": 178,
+            "marginY": 0,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#9c8d7f",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    }
+]

@@ -1,5 +1,8 @@
 [
     {
+        "position": ["Graphics.width - 10", "Graphics.height / 2"],
+        "visible": true,
+        "goldIconIndex": 314,
         "navigation": 1,
         "anchor": 1,
         "stayTime": 40,

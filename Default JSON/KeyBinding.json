@@ -1,0 +1,30 @@
+{
+    "common": {
+        "TargetSelect": "q",
+        "NearestTargetSelect": "f",
+        "FirearmReload": "r",
+        "Attack": "a",
+        "Jump": "s",
+        "Rotate": "d",
+        "Weapons": "e",
+        "Follow": "w",
+        "AutoRotate": "control"
+    },
+    "weaponCircle": {
+        "TopSlot": "w",
+        "BottomSlot": "s",
+        "RightSlot": "d",
+        "LeftSlot": "a"
+    },
+    "SkillsPanel": {
+        "slot1": "1",
+        "slot2": "2",
+        "slot3": "3",
+        "slot4": "4",
+        "slot5": "5",
+        "slot6": "6",
+        "slot7": "7",
+        "slot8": "8"
+    }
+}
+    

@@ -31,7 +31,7 @@
         "mapEventOnClick": 0,
         "scriptOnClick": "uAPI.doFollow",
         "condition": null,
-        "conditionForDisable": "!uAPI.isFollowAllowed"
+        "conditionForDisable": "!uAPI.isFollowAllowed || $gamePlayer.target() == null"
     },
     {
         "name": "rotate",
@@ -63,9 +63,9 @@
         "disabledImg": "Button_Weapons_03",
         "commonEventOnClick": 0,
         "mapEventOnClick": 0,
-        "scriptOnClick": "uAPI.doChangeWeapon",
+        "scriptOnClick": "uAPI.doChangeWeapons",
         "condition": null,
-        "conditionForDisable": "!uAPI.isWeaponsAllowed"
+        "conditionForDisable": "!uAPI.isWeaponsAllowed || !$gamePlayer.isFavWeapExists()"
     },
     {
         "name": "attack",
