@@ -1,6 +1,34 @@
 # Version 1.2  
 ## Builds:  
 
+**1044** - (09.05.2019)  
+> - all UI elements settings are transferred from plugin parameters to JSON files  
+> - Now, Firearm panel can be modified, see `FirearmPanel.json`  
+> - New _API commands_ for UI Spell Panel [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Script--Calls-API )
+> - new plugin parameter `Shake screen when player get damage?`  
+> - New feature: **Auto rotate player to mouse**, when <kbd>CTRL</kbd> is pressed. (To change key, see `KeyBinding.json`)
+
+![](https://c10.patreonusercontent.com/3/eyJwIjoxfQ%3D%3D/patreon-media/p/post/26730747/a54bca1c2c904a7b859c889795f02827/1.gif?token-time=1559088000&token-hash=1nhxrhiWlafgms9GhgwaMlUZCAx73f44wsWnP2aliKU%3D)
+
+> - some fixes and small changes  
+> - improved mouse tracking and mouse position determination  
+> - new ABS parameter `<explosive:1>` - sllow create explosive effect, when the spell reach target **(Only for < ABS:1> skills)**
+
+![](https://c10.patreonusercontent.com/3/eyJwIjoxfQ%3D%3D/patreon-media/p/post/26730747/d0291130fac046719c37b3e9e04dd04b/1.gif?token-time=1559088000&token-hash=K3qnkRPoGlHWpocZAnOXvwvfs2sizCCS1PDYZBFJf6g%3D)
+
+![](https://c10.patreonusercontent.com/3/eyJwIjoxfQ%3D%3D/patreon-media/p/post/26730747/2b5db43cbb2a448bbe27d07df2b274c4/1.png?token-time=1559088000&token-hash=8-5Vq7-kxOrZ6XtGm9kFNQyBGpLN7CzIcHkG4GctiR4%3D)
+
+> - New feature: Extended error messages (like Yanfly's Engine plugin)  and error logs in file
+
+```diff
++ Only for Patrons
+```
+> - New ABS Parameter for enemies `<HPBarStyle: StyleID>` - allow create custom HP bars on map for each enemy.
+
+![](https://c10.patreonusercontent.com/3/eyJwIjoxfQ%3D%3D/patreon-media/p/post/26730747/8a6fbc848dd34be28da0e2c2e19f8e6a/1.png?token-time=1559088000&token-hash=RJ6BQsN2FmwkL3JMt1F1Pb5PuWptJFEzTvmmx9YFlEo%3D)
+
+
+
 **1036** - (15.03.2019)
 > - fixed bug : black rain
 > - fixed bug: Skills with `<noTarget>` and `<castTime>` caused an error _Target too far_
