@@ -9,7 +9,7 @@ Active battle system "Alpha" for RPG Maker MV.
 > **Required MV 1.6.1 and above**  
 
 >State: **Stable**   
->Last public build: 980 (28.10.2018)  
+>Last public build: 1044 (15.05.2019)  
 >Last private build: 1044 (09.05.2019)  
 >[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Changelog.md)  
 
@@ -28,7 +28,7 @@ Active battle system "Alpha" for RPG Maker MV.
 (Attribution Non-Commercial Share Alike, cc by-nc-sa)   
 
 
-**For using plugin in commercial project you need purchase license for 24$.**  
+**For using plugin in commercial project you need purchase license for 28$.**  
 **If you want buy commercial license, email me at pheonix17@mail.ru**  
 
 ### If you like it
