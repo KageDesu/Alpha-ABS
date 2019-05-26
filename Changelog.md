@@ -1,6 +1,19 @@
 # Version 1.2  
 ## Builds:  
 
+**1050** - (26.05.2019)  
+> - **fixed critical bug**: memory leak when transferring between maps
+> - plugin .js file size optimization (removed unused graphic data)
+> - improved memory using. Now Alpha ABS uses 2-3 times less memory
+> - fixed bug: select 'Optimize' equipment in menu cause error in console and show console  
+> - fixed bug: player rotate to target or mouse when you cast `noTarget` skill
+> - fixed glitch: message window appear below UI Buttons
+> - Now, console not will appears automatically when no critical error occurs
+> - fixed bug: weapon icon overlap previous in favorite weapon settings menu
+> - fixed bug: sometimes enemy could be spawned the dead at start
+> - **New feature: Motion System 2** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Motion-System-2)
+> - some other fixes and small changes
+
 **1044** - (09.05.2019)  
 > - all UI elements settings are transferred from plugin parameters to JSON files  
 > - Now, Firearm panel can be modified, see `FirearmPanel.json`  
