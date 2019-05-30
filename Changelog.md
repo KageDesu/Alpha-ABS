@@ -1,6 +1,25 @@
 # Version 1.2  
 ## Builds:  
 
+**1055** - (30.05.2019)  
+> - fixed bug: Motion System 2 (MS2) - last frame was not played in idle weapon animation
+> - fixed bug: game crush when select follower with mini HP bar option  
+> - fixed bug: uAPI.hide not work correctly  
+> - Now, uAPI.showControls and uAPI.hideControls show\hide UI Buttons
+> - fixed bug: Spell Panel displayed at half in menu with YEP_ItemCore plugin
+> - fixed bug: glitch with MS2 between ABS and not ABS map transferring
+> - fixed bug: ABS parameter for enemies <agressive:X> don't work properly
+> - fixed bug: change favorite weapon when main weapon is still recharging
+> - fixed bug: when you change favorite weapon from `firearm` to basic, UI Firearm panel is not gone
+> - improved MS2: now works with followers
+> - some other fixes and small changes
+
+```diff
++ Only for Patrons
+```
+> - **New feature: Visual Equipment** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Visual-Equipment)
+
+
 **1050** - (26.05.2019)  
 > - **fixed critical bug**: memory leak when transferring between maps
 > - plugin .js file size optimization (removed unused graphic data)
