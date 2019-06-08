@@ -1,6 +1,12 @@
 # Version 1.2  
 ## Builds:  
 
+**1058** - (07.06.2019)  
+> - **New feature: Defense Stance** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Defense-Stance-(Shield-Block))  
+> - fixed bug: sometimes enemies not attack (not see) player after reborn or exit from menu   
+> - fixed compatibility issue: `Visual Equipment` not works with `YEP_ItemCore`  
+> - some other fixes and small changes  
+
 **1055** - (30.05.2019)  
 > - fixed bug: Motion System 2 (MS2) - last frame was not played in idle weapon animation
 > - fixed bug: game crush when select follower with mini HP bar option  

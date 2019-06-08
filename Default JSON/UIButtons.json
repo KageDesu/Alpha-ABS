@@ -83,5 +83,29 @@
         "scriptOnClick": "uAPI.doAttack",
         "condition": null,
         "conditionForDisable": "!uAPI.isCanAttack"
+    },
+    {
+        "name": "shield",
+        "position": [
+            80,
+            "Graphics.height - 164"
+        ],
+        "visible": false,
+        "isCheckAlpha": true,
+        "labelText": [
+            "Shield",
+            22,
+            0
+        ],
+        "isOverrideClickInput": false,
+        "mainImg": "Button_Shield_00",
+        "hoverImg": "Button_Shield_01",
+        "pressedImg": "Button_Shield_02",
+        "disabledImg": "Button_Shield_03",
+        "commonEventOnClick": 0,
+        "mapEventOnClick": 0,
+        "scriptOnClick": "uAPI.doUseShield",
+        "condition": "!uAPI.isCanUseShield",
+        "conditionForDisable": "!uAPI.isCanUseShieldNow"
     }
 ]

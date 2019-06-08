@@ -1,0 +1,58 @@
+[
+    {
+        "position": [
+            14,
+            "Graphics.height - 250"
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "gaugeName": "shieldTimer",
+        "iconSize": 22,
+        "iconMarginX": 0,
+        "iconMarginY": 2,
+        "valuesSeparateSymbol": "/ ",
+        "secondsSymbol": "s",
+        "textSkillName": {
+            "textBoxWidth": 86,
+            "textBoxHeight": 18,
+            "visible": true,
+            "marginX": 26,
+            "marginY": 3,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#D2D8DB",
+            "fontSize": 14,
+            "fontItalic": false
+        },
+        "textValue1": {
+            "textBoxWidth": 30,
+            "textBoxHeight": 18,
+            "visible": false,
+            "marginX": 80,
+            "marginY": 3,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#D2D8DB",
+            "fontSize": 14,
+            "fontItalic": false
+        },
+        "textValue2": {
+            "textBoxWidth": 30,
+            "textBoxHeight": 18,
+            "visible": false,
+            "marginX": 178,
+            "marginY": 0,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#9c8d7f",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    }
+]
