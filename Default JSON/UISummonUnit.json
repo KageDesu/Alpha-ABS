@@ -1,0 +1,218 @@
+[
+    {
+        "id": "SummonTitle",
+        "position": [
+            64,
+            90
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": 70,
+        "textZoneHeight": 24,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": "#000000",
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#a5a723",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "SummonIcon",
+        "position": [
+            138,
+            88
+        ],
+        "visible": true,
+        "backgroundImg": "SummonIcon",
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "UnitMode_Follow",
+        "position": [
+            12,
+            128
+        ],
+        "visible": true,
+        "backgroundImg": "EnemyLevelCircle",
+        "backgroundOpacity": 255,
+        "foregroundImg": "SummonMode_Follow",
+        "foregroundOpacity": 255,
+        "foregroundMarginX": 5,
+        "foregroundMarginY": 4,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "UnitMode_Looting",
+        "position": [
+            12,
+            128
+        ],
+        "visible": true,
+        "backgroundImg": "EnemyLevelCircle",
+        "backgroundOpacity": 255,
+        "foregroundImg": "SummonMode_Looting",
+        "foregroundOpacity": 255,
+        "foregroundMarginX": 5,
+        "foregroundMarginY": 4,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "UnitMode_Support",
+        "position": [
+            12,
+            128
+        ],
+        "visible": true,
+        "backgroundImg": "EnemyLevelCircle",
+        "backgroundOpacity": 255,
+        "foregroundImg": "SummonMode_Support",
+        "foregroundOpacity": 255,
+        "foregroundMarginX": 5,
+        "foregroundMarginY": 4,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "UnitMode_Battle",
+        "position": [
+            12,
+            128
+        ],
+        "visible": true,
+        "backgroundImg": "EnemyLevelCircle",
+        "backgroundOpacity": 255,
+        "foregroundImg": "SummonMode_Battle",
+        "foregroundOpacity": 255,
+        "foregroundMarginX": 5,
+        "foregroundMarginY": 4,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "UnitBeh_AttackAll",
+        "position": [
+            14,
+            102
+        ],
+        "visible": true,
+        "backgroundImg": "PetBehBackground",
+        "backgroundOpacity": 255,
+        "foregroundImg": "SummonBeh_AttackAll_icon",
+        "foregroundOpacity": 255,
+        "foregroundMarginX": 4,
+        "foregroundMarginY": 4,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "UnitBeh_AttackTarget",
+        "position": [
+            14,
+            102
+        ],
+        "visible": true,
+        "backgroundImg": "PetBehBackground",
+        "backgroundOpacity": 255,
+        "foregroundImg": "SummonBeh_AttackTarget_Icon",
+        "foregroundOpacity": 255,
+        "foregroundMarginX": 4,
+        "foregroundMarginY": 4,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "UnitBeh_Protect",
+        "position": [
+            14,
+            102
+        ],
+        "visible": true,
+        "backgroundImg": "PetBehBackground",
+        "backgroundOpacity": 255,
+        "foregroundImg": "SummonBeh_Protect_Icon",
+        "foregroundOpacity": 255,
+        "foregroundMarginX": 4,
+        "foregroundMarginY": 4,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "SummonName",
+        "position": [
+            0,
+            0
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": 64,
+        "textZoneHeight": 24,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": "#000000",
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#94a136",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    }
+]

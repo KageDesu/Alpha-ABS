@@ -55,7 +55,7 @@
         "position": ["Graphics.width - 76", "Graphics.height - 114"],
         "visible": true,
         "isCheckAlpha": true,
-        "labelText": ["Weapons", 22, 0],
+        "labelText": ["Weapons", 20, 0],
         "isOverrideClickInput": false,
         "mainImg": "Button_Weapons_00",
         "hoverImg": "Button_Weapons_01",
@@ -107,5 +107,26 @@
         "scriptOnClick": "uAPI.doUseShield",
         "condition": "!uAPI.isCanUseShield",
         "conditionForDisable": "!uAPI.isCanUseShieldNow"
+    },
+    {
+        "name": "summon",
+        "position": ["Graphics.width - 76", "Graphics.height - 194"],
+        "visible": false,
+        "isCheckAlpha": true,
+        "labelText": [
+            "Behaviour",
+            18,
+            0
+        ],
+        "isOverrideClickInput": false,
+        "mainImg": "Button_Summon_00",
+        "hoverImg": "Button_Summon_01",
+        "pressedImg": "Button_Summon_02",
+        "disabledImg": "Button_Summon_03",
+        "commonEventOnClick": 0,
+        "mapEventOnClick": 0,
+        "scriptOnClick": "uAPI.showSummonMenu",
+        "condition": "!uAPI.isSummonUnitExist",
+        "conditionForDisable": null
     }
 ]

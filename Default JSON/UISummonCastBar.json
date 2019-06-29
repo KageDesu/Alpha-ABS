@@ -1,0 +1,58 @@
+[
+    {
+        "position": [
+            68,
+            128
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "gaugeName": "cbP",
+        "iconSize": 16,
+        "iconMarginX": 94,
+        "iconMarginY": 2,
+        "valuesSeparateSymbol": "/ ",
+        "secondsSymbol": "s",
+        "textSkillName": {
+            "textBoxWidth": 80,
+            "textBoxHeight": 16,
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#e0cfbf",
+            "fontSize": 12,
+            "fontItalic": false
+        },
+        "textValue1": {
+            "textBoxWidth": 30,
+            "textBoxHeight": 18,
+            "visible": false,
+            "marginX": 150,
+            "marginY": -2,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#e0cfbf",
+            "fontSize": 14,
+            "fontItalic": false
+        },
+        "textValue2": {
+            "textBoxWidth": 30,
+            "textBoxHeight": 18,
+            "visible": false,
+            "marginX": 178,
+            "marginY": 0,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#9c8d7f",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    }
+]

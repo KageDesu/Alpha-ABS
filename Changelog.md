@@ -1,6 +1,21 @@
 # Version 1.2  
 ## Builds:  
 
+**1076** - (29.06.2019)  
+> - **New feature: Summon System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Summon-System)
+> - new plugin parameter `Show player PopUps` - for enable/disable states messages on player portrait  
+> - new ABS parameter `<motionWait>` - for weapons with Motion System 2.  
+>> If `<motionWait:1>` - player can't move and perform next attack while attack animation is playing  (default 0)
+> - New default key for `Defense Stance` activate - <kbd>v</kbd>
+> - fixed bug with Party members and enemies rage calculations - can cause FPS drop in battles  
+> - fixed wrong animation frames sequence in Motions System 2 weapon animation
+> - fixed bug when sometimes AI turned off after change map (or call menu)  
+> - fixed some issues with `Defense Stance` shield state  
+> - fixed bug with Auto attack mode and `Defense Stance`  
+> - fixed bug with `<speed>` states (no acceleration)
+> - fixed bug with map grass and `Visual Equipment`  (wrong sprite order)
+> - some other fixes and small changes  
+
 **1058** - (07.06.2019)  
 > - **New feature: Defense Stance** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Defense-Stance-(Shield-Block))  
 > - fixed bug: sometimes enemies not attack (not see) player after reborn or exit from menu   

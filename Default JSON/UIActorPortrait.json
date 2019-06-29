@@ -24,5 +24,18 @@
         "useMask": true,
         "flipFace": false,
         "faceSize": 54
+    },
+    {
+        "position": [
+            24,
+            108
+        ],
+        "visible": true,
+        "backgroundImg": "PetPortraitBackground",
+        "foregroundImg": "PetPortraitForeground",
+        "maskImg": "PetPortraitMask",
+        "useMask": true,
+        "flipFace": true,
+        "faceSize": 36
     }
 ]
