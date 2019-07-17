@@ -1,6 +1,25 @@
 # Version 1.2  
 ## Builds:  
 
+**1082** - (17.07.2019)  
+> - **New feature: Improved Interpreter for ABS events** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/ABS-Events-Commands)
+> - improved **Visual Equipment** - now player can equip more than one equipment with <visual> parameter
+> - added ability to set summon and dismiss animations for **Summon Monster** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Summon-System)  
+>> `<summonStartAnimId:X>`  
+>> `<summonEndAnimId:X>`  
+>> This parameters for summon **state** Note!, not monster  
+> - Now, if you forgot to copy (update) `ABS JSON files` (data/AABS), the game will tell you about it  
+> - fixed bug: `<cEonEnd>` not working  
+> - fixed bug: `visible` parameter for UI Buttons not working  
+> - some other fixes and small changes  
+
+
+```diff
++ Only for Patrons
+```
+> - **New feature: Hints for Events** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Hints-for-Events)
+> - new plugin parameter `AI Think Interval` - The lower the value, the AI thinks faster and less game performance
+
 **1076** - (29.06.2019)  
 > - **New feature: Summon System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Summon-System)
 > - new plugin parameter `Show player PopUps` - for enable/disable states messages on player portrait  
