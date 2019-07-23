@@ -1,6 +1,20 @@
 # Version 1.2  
 ## Builds:  
 
+**1086** - (23.07.2019)
+
+> - fixed bug: issue with open menu by <kbd>ESC</kbd> and **Hints for Events**  
+> - **Hints for Events** system optimization for more performance on big maps  
+> - improvements for **Summon System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Summon-System)
+>> - new parameters `<sBattleMode>`, `<sChangeModeAllowed>` - see wiki for more information  
+> - some other fixes and small changes  
+
+```diff
++ Only for Patrons
+```
+> - **New feature: Mini messages for Events** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Events-Mini-Messages)  
+
+
 **1082** - (17.07.2019)  
 > - **New feature: Improved Interpreter for ABS events** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/ABS-Events-Commands)
 > - improved **Visual Equipment** - now player can equip more than one equipment with <visual> parameter
