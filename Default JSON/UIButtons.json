@@ -90,7 +90,7 @@
             80,
             "Graphics.height - 164"
         ],
-        "visible": false,
+        "visible": true,
         "isCheckAlpha": true,
         "labelText": [
             "Shield",
@@ -111,7 +111,7 @@
     {
         "name": "summon",
         "position": ["Graphics.width - 76", "Graphics.height - 194"],
-        "visible": false,
+        "visible": true,
         "isCheckAlpha": true,
         "labelText": [
             "Behaviour",
@@ -126,7 +126,31 @@
         "commonEventOnClick": 0,
         "mapEventOnClick": 0,
         "scriptOnClick": "uAPI.showSummonMenu",
-        "condition": "!uAPI.isSummonUnitExist",
+        "condition": "!uAPI.isCanChangeSummonUnitMode",
+        "conditionForDisable": null
+    },
+    {
+        "name": "unsummon",
+        "position": [
+            "Graphics.width - 76",
+            "Graphics.height - 194"
+        ],
+        "visible": true,
+        "isCheckAlpha": true,
+        "labelText": [
+            "Unsummon",
+            18,
+            0
+        ],
+        "isOverrideClickInput": false,
+        "mainImg": "Button_UnSummon_00",
+        "hoverImg": "Button_UnSummon_01",
+        "pressedImg": "Button_UnSummon_02",
+        "disabledImg": "Button_UnSummon_03",
+        "commonEventOnClick": 0,
+        "mapEventOnClick": 0,
+        "scriptOnClick": "uAPI.unSummonUnit",
+        "condition": "!uAPI.isSummonWithoutMode",
         "conditionForDisable": null
     }
 ]

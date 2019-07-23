@@ -1,0 +1,22 @@
+[
+    {
+        "id": "example",
+        "width": 0,
+        "height": 0,
+        "textSize": 16,
+        "background": 0,
+        "fontFace": null,
+        "text": "\\c[2]Example\\c[0]\ninfo!\\i[3]",
+        "isManualSize": false
+    },
+    {
+        "id": "example2",
+        "width": 340,
+        "height": 80,
+        "textSize": 14,
+        "background": 0,
+        "fontFace": "Acme",
+        "text": "\\c[5]Hello!\\c[0] Example with fixed window size",
+        "isManualSize": true
+    }
+]
