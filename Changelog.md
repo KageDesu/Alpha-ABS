@@ -1,6 +1,11 @@
 # Version 1.2  
 ## Builds:  
 
+**1090** - (03.08.2019)  
+> - fixed issue with plugin `GALV_MessageStyles`  
+> - **New feature: Landmines and Traps** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Landmines-and-Traps)  
+> - some other small fixes  
+
 **1086** - (23.07.2019)
 
 > - fixed bug: issue with open menu by <kbd>ESC</kbd> and **Hints for Events**  
