@@ -1,5 +1,25 @@
-# Version 1.2  
 ## Builds:  
+
+**1110** - (17.09.2019)  
+> - **New feature: Outer ABS Settings** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Outer-Settings)
+> - **New feature: Blood Splatter Effect** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/BloodSplatter-Effect-(Low-HP))
+> - improvements for **Landmines**: now, after detonation the self switch A turns off automatically
+> - fixed bug with monster spell cast audio endless looping  
+> - fixed bug with `<reloadParam>` and `<reloadTime>` for <ABS:2> and <ABS:3> skills  
+> - improvements for **Solid Regions**: new algorithm, fixed bug when enemy can't see player on same horizontal or vertical line  
+> - fixed bug with party ability `Gold Double`    
+> - Added embedded improved Terrax Lighting support  
+> - Some other fixes and changes  
+
+
+```diff
++ Only for PRO version
+```
+
+> - **New feature: Fog of War** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Fog-of-War-on-Map)  
+> - **New feature: Extended Damage PopUps** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Custom-Map-Damage-PopUp's)
+
+
 
 **1090** - (03.08.2019)  
 > - fixed issue with plugin `GALV_MessageStyles`  
@@ -15,7 +35,7 @@
 > - some other fixes and small changes  
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 > - **New feature: Mini messages for Events** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Events-Mini-Messages)  
 
@@ -34,7 +54,7 @@
 
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 > - **New feature: Hints for Events** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Hints-for-Events)
 > - new plugin parameter `AI Think Interval` - The lower the value, the AI thinks faster and less game performance
@@ -74,7 +94,7 @@
 > - some other fixes and small changes
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 > - **New feature: Visual Equipment** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Visual-Equipment)
 
@@ -112,7 +132,7 @@
 > - New feature: Extended error messages (like Yanfly's Engine plugin)  and error logs in file
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 > - New ABS Parameter for enemies `<HPBarStyle: StyleID>` - allow create custom HP bars on map for each enemy.
 
@@ -129,7 +149,7 @@
 > - many small changes
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 
 > - new UI element - Skill information window  
@@ -168,7 +188,7 @@
 > - new UI elements - UI Status Panel  [Check Wiki for information](https://github.com/KageDesu/Alpha-ABS/wiki/Status-Panel-JSON-Configuration)
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 
 > - Custom UI styles for states  
@@ -181,7 +201,7 @@
 > - added many new `uAPI Script calls` [Check WiKi](https://github.com/KageDesu/Alpha-ABS/wiki/Script--Calls-API)  
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 
 > - Custom UI Buttons
@@ -198,7 +218,7 @@
 > - fixed: select next target (`Q` key by default) now select targets by distance from nearest to farther
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 > - Text Font loader. `.ttf` fonts files in `fonts/` folder will be load in game automatically and can be used to customize UI elements with new customization system. **(Works only on PC or MAC)**
 
@@ -233,7 +253,7 @@
 ![](https://github.com/KageDesu/TestRepo/blob/master/2018-10-09_19-37-11.png)
 
 ```diff
-+ Only for Patrons
++ Only for PRO version
 ```
 > - new feature `Mini HP bars` - display HP bars above enemies and allies on ABS map  
 ![](https://github.com/KageDesu/TestRepo/blob/master/2018-10-09_19-24-57.png)
