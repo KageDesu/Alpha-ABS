@@ -1,0 +1,222 @@
+[{
+        "title": "Miss_For_All_0",
+        "stayTime": 2,
+        "changeFontSize": 26,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": null,
+            "textColor": "#E6E6E6",
+            "fontSize": 22,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Damage_HP_For_Player_1",
+        "stayTime": 2,
+        "changeFontSize": 26,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Tahoma",
+            "textColor": "#FF0000",
+            "fontSize": 22,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Damage_HP_For_Player_Critical_2",
+        "stayTime": 5,
+        "changeFontSize": 32,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Consolas",
+            "textColor": "#FF0000",
+            "fontSize": 26,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Damage_MP_For_Player_3",
+        "stayTime": 2,
+        "changeFontSize": 24,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": null,
+            "textColor": "#0080C0",
+            "fontSize": 18,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Damage_MP_For_Player_Critical_4",
+        "stayTime": 3,
+        "changeFontSize": 28,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": null,
+            "textColor": "#0000A0",
+            "fontSize": 22,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Damage_HP_For_Enemy_5",
+        "stayTime": 1,
+        "changeFontSize": 24,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": null,
+            "textColor": "#FFFFFF",
+            "fontSize": 20,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Damage_HP_For_Enemy_Critical_6",
+        "stayTime": 4,
+        "changeFontSize": 28,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 3,
+            "fontFace": null,
+            "textColor": "#F3E107",
+            "fontSize": 22,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Damage_MP_For_Enemy_7",
+        "stayTime": 2,
+        "changeFontSize": 24,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": null,
+            "textColor": "#E6E6E6",
+            "fontSize": 18,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Damage_MP_For_Enemy_Critical_8",
+        "stayTime": 2,
+        "changeFontSize": 26,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": null,
+            "textColor": "#E6E6E6",
+            "fontSize": 20,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Heal_HP_For_Player_9",
+        "stayTime": 3,
+        "changeFontSize": 24,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Tahoma",
+            "textColor": "#80FF00",
+            "fontSize": 21,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Heal_HP_For_Enemy_10",
+        "stayTime": 2,
+        "changeFontSize": 23,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Arial",
+            "textColor": "#80FF00",
+            "fontSize": 20,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Rise_MP_For_Player_11",
+        "stayTime": 2,
+        "changeFontSize": 23,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Arial",
+            "textColor": "#008080",
+            "fontSize": 20,
+            "fontItalic": false
+        }
+    },
+    {
+        "title": "Rise_MP_For_Enemy_12",
+        "stayTime": 2,
+        "changeFontSize": 23,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Arial",
+            "textColor": "#008080",
+            "fontSize": 20,
+            "fontItalic": false
+        }
+    }
+]

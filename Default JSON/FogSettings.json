@@ -1,0 +1,23 @@
+{
+    "fogOpenRadiusVarId": 1,
+    "fogRegions": [1, 2],
+    "fogIgnorePairs": {
+        "1": [2]
+    },
+    "fogSettingsA": {
+        "color": "#000000",
+        "opacity": 255
+    },
+    "fogSettingsB": {
+        "color": "#000000",
+        "opacity": 230
+    },
+    "fadeSettingsA": {
+        "fadeSpeed": 6,
+        "fadeTick": 1
+    },
+    "fadeSettingsB": {
+        "fadeSpeed": 5,
+        "fadeTick": 2
+    }
+}
