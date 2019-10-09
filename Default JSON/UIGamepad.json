@@ -1,0 +1,65 @@
+{
+    "Buttons": {
+        "Attack": {
+            "position": [130, "Graphics.height - 60"]
+        },
+        "Jump": {
+            "position": ["Graphics.width - 160", "Graphics.height - 115"]
+        },
+        "AnyCommand": {
+            "position": ["Graphics.width - 116", "Graphics.height - 164"]
+        }
+    },
+    "SpecialButtons": {
+        "Action": {
+            "position": ["Graphics.width - 80", "Graphics.height - 115"]
+        },
+        "Menu": {
+            "position": ["Graphics.width - 116", "Graphics.height - 70"]
+        }
+    },
+    "GamepadSymbols": {
+        "SYM_A": {
+            "position": ["Graphics.width - 88", "Graphics.height - 45"],
+            "img": "GP_A"
+        },
+        "SYM_B": {
+            "position": ["Graphics.width - 48", "Graphics.height - 85"],
+            "img": "GP_B"
+        },
+        "SYM_X": {
+            "position": ["Graphics.width - 132", "Graphics.height - 85"],
+            "img": "GP_X"
+        },
+        "SYM_Y": {
+            "position": ["Graphics.width - 88", "Graphics.height - 135"],
+            "img": "GP_Y"
+        },
+        "SYM_RT": {
+            "position": [175, "Graphics.height - 54"],
+            "img": "GP_RT"
+        }
+    },
+    "Other": {
+        "EmptyButtonImg": "GP_Empty_00",
+        "EmptyButtonsPosition": ["Graphics.width - 112", "Graphics.height - 168"],
+        "EmptyButtonOpacity": 200,
+        "SwitchCommandImg": "SwitchCommandIcon",
+        "SwitchCommandPosition": ["Graphics.width - 54", "Graphics.height - 146"]
+    },
+    "SpellPanel": {
+        "position": [64, 500],
+        "visible": true,
+        "backgroundImg": "DPad",
+        "switchSkillImg": "SwitchSkillsIcon",
+        "switchSkillMarginX": -45,
+        "switchSkillMarginY": -30,
+        "backLayerOpacity": 200,
+        "backLayerMarginX": -7,
+        "backLayerMarginY": 7,
+        "item_0": [14, -47],
+        "item_1": [74, 10],
+        "item_2": [14, 66],
+        "item_3": [-42, 10]
+    }
+}

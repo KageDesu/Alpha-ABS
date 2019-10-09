@@ -27,6 +27,22 @@
         "slot6": "6",
         "slot7": "7",
         "slot8": "8"
+    },
+    "Gamepad": {
+        "action": "A",
+        "jump": "X",
+        "attack": "RTrigger",
+        "command": "Y",
+        "menu": "B",
+        "follow": "LStick",
+        "target": "RStick",
+        "select0": "dUp",
+        "select1": "dRight",
+        "select2": "dDown",
+        "select3": "dLeft",
+        "switchSkills": "LB",
+        "dashing": "LTrigger",
+        "switchCommand": "RB"
     }
 }
     

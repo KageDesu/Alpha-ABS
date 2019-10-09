@@ -1,5 +1,18 @@
 ## Builds:  
 
+**1125** - (09.10.2019)  
+> - **New feature: Monster Leveling System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Level-System)
+> - improved monster spawn system, added spawn and revive block opportunity [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Spawning#3-block-spawning-and-revive)  
+> - added support for 8-way pixel diagonal movement plugin `SAN Analog Move`  
+> - plugin performance improvements  
+> - many other fixes and changes  
+
+```diff
++ Only for PRO version
+```
+> - **Gamepad support** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Gamepad)  
+
+
 **1110** - (17.09.2019)  
 > - **New feature: Outer ABS Settings** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Outer-Settings)
 > - **New feature: Blood Splatter Effect** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/BloodSplatter-Effect-(Low-HP))
@@ -8,7 +21,7 @@
 > - fixed bug with `<reloadParam>` and `<reloadTime>` for <ABS:2> and <ABS:3> skills  
 > - improvements for **Solid Regions**: new algorithm, fixed bug when enemy can't see player on same horizontal or vertical line  
 > - fixed bug with party ability `Gold Double`    
-> - Added embedded improved Terrax Lighting support  
+> - added embedded improved Terrax Lighting support  
 > - Some other fixes and changes  
 
 
