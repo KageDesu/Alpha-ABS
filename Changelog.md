@@ -1,5 +1,15 @@
 ## Builds:  
 
+**1128** - (21.10.2019)  
+
+> - **New feature: Defense Towers** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Defense-Towers)  
+> - fixed game crush on Non-Abs map when you use gamepad  
+> - fixed bug: gamepad key binding not working on Non-Abs map   
+> - fixed `uAPI` commands: `hideControls`, `hideUI`  
+> - fixed bug: AOE skills animation on map  
+> - fixed game crush when <kbd>CTRL</kbd> pressed  
+> - other small bugs fixes and overall improvements
+
 **1125** - (09.10.2019)  
 > - **New feature: Monster Leveling System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Level-System)
 > - improved monster spawn system, added spawn and revive block opportunity [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Spawning#3-block-spawning-and-revive)  
