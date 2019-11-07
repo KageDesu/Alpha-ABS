@@ -1,5 +1,15 @@
 ## Builds:  
 
+**1132** - (07.11.2019)  
+
+> - **New feature: Map Encounters** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Map-Encounters)
+> - New: Enemies can shoot Vector skills `<ABS:1>` in all directions (use ABS parameters `<noTarget:1>` and `<directionFix:0>`)
+> - New: Enemies can use Circle skills `<ABS:2>`  
+> - Improved pathfinding for ABS events, now enemies can move through corpses (and all `below` or `above` character priority events)  
+> - Improved algorithm of selecting the spawn position for ABS events  
+> - fixed bug: `Blood Splatter` effect and game load  
+> - other small bugs fixes and improvements  
+ 
 **1128** - (21.10.2019)  
 
 > - **New feature: Defense Towers** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Defense-Towers)  
