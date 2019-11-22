@@ -1,5 +1,25 @@
 ## Builds:  
 
+**1142** - (22.11.2019)  
+
+> - New: plugin parameter `Enemy HP value in %`  
+> - New: plugin parameter `After Death Common Event`  
+> - New: Now enemies can use Zone skills `<ABS:3>`  
+> - New: If `Game Over Common Event` > 0, but NON ABS map not specified in `Game Over Map ID`, game not go to the GameOver screen  
+> - `GALV_MessageStyles` plugin support  
+> - `MOG_LMBS` plugin support  
+> - `YEP_BattleEngineCore` plugin support
+> - fixed bug: player sprite restore normal state (after death) before transfer to `Game Over Map`  
+> - fixed bug: Enemies `Vector` skill shooting and solid regions  
+> - fixed bug: Enemies casting animation repeating  
+> - other small bugs fixes and improvements  
+
+```diff
++ Only for PRO version
+```
+> - **New feature: Second Battle System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Second-Battle-System)  
+
+
 **1132** - (07.11.2019)  
 
 > - **New feature: Map Encounters** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Map-Encounters)
@@ -9,7 +29,7 @@
 > - Improved algorithm of selecting the spawn position for ABS events  
 > - fixed bug: `Blood Splatter` effect and game load  
 > - other small bugs fixes and improvements  
- 
+
 **1128** - (21.10.2019)  
 
 > - **New feature: Defense Towers** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Defense-Towers)  
