@@ -1,5 +1,27 @@
 ## Builds:  
 
+**1155** - (25.12.2019)  
+
+
+> - New: plugin parameter `Random TP at start`
+> - New: Skill ABS parameter `<noCastingDelay>` - if 1, then casting time will not grow by damage _(default 0)_  
+> - `HIME_PreTitleEvents` plugin support  
+> - `FROG_Health` plugin support  
+> - `GALV_CharacterAnimations` plugin support  
+> - `GALV_CharacterFrames` plugin support
+> - fixed bug: firearm ammo not loaded when you go from ABS map to another ABS map  
+> - fixed bug: enemies spawned (with Encounters)  outside the game map    
+> - fixed bug: ABS parameter `<motionWait>` not works with `SAN_AnalogMove` plugin  
+> - fixed bug: with `YEP_ItemCore` items could be duplicated (item notify panel)     
+> - other small bugs fixes and improvements
+
+
+```diff
++ Only for PRO version
+```
+> - **New feature: Map Inventory** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Map-Inventory)  
+
+
 **1142** - (22.11.2019)  
 
 > - New: plugin parameter `Enemy HP value in %`  

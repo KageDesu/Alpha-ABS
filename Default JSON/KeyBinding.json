@@ -10,7 +10,8 @@
         "Follow": "w",
         "AutoRotate": "control",
         "Shield": "v",
-        "SummonMenu": "c"
+        "SummonMenu": "c",
+        "Inventory": "i"
     },
     "weaponCircle": {
         "TopSlot": "w",
