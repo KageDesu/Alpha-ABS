@@ -1,5 +1,27 @@
 ## Builds:  
 
+**1158** - (31.12.2019)  
+
+> - New: plugin parameter `Sort Items?` (for Map Inventory)
+> - New: plugin parameter `Sort Equipments?` (for Map Inventory)
+> - New: plugin parameter `Use skill info with extended description?`
+> - New: You can set special item type for certain items (for Map Inventory)  
+> - Added items and equipments sorting (for Map inventory)  
+> - New: Now you can set items to Spell Panel from map inventory  
+> - New: Now you can set weapons to Favorite Circle from map inventory
+> - New: Extended description for Skill information window. [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Skill-Information-Window-JSON-Configuration)
+> - fixed bug: `ABS Activate` plugin command fix
+> - fixed bug: Favorite weapons circle and Map Inventory glitch  
+> - fixed bug: You can set same weapon in all favorite weapon circle slots
+> - other small bugs fixes and improvements
+
+```diff
++ Only for PRO version
+```
+> - **New feature: Visual Chest** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Visual-Chests-System)  
+
+
+
 **1155** - (25.12.2019)  
 
 
