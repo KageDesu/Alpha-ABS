@@ -28,9 +28,9 @@ Active battle system "Alpha" for RPG Maker MV.
 `Creative Commons 4.0 Attribution, Share Alike, Non-Commercial`     
 (Attribution Non-Commercial Share Alike, cc by-nc-sa)   
 
+**For using Alpha ABS plugin in commercial project you must make a donation**
+**If interested in commercial license, email me at pheonix17@mail.ru**
 
-**For using plugin in commercial project you need purchase license for 40$.**  
-**If you want buy commercial license, email me at pheonix17@mail.ru**  
 
 ### If you like it
 You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6).  
