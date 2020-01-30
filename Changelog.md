@@ -1,5 +1,23 @@
 ## Builds:  
 
+**1164** - (30.01.2020)  
+
+> - **New feature: Absorb Barriers** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Absorb-Barriers)
+> - Improved **Enemy Level System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Level-System)
+>> now you can use enemy **level** in Damage Formula  
+>> new plugin parameter `Show Level`
+> - Added `<motionWait:X>` ABS parameters for enemies [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Motion-System-2)
+> - fixed critical bug: After Revive, enemies might not be activated (not attack player, not see player)  
+> - fixed bug: You can't open inventory on the NON-ABS map if the visual chest was opened  
+> - other small bugs fixes and improvements
+
+```diff
++ Only for PRO version
+```
+> - **New feature: Player Chest** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Player-Storage-(Player-Chest))  
+> - **New feature: Stored Chests**, Visual Chests [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Visual-Chests-System) that can keep items after closing  
+
+
 **1158** - (31.12.2019)  
 
 > - New: plugin parameter `Sort Items?` (for Map Inventory)
