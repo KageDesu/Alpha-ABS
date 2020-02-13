@@ -35,3 +35,5 @@ Active battle system "Alpha" for RPG Maker MV.
 ### If you like it
 You can [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=AEG4RJ3CFR3N6).  
 Or you can join me on [Patreon](https://www.patreon.com/KageDesu) and get unique plugins features
+
+[![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V81FBXW)
