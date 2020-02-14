@@ -3,14 +3,14 @@
         "Alerts": {
             "STRING_ALERT_NEEDTARGET": "Need Target",
             "STRING_ALERT_TOFAR": "Target too far",
-            "STRING_ALERT_INTERRUPT": "Action interrupt",
+            "STRING_ALERT_INTERRUPT": "Action interrupted",
             "STRING_ALERT_NOAUTOA": "Can't use attack",
             "STRING_ALERT_NOUSE": "Can't use action now",
-            "STRING_ALERT_NOCHARGES": "Can't use, no charges",
+            "STRING_ALERT_NOCHARGES": "Can't use; no charges",
             "STRING_ALERT_RECHARGE": "Action is not ready",
             "STRING_ALERT_CASTMOVE": "Can't use while moving",
-            "STRING_ALERT_NOINBATTLE": "Need get out of the battle",
-            "STRING_ALERT_NEWLEVEL": "New level"
+            "STRING_ALERT_NOINBATTLE": "Need to get out of the battle",
+            "STRING_ALERT_NEWLEVEL": "Level Up!"
         },
         "PopUps": {
             "STRING_POPUP_EVADE" : "Evade",

@@ -1,0 +1,15 @@
+{
+    "position": [
+        "(Graphics.width / 2) - 124",
+        "(Graphics.height / 2) - 160"
+    ],
+    "visible": true,
+    "openChestSE": null,
+    "icon": "inventoryIconStorage",
+    "iconMarginX": 18,
+    "iconMarginY": 18,
+    "categoryButtonsMarginX": 88,
+    "categoryButtonsMarginY": 17,
+    "putInHelpText": "Put in the chest",
+    "isLinkedCategories": true
+}

@@ -1,0 +1,82 @@
+{
+    "position": [
+        "(Graphics.width / 2) - 124",
+        "(Graphics.height / 2) - 160"
+    ],
+    "visible": true,
+    "openChestSE": null,
+    "backgroundImg": "inventoryBackground",
+    "headerBackImg": "inventoryHeaderBackground",
+    "isCloseButtonVisible": true,
+    "closeButtonMarginX": 204,
+    "closeButtonMarginY": 16,
+    "closeButtonImg": "inventoryCloseBtn_00",
+    "closeButtonHoverImg": "inventoryCloseBtn_01",
+    "icon": "inventoryIconChest",
+    "iconMarginX": 20,
+    "iconMarginY": 20,
+    "defaultChestName": "CHEST",
+    "chestName": {
+        "textBoxWidth": 154,
+        "textBoxHeight": 36,
+        "visible": true,
+        "marginX": 50,
+        "marginY": 13,
+        "position": "center",
+        "outlineColor": null,
+        "outlineWidth": 2,
+        "fontFace": "KhmerUIb",
+        "textColor": "#d5ae54",
+        "fontSize": 20,
+        "fontItalic": false
+    },
+    "itemName": {
+        "textBoxWidth": 210,
+        "textBoxHeight": 22,
+        "visible": true,
+        "marginX": 20,
+        "marginY": 48,
+        "position": "center",
+        "outlineColor": null,
+        "outlineWidth": 2,
+        "fontFace": "KhmerUI",
+        "textColor": "#ba9059",
+        "fontSize": 16,
+        "fontItalic": false
+    },
+    "takeAllButtonPosition": [30, 288],
+    "takeDefaultText": "Take All",
+    "takeTextSettings": {
+        "textBoxWidth": 68,
+        "textBoxHeight": 20,
+        "visible": true,
+        "marginX": 32,
+        "marginY": 288,
+        "position": "center",
+        "outlineColor": null,
+        "outlineWidth": 2,
+        "fontFace": "KhmerUI",
+        "textColor": "#786d61",
+        "fontSize": 14,
+        "fontItalic": false
+    },
+    "pageArrowLeftInSectionPos": [154, 290],
+    "pageArrowRightInSectionPos": [202, 290],
+    "pageText": {
+        "textBoxWidth": 40,
+        "textBoxHeight": 20,
+        "visible": true,
+        "marginX": 166,
+        "marginY": 290,
+        "position": "center",
+        "outlineColor": null,
+        "outlineWidth": 2,
+        "fontFace": "KhmerUI",
+        "textColor": "#786d61",
+        "fontSize": 16,
+        "fontItalic": false
+    },
+    "helpWindow": {
+        "helpTakeItemText": "Take"
+    }
+}

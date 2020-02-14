@@ -152,5 +152,29 @@
         "scriptOnClick": "uAPI.unSummonUnit",
         "condition": "!uAPI.isSummonWithoutMode",
         "conditionForDisable": null
+    },
+    {
+        "name": "inventory",
+        "position": [
+            "154",
+            "Graphics.height - 56"
+        ],
+        "visible": true,
+        "isCheckAlpha": true,
+        "labelText": [
+            "Inventory",
+            18,
+            0
+        ],
+        "isOverrideClickInput": false,
+        "mainImg": "Button_Inventory_00",
+        "hoverImg": "Button_Inventory_01",
+        "pressedImg": "Button_Inventory_02",
+        "disabledImg": "Button_Inventory_03",
+        "commonEventOnClick": 0,
+        "mapEventOnClick": 0,
+        "scriptOnClick": "uAPI.openCloseInventory",
+        "condition": null,
+        "conditionForDisable": "!uAPI.isInventoryAllowed"
     }
 ]

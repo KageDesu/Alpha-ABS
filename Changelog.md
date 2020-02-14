@@ -1,5 +1,33 @@
 ## Builds:  
 
+**1166** - (14.02.2020)  
+
+> - New: added UI Button for open(close) map inventory  
+> - New: map inventory and player storage chest now closing by right mouse click  
+> - New: plugin parameter `Piercing Damage for Absorb Barriers?` [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Absorb-Barriers)
+> - fixed critical bug: AI not works after save game loaded  
+> - fixed bug: `<escapeOnBattle>` ABS parameters works wrong  
+> - improvements in work `<escapeOnBattle>` and `<agressive>` ABS commands  
+> - fixed bug: keyword `level` in skill Damage Formula not works in Non-ABS Battle system
+> - fixed bug: returning items from player storage to inventory works sometimes wrong  
+> - fixed bug: inventory (chest, storage) page count glitch
+> - fixed bug: bush depth
+> - fixed bug: FPS drops when player in `Follow mode`  
+> - fixed bug: `Shield` UI button don't hides when UI is hidden  
+> - fixed bug: Items Notify glitch when UI is hidden  
+> - fixed bug: `Guard` state remains after Non-ABS Battle  
+> - improved `<speed:X>` ABS parameter for States
+> - fixed grammar errors in `Locale.json`  
+> - improved equipment's sorting in map inventory  
+> - fixed glich with `Favorite weapons` circle and Visual Chests
+> - fixed bug: player can moving when player storage is open
+  >> - now, event will paused and wait until storage is closed
+> - improved **Enemy Level System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Level-System)
+ >> - now `<runAwayIfLvlBelow>` and `<noFightIfLvlBelow>` works together  
+> - some small ABS UI performance improvements
+> - many small bugs fixes and improvements
+
+
 **1164** - (30.01.2020)  
 
 > - **New feature: Absorb Barriers** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Absorb-Barriers)

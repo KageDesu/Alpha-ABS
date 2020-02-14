@@ -1,0 +1,57 @@
+[
+    {
+        "id": "Parameters",
+        "iconPositionOnTarget": [482, 53],
+        "positionOnBarrierHpGauge": [56, -2],
+        "barrierDamagePopUp":
+        {
+            "title": "BarrierHpDamage",
+            "stayTime": 2,
+            "changeFontSize": 26,
+            "text": {
+                "visible": true,
+                "marginX": 0,
+                "marginY": 0,
+                "position": "center",
+                "outlineColor": null,
+                "outlineWidth": 2,
+                "fontFace": "Tahoma",
+                "defaultTextColor": "#C0C0C0",
+                "fontSize": 22,
+                "fontItalic": false
+            }
+        },
+        "barrierHpGauge":
+        {
+            "position": [
+                0,
+                -5
+            ],
+            "visible": true,
+            "width": 54,
+            "height": 8,
+            "fillColor": "#C0C0C0",
+            "foregroundImg": "Barrier_gauge_foreground",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 120
+        }
+    },
+    {
+        "id": 0,
+        "icon": null,
+        "gaugeIcon": null,
+        "barrierHpGaugeColor": "#C0C0C0",
+        "barrierHpDamagePopUpColor": "#C0C0C0",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
+        "id": 2,
+        "icon": "barrier_fire",
+        "gaugeIcon": "barrier_gauge_fire",
+        "barrierHpGaugeColor": "#d687c6",
+        "barrierHpDamagePopUpColor": "#FF8080",
+        "damagedSE": null,
+        "brokeSE": null
+    }
+]
