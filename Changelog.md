@@ -2,7 +2,6 @@
 
 **1170** - (21.02.2020)  
 
-> - **New feature: Enemy Vision** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Vision)
 > - New: improved **Visual Equipment**, now works on NON-ABS maps  
 > - New: plugin parameter `Show Items Notify on NON ABS maps?`
 >> If this parameter is ON:   
@@ -16,6 +15,12 @@
 > - fixed bug: `Visual Chest` and `User Storage` don't save their new positions after dragging  
 > - fixed bug: `Visual Chest` and `User Storage` glitch (wrong item), when you try taking items from not first page  
 > - other small changes  
+
+```diff
++ Only for PRO version
+```
+
+> - **New feature: Enemy Vision** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Vision)
 
 **1166** - (14.02.2020)  
 
