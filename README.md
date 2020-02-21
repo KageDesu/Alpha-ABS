@@ -1,4 +1,7 @@
 # Alpha ABS
+
+![](https://github.com/KageDesu/TestRepo/blob/master/2018-12-27_18-41-49.png)
+
 Active battle system "Alpha" for RPG Maker MV.
 
 ![](https://github.com/KageDesu/TestRepo/blob/master/2018-12-27_18-41-49.png)
@@ -9,7 +12,7 @@ Active battle system "Alpha" for RPG Maker MV.
 > **Required MV 1.6.1 and above**  
 
 **Last build:** 1128 (25.10.2019)  
-**Last PRO build:** 1166 (14.02.2020)
+**Last PRO build:** 1170 (21.02.2020)
 
 >[Changelog](https://github.com/KageDesu/Alpha-ABS/blob/master/Changelog.md)  
 

@@ -1,5 +1,22 @@
 ## Builds:  
 
+**1170** - (21.02.2020)  
+
+> - **New feature: Enemy Vision** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Vision)
+> - New: improved **Visual Equipment**, now works on NON-ABS maps  
+> - New: plugin parameter `Show Items Notify on NON ABS maps?`
+>> If this parameter is ON:   
+>>  - item (or gold) notify will be displayed on NON ABS maps  
+>>  - uAPI commands `putLine` and `putLineWithIcon` will be works on NON ABS maps
+> - New: ABS parameter for skills (weapons) `<stopCast:1>`  
+>> Skill with that parameter will completely break the target spell casting   
+> - improved **Enemy Level System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Level-System)  
+>> - now, you can create `Grow Tables` and raise the characteristics of enemies with each of their level  
+> - Menu key (<kbd>ESC</kbd> _(by default)_) now first close `Map Inventory` (if opened) then open Game Menu  
+> - fixed bug: `Visual Chest` and `User Storage` don't save their new positions after dragging  
+> - fixed bug: `Visual Chest` and `User Storage` glitch (wrong item), when you try taking items from not first page  
+> - other small changes  
+
 **1166** - (14.02.2020)  
 
 > - New: added UI Button for open(close) map inventory  
