@@ -3,6 +3,7 @@
         "id": "Parameters",
         "iconPositionOnTarget": [482, 53],
         "positionOnBarrierHpGauge": [56, -2],
+        "iconPositionOnPlayer": [220, 10],
         "barrierDamagePopUp":
         {
             "title": "BarrierHpDamage",
@@ -34,7 +35,20 @@
             "foregroundImg": "Barrier_gauge_foreground",
             "backgroundColor": "#000000",
             "backgroundOpacity": 120
-        }
+        },
+        "barrierPlayerHpGauge": {
+                    "position": [
+                        76,
+                        12
+                    ],
+                    "visible": true,
+                    "width": 158,
+                    "height": 9,
+                    "fillColor": "#C0C0C0",
+                    "foregroundImg": "Barrier_gauge_foreground2",
+                    "backgroundColor": "#000000",
+                    "backgroundOpacity": 120
+                }
     },
     {
         "id": 0,

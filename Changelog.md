@@ -1,5 +1,34 @@
 ## Builds:  
 
+**1174** - (23.03.2020)  
+> - Fixed critical bug: AI not works after save game, then go to the Title screen and load game  
+> - Fixed glitch when Gamepad UI may shown when Gamepad is not connected
+>> See new Plugin Parameter `Gamepad Support`
+> - New: Visual looting (like [Visual Chest](https://github.com/KageDesu/Alpha-ABS/wiki/Visual-Chests-System)) for enemies  
+>> See new Plugin Parameter `Visual loot`
+> - New: improved `Solid Regions` system
+>> - `<noTarget:1>`,`<ABS:1> (Vector)` skills _don't ignore_ obstacles anymore  
+> - New: added new keyboar shortcut <kbd>t</kbd> for `Take All` button in chests and player storage  
+>> - You can change key code in `KeyBinding.json`  
+> - New: Improved **Absorb Barriers** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Absorb-Barriers)
+>> - Now, player can use absorb barriers
+> - New feature: **Teleport Ability** for enemies [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Teleport-Ability)  
+>> - Enemies can performs teleports for battle movements  
+> - New feature: **Support Ally Ability** for enemies [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Support-Ally-Ability)
+>> - Enemies know how support (heal) their allies in battle  
+> - New uAPI script calls: [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Script--Calls-API) for more information  
+>> - uAPI.addWeaponInPlayerStorage(id, count)
+>> - uAPI.addItemInPlayerStorage(id, count)
+>> - uAPI.addArmorInPlayerStorage(id, count)
+>> - uAPI.moveEquipedItemsToStorage()
+>> - uAPI.moveAllItemsToStorage()
+>> - uAPI.clearPlayerStorage()
+>> - uAPI.aliveEnemiesCount
+>> - uAPI.deadEnemiesCount
+>> - uAPI.inBattleEnemiesCount
+> - other many small changes and bug fixes  
+
+
 **1170** - (21.02.2020)  
 
 > - New: improved **Visual Equipment**, now works on NON-ABS maps  
