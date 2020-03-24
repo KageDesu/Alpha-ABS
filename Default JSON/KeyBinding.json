@@ -11,7 +11,8 @@
         "AutoRotate": "control",
         "Shield": "v",
         "SummonMenu": "c",
-        "Inventory": "i"
+        "Inventory": "i",
+        "TakeAll": "t"
     },
     "weaponCircle": {
         "TopSlot": "w",
