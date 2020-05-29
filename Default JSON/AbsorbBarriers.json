@@ -2,8 +2,9 @@
     {
         "id": "Parameters",
         "iconPositionOnTarget": [482, 53],
-        "positionOnBarrierHpGauge": [56, -2],
         "iconPositionOnPlayer": [220, 10],
+        "iconPositionOnAlly": [168, -4],
+        "positionOnBarrierHpGauge": [56, -2],
         "barrierDamagePopUp":
         {
             "title": "BarrierHpDamage",
@@ -37,18 +38,31 @@
             "backgroundOpacity": 120
         },
         "barrierPlayerHpGauge": {
-                    "position": [
-                        76,
-                        12
-                    ],
-                    "visible": true,
-                    "width": 158,
-                    "height": 9,
-                    "fillColor": "#C0C0C0",
-                    "foregroundImg": "Barrier_gauge_foreground2",
-                    "backgroundColor": "#000000",
-                    "backgroundOpacity": 120
-                }
+            "position": [
+                76,
+                12
+            ],
+            "visible": true,
+            "width": 158,
+            "height": 9,
+            "fillColor": "#C0C0C0",
+            "foregroundImg": "Barrier_gauge_foreground2",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 120
+        },
+        "barrierAllyHpGauge": {
+            "position": [
+                55,
+                2
+            ],
+            "visible": true,
+            "width": 128,
+            "height": 9,
+            "fillColor": "#C0C0C0",
+            "foregroundImg": "Barrier_gauge_foreground3",
+            "backgroundColor": "#000000",
+            "backgroundOpacity": 120
+        }
     },
     {
         "id": 0,
@@ -60,11 +74,83 @@
         "brokeSE": null
     },
     {
+        "id": 1,
+        "icon": "Barriers/barrier_phys",
+        "gaugeIcon": "Barriers/barrier_gauge_phys",
+        "barrierHpGaugeColor": "#858585",
+        "barrierHpDamagePopUpColor": "#C0C0C0",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
         "id": 2,
         "icon": "barrier_fire",
         "gaugeIcon": "barrier_gauge_fire",
         "barrierHpGaugeColor": "#d687c6",
         "barrierHpDamagePopUpColor": "#FF8080",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
+        "id": 3,
+        "icon": "Barriers/barrier_ice",
+        "gaugeIcon": "Barriers/barrier_gauge_ice",
+        "barrierHpGaugeColor": "#18F1E7",
+        "barrierHpDamagePopUpColor": "#18F1E7",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
+        "id": 4,
+        "icon": "Barriers/barrier_thunder",
+        "gaugeIcon": "Barriers/barrier_gauge_thunder",
+        "barrierHpGaugeColor": "#D3DE0C",
+        "barrierHpDamagePopUpColor": "#D3DE0C",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
+        "id": 5,
+        "icon": "Barriers/barrier_water",
+        "gaugeIcon": "Barriers/barrier_gauge_water",
+        "barrierHpGaugeColor": "#0080C0",
+        "barrierHpDamagePopUpColor": "#0080C0",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
+        "id": 6,
+        "icon": "Barriers/barrier_earth",
+        "gaugeIcon": "Barriers/barrier_gauge_earth",
+        "barrierHpGaugeColor": "#9F5000",
+        "barrierHpDamagePopUpColor": "#9F5000",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
+        "id": 7,
+        "icon": "Barriers/barrier_wind",
+        "gaugeIcon": "Barriers/barrier_gauge_wind",
+        "barrierHpGaugeColor": "#84FF84",
+        "barrierHpDamagePopUpColor": "#84FF84",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
+        "id": 8,
+        "icon": "Barriers/barrier_light",
+        "gaugeIcon": "Barriers/barrier_gauge_light",
+        "barrierHpGaugeColor": "#FFFFC6",
+        "barrierHpDamagePopUpColor": "#FFFFC6",
+        "damagedSE": null,
+        "brokeSE": null
+    },
+    {
+        "id": 9,
+        "icon": "Barriers/barrier_darkness",
+        "gaugeIcon": "Barriers/barrier_gauge_darkness",
+        "barrierHpGaugeColor": "#58516A",
+        "barrierHpDamagePopUpColor": "#58516A",
         "damagedSE": null,
         "brokeSE": null
     }

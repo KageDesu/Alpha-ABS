@@ -101,18 +101,7 @@
         "textZoneWidth": null,
         "textZoneHeight": null,
         "textOpacity": 255,
-        "text": {
-            "visible": false,
-            "marginX": 0,
-            "marginY": 0,
-            "position": "center",
-            "outlineColor": null,
-            "outlineWidth": 3,
-            "fontFace": null,
-            "textColor": "#FFFFFF",
-            "fontSize": 14,
-            "fontItalic": false
-        }
+        "text": null
     },
     {
         "id": "EnemyName",
@@ -142,5 +131,171 @@
             "fontSize": 14,
             "fontItalic": false
         }
+    },
+    {
+        "id": "PartyMemberName",
+        "position": [
+            -40,
+            -10
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": 140,
+        "textZoneHeight": 20,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "right",
+            "outlineColor": "#000000",
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#987e24",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "AllyNameOnMap",
+        "position": [
+            0,
+            0
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": 100,
+        "textZoneHeight": 24,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": -68,
+            "position": "center",
+            "outlineColor": "#000000",
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#d5b88e",
+            "fontSize": 12,
+            "fontItalic": false
+        },
+        "deathStateIcon": {
+            "iconIndex": 1,
+            "visible": true,
+            "marginX": 40,
+            "marginY": -48,
+            "iconSize": 16
+        }
+    },
+    {
+        "id": "PartyMemberWeaponIcon",
+        "iconSize": 18,
+        "position": [
+            -2,
+            42
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": "AllyWeaponIconForeground",
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": 140,
+        "textZoneHeight": 20,
+        "textOpacity": 255,
+        "text": null
+    },
+    {
+        "id": "PartyMemberLevel",
+        "position": [
+            37,
+            38
+        ],
+        "visible": true,
+        "backgroundImg": "EnemyLevelCircle",
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#d5b88e",
+            "fontSize": 10,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "PartyMemberAction",
+        "position": [
+            -5,
+            -5
+        ],
+        "visible": true,
+        "backgroundImg": "EnemyLevelCircle",
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null,
+        "actionIconsMarginX": 5,
+        "actionIconsMarginY": 4,
+        "actionIcons": [
+            "SummonMode_Follow",
+            "SummonMode_Looting",
+            "SummonMode_Support",
+            "SummonMode_Battle",
+            "AllyMode_Dead"
+        ]
+    },
+    {
+        "id": "PartyMemberBehavior",
+        "position": [
+            -11,
+            19
+        ],
+        "visible": true,
+        "backgroundImg": "PetBehBackground",
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": null,
+        "textZoneHeight": null,
+        "textOpacity": 255,
+        "text": null,
+        "actionIconsMarginX": 4,
+        "actionIconsMarginY": 3,
+        "actionIcons": [
+            "SummonBeh_AttackAll_icon",
+            "SummonBeh_AttackTarget_Icon",
+            "SummonBeh_Protect_Icon",
+            "PartyBeh_Support_Icon"
+        ]
     }
 ]

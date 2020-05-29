@@ -1,0 +1,32 @@
+[
+    {
+        "position": [
+            62,
+            38
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "gaugeName": "cbAlly",
+        "iconSize": 16,
+        "iconMarginX": 108,
+        "iconMarginY": -6,
+        "valuesSeparateSymbol": "/ ",
+        "secondsSymbol": "s",
+        "textSkillName": {
+            "textBoxWidth": 80,
+            "textBoxHeight": 16,
+            "visible": true,
+            "marginX": 25,
+            "marginY": -11,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#e0cfbf",
+            "fontSize": 12,
+            "fontItalic": false
+        },
+        "textValue1": null,
+        "textValue2": null
+    }
+]

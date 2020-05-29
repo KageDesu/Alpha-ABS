@@ -1,5 +1,28 @@
 ## Builds:  
 
+**1190** - (29.05.2020)  
+> - **New Party System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Party)
+> - `[Preview]` **New feature: Alternative Input** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Alternative-Input)
+> - Added scope `1 Ally`, `All allies` support for ABS skills  
+> - Added new parameter `vertical` for UI gauges configuration (see _data/AABS/UIGauges.json_)  
+> - **Map Inventory** updated to version 1.1
+>> - New: Select a party member when using items
+>> - New: Move items from inventory to any `StoredChest`
+>> - Improved checking of the conditions of use of the items (for `NON ABS` maps)
+>> -  New plugin parameters
+>>> - `Store items in chest?`
+>>> - `Auto Inventory Refresh?`
+>>> - `Allow Party Selector?`
+>> - Actor current HP, MP, TP visual represent when using items
+![](https://github.com/KageDesu/TestRepo/blob/master/2020-05-29_14-52-41.png)
+> - New: ABS parameter for Enemies `<reviveMaxCount:X>`
+>> - allows limit revives count on map for prevent unlimited items and exp. grinding  
+> - fixed bug: after enemy have been revived `Visual loot` not refreshed
+> - *UI performance improvements*
+> - *AI performance improvements*
+> - a lot of small changes and bug fixes
+
+
 **1174** - (23.03.2020)  
 > - Fixed critical bug: AI not works after save game, then go to the Title screen and load game  
 > - Fixed glitch when Gamepad UI may shown when Gamepad is not connected

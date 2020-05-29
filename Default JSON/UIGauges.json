@@ -6,6 +6,7 @@
             20
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "HPGaugeFill",
         "foregroundImg": "HPGaugeForeground",
         "backgroundColor": "#000000",
@@ -32,6 +33,7 @@
             42
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "MPGaugeFill",
         "foregroundImg": "MPGaugeForeground",
         "backgroundColor": "#000000",
@@ -58,6 +60,7 @@
             60
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "TPGaugeFill",
         "foregroundImg": "MPGaugeForeground",
         "backgroundColor": "#000000",
@@ -84,6 +87,7 @@
             28
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "EnemyHPGaugeFill",
         "foregroundImg": "EnemyHPGaugeForeground",
         "backgroundColor": "#000000",
@@ -110,24 +114,14 @@
             18
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "PlayerCastGaugeForeground",
         "foregroundImg": null,
         "backgroundColor": "#000000",
         "backgroundOpacity": 120,
         "maskImg": null,
         "useMask": false,
-        "text": {
-            "visible": false,
-            "marginX": 10,
-            "marginY": 0,
-            "position": "left",
-            "outlineColor": null,
-            "outlineWidth": 2,
-            "fontFace": "Acme",
-            "textColor": "#cabeb2",
-            "fontSize": 14,
-            "fontItalic": false
-        }
+        "text": null
     },
     {
         "id": "cbE",
@@ -136,24 +130,14 @@
             10
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "EnemyCastGaugeForeground",
         "foregroundImg": null,
         "backgroundColor": "#000000",
         "backgroundOpacity": 120,
         "maskImg": null,
         "useMask": false,
-        "text": {
-            "visible": false,
-            "marginX": 10,
-            "marginY": 0,
-            "position": "left",
-            "outlineColor": null,
-            "outlineWidth": 2,
-            "fontFace": "Acme",
-            "textColor": "#cabeb2",
-            "fontSize": 14,
-            "fontItalic": false
-        }
+        "text": null
     },
     {
         "id": "miniHp",
@@ -162,24 +146,14 @@
             -8
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "MiniHPGaugeFill",
         "foregroundImg": null,
         "backgroundColor": "#000000",
         "backgroundOpacity": 120,
         "maskImg": null,
         "useMask": false,
-        "text": {
-            "visible": false,
-            "marginX": 0,
-            "marginY": 0,
-            "position": "center",
-            "outlineColor": null,
-            "outlineWidth": 2,
-            "fontFace": "KhmerUI",
-            "textColor": "#cabeb2",
-            "fontSize": 8,
-            "fontItalic": false
-        }
+        "text": null
     },
     {
         "id": "shieldTimer",
@@ -188,24 +162,14 @@
             4
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "ShieldTimerForeground",
         "foregroundImg": null,
         "backgroundColor": "#000000",
         "backgroundOpacity": 120,
         "maskImg": null,
         "useMask": false,
-        "text": {
-            "visible": false,
-            "marginX": 10,
-            "marginY": 0,
-            "position": "left",
-            "outlineColor": null,
-            "outlineWidth": 2,
-            "fontFace": "Acme",
-            "textColor": "#cabeb2",
-            "fontSize": 14,
-            "fontItalic": false
-        }
+        "text": null
     },
     {
         "id": "hpP",
@@ -214,6 +178,7 @@
             112
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "PetHPGaugeFill",
         "foregroundImg": "PetHPGaugeForeground",
         "backgroundColor": "#000000",
@@ -240,24 +205,14 @@
             126
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "PetMPGaugeFill",
         "foregroundImg": "PetMPGaugeForeground",
         "backgroundColor": "#000000",
         "backgroundOpacity": 100,
         "maskImg": "PetMPGaugeMask",
         "useMask": true,
-        "text": {
-            "visible": false,
-            "marginX": -10,
-            "marginY": 0,
-            "position": "right",
-            "outlineColor": null,
-            "outlineWidth": 2,
-            "fontFace": "KhmerUI",
-            "textColor": "#cabeb2",
-            "fontSize": 11,
-            "fontItalic": false
-        }
+        "text": null
     },
     {
         "id": "cbP",
@@ -266,23 +221,110 @@
             10
         ],
         "visible": true,
+        "vertical": false,
         "fillImg": "PetCastGaugeForeground",
         "foregroundImg": null,
         "backgroundColor": "#000000",
         "backgroundOpacity": 120,
         "maskImg": null,
         "useMask": false,
+        "text": null
+    },
+    {
+        "id": "hpPM",
+        "position": [
+            56,
+            9
+        ],
+        "visible": true,
+        "vertical": false,
+        "fillImg": "PartyMemberHPGaugeFill",
+        "foregroundImg": "PartyMemberHPGaugeForeground",
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 100,
+        "maskImg": "PartyMemberHPGaugeMask",
+        "useMask": true,
         "text": {
-            "visible": false,
-            "marginX": 10,
+            "visible": true,
+            "marginX": 6,
             "marginY": 0,
             "position": "left",
             "outlineColor": null,
             "outlineWidth": 2,
-            "fontFace": "Acme",
+            "fontFace": "KhmerUI",
             "textColor": "#cabeb2",
-            "fontSize": 14,
+            "fontSize": 12,
             "fontItalic": false
         }
+    }, 
+    {
+        "id": "mpPM",
+        "position": [
+            59,
+            25
+        ],
+        "visible": true,
+        "vertical": false,
+        "fillImg": "PartyMemberMPGaugeFill",
+        "foregroundImg": "PartyMemberMPGaugeForeground",
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 100,
+        "maskImg": "PartyMemberMPGaugeMask",
+        "useMask": true,
+        "text": {
+            "visible": true,
+            "marginX": 6,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#cabeb2",
+            "fontSize": 12,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "tpPM",
+        "position": [
+            59,
+            25
+        ],
+        "visible": true,
+        "vertical": false,
+        "fillImg": "PartyMemberTPGaugeFill",
+        "foregroundImg": "PartyMemberMPGaugeForeground",
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 100,
+        "maskImg": "PartyMemberMPGaugeMask",
+        "useMask": true,
+        "text": {
+            "visible": true,
+            "marginX": 6,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#cabeb2",
+            "fontSize": 12,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "cbAlly",
+        "position": [
+            0,
+            0
+        ],
+        "visible": true,
+        "vertical": false,
+        "fillImg": "AllyCastGaugeForeground",
+        "foregroundImg": null,
+        "backgroundColor": "#000000",
+        "backgroundOpacity": 120,
+        "maskImg": null,
+        "useMask": false,
+        "text": null
     }
 ]

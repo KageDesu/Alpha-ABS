@@ -30,6 +30,12 @@
         "slot7": "7",
         "slot8": "8"
     },
+    "AlterMove": {
+        "up": "w",
+        "down": "s",
+        "left": "a",
+        "right": "d"
+    },
     "Gamepad": {
         "action": "A",
         "jump": "X",

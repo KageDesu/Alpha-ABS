@@ -1,0 +1,7 @@
+{
+    "PartyUIGroup": {
+        "Position": [20, 108],
+        "PortraitHeight": 66,
+        "PositionModWhenSummon": [0, 60]
+    }
+}

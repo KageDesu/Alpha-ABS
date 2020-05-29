@@ -37,5 +37,18 @@
         "useMask": true,
         "flipFace": true,
         "faceSize": 36
+    },
+    {
+        "position": [
+            0,
+            0
+        ],
+        "visible": true,
+        "backgroundImg": "PartyMemberPortraitBackground",
+        "foregroundImg": "PartyMemberPortraitForeground",
+        "maskImg": "PartyMemberPortraitMask",
+        "useMask": true,
+        "flipFace": true,
+        "faceSize": 56
     }
 ]

@@ -197,5 +197,47 @@
         "helpUseItemText": "Use Item",
         "helpEquipItemText": "Equip",
         "helpUnEquipItemText": "UnEquip"
+    },
+    "partySelectorHpGauge": {
+        "position": [
+            6,
+            52
+        ],
+        "visible": true,
+        "width": 46,
+        "height": 5,
+        "fillColor": "#A31826",
+        "foregroundImg": "PartySelectorGaugeForeground",
+        "backgroundColor": "#5C5C5C",
+        "backgroundOpacity": 180
+    },
+    "partySelectorMpGauge": {
+        "position": [
+            6,
+            52
+        ],
+        "visible": true,
+        "width": 46,
+        "height": 5,
+        "fillColor": "#1737A4",
+        "foregroundImg": "PartySelectorGaugeForeground",
+        "backgroundColor": "#5C5C5C",
+        "backgroundOpacity": 180
+    },
+    "partySelectorTpGauge": {
+        "position": [
+            6,
+            52
+        ],
+        "visible": true,
+        "width": 46,
+        "height": 5,
+        "fillColor": "#18A35A",
+        "foregroundImg": "PartySelectorGaugeForeground",
+        "backgroundColor": "#5C5C5C",
+        "backgroundOpacity": 180
+    },
+    "partySelectorEquipIcons": {
+        
     }
 }
