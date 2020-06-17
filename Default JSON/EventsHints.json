@@ -18,5 +18,15 @@
         "fontFace": "Acme",
         "text": "\\c[5]Hello!\\c[0] Example with fixed window size",
         "isManualSize": true
+    },
+    {
+        "id": "linkExample",
+        "width": 320,
+        "height": 140,
+        "textSize": 14,
+        "background": 4,
+        "fontFace": null,
+        "text": "\\C[1]Magic Shard \\I[312]\\C[0]\n\\}Some cool and rare item...\nMagic shard used for....and etc.",
+        "isManualSize": true
     }
 ]

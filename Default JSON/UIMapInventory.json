@@ -36,7 +36,7 @@
         "position": "center",
         "outlineColor": null,
         "outlineWidth": 2,
-        "fontFace": "KhmerUI",
+        "fontFace": "Arial",
         "textColor": "#ba9059",
         "fontSize": 16,
         "fontItalic": false
@@ -54,7 +54,7 @@
         "position": "right",
         "outlineColor": null,
         "outlineWidth": 2,
-        "fontFace": "Acme",
+        "fontFace": "Consolas",
         "textColor": "#bfbfbf",
         "fontSize": 12,
         "fontItalic": false
@@ -68,7 +68,7 @@
         "position": "left",
         "outlineColor": null,
         "outlineWidth": 3,
-        "fontFace": "KhmerUIb",
+        "fontFace": "Consolas",
         "textColor": "#b9a996",
         "fontSize": 12,
         "fontItalic": false
@@ -85,7 +85,7 @@
         "position": "left",
         "outlineColor": null,
         "outlineWidth": 2,
-        "fontFace": "KhmerUI",
+        "fontFace": null,
         "textColor": "#786d61",
         "fontSize": 16,
         "fontItalic": false
@@ -101,7 +101,7 @@
         "position": "center",
         "outlineColor": null,
         "outlineWidth": 2,
-        "fontFace": "KhmerUI",
+        "fontFace": "Consolas",
         "textColor": "#786d61",
         "fontSize": 16,
         "fontItalic": false
@@ -109,7 +109,7 @@
     "helpWindow": {
         "showDelay": 25,
         "width": 280,
-        "height": 142,
+        "height": 182,
         "marginX": 37,
         "marginY": 37,
         "backgroundColor": "#000000",
@@ -129,7 +129,7 @@
             "position": "right",
             "outlineColor": null,
             "outlineWidth": 2,
-            "fontFace": "Acme",
+            "fontFace": "Tahoma",
             "textColor": "#b1530f",
             "fontSize": 16,
             "fontItalic": false
@@ -144,7 +144,7 @@
             "position": "left",
             "outlineColor": null,
             "outlineWidth": 2,
-            "fontFace": "KhmerUIb",
+            "fontFace": "Arial Black",
             "textColor": "#ba9059",
             "fontSize": 17,
             "fontItalic": false
@@ -158,7 +158,7 @@
             "position": "left",
             "outlineColor": null,
             "outlineWidth": 2,
-            "fontFace": "KhmerUI",
+            "fontFace": "Consolas",
             "textColor": "#FFFFFF",
             "fontSize": 15,
             "fontItalic": false
@@ -174,9 +174,9 @@
         "descriptionWindow": {
             "x": 0,
             "y": 34,
-            "width": 290,
-            "height": 100,
-            "fontFace": "KhmerUI",
+            "width": 360,
+            "height": 260,
+            "fontFace": "Consolas",
             "fontSize": 13
         },
         "clickHelpText": {
@@ -184,16 +184,16 @@
             "textBoxHeight": 20,
             "visible": true,
             "marginX": 34,
-            "marginY": 114,
+            "marginY": 148,
             "position": "left",
             "outlineColor": null,
             "outlineWidth": 2,
-            "fontFace": "KhmerUI",
+            "fontFace": "Tahoma",
             "textColor": "#67625b",
             "fontSize": 13,
             "fontItalic": false
         },
-        "helpIconPosition": [16, 114],
+        "helpIconPosition": [16, 148],
         "helpUseItemText": "Use Item",
         "helpEquipItemText": "Equip",
         "helpUnEquipItemText": "UnEquip"
@@ -238,6 +238,14 @@
         "backgroundOpacity": 180
     },
     "partySelectorEquipIcons": {
-        
+        "nothingEquippedIcon": 16,
+        "marginX": 34,
+        "marginY": 34
+    },
+    "availableCategories": {
+        "items": true,
+        "weapons": true,
+        "armors": true,
+        "keyItems": true
     }
 }

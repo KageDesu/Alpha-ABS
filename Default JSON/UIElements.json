@@ -297,5 +297,67 @@
             "SummonBeh_Protect_Icon",
             "PartyBeh_Support_Icon"
         ]
+    },
+    {
+        "id": "ExtraTargetName",
+        "position": [
+            354,
+            10
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": 140,
+        "textZoneHeight": 20,
+        "textOpacity": 255,
+        "text": {
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": "#000000",
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#C96216",
+            "fontSize": 14,
+            "fontItalic": false
+        }
+    },
+    {
+        "id": "ExtraTargetIcon",
+        "position": [
+            284,
+            54
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "backgroundOpacity": 255,
+        "foregroundImg": null,
+        "foregroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textOpacity": 255,
+        "text": null,
+        "iconSize": 24
+    },
+    {
+        "id": "ExtraTargetMessage",
+        "position": [
+            348,
+            32
+        ],
+        "visible": true,
+        "backgroundImg": "ExtraTargetMsgBackground",
+        "backgroundOpacity": 255,
+        "opacity": 255,
+        "scale": 1.0,
+        "textZoneWidth": 240,
+        "textZoneHeight": 80,
+        "fontFace": null,
+        "fontSize": 14
     }
 ]

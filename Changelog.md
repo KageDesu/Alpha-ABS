@@ -1,5 +1,38 @@
 ## Builds:  
 
+**1194** - (16.06.2020)  
+> - **Party System** improvements and fixes:
+>> - party members is solid now  
+>> - fixed visibility glitch on ABS maps  
+>> -  fixed <ABS:1> weapons issues  
+>> -  fixed dead ally message when uses `uAPI.showMiniTextParty`
+>> - improved decision making algorithm (improved think time)  
+>> - plugin parameter `Can select Ally as Target?`
+> - **Map Inventory** updated to version 1.2  
+>> - description text auto word wrap
+>> - new: Direct using items with 'None' scope
+>> - new: Select a party member when equip armors or weapons
+>> - improved Items sorting
+>> - fixed: Items no longer disappear from the chest(or storage) if you take more than possible (max items)
+>> - now you can hide inventory categories  
+> - Fixed some issues with **save and load game**  
+> - Fixed bug: **Visual Equipment** refresh when equipments change on NON ABS maps
+> - Improved gamepad sticks input  
+> - New plugin parameter `Preview Target?` - Preview target UI when hovered by mouse
+> - New plugin parameter `Preview if selected?` - Preview another target when is some target selected
+> - New plugin parameter `Tilt when Dashing?`
+> - New plugin parameter `Tilt when Jumping?`
+> - some small changes and bug fixes
+
+
+```diff
++ Only for PRO version
+```
+
+> - **New feature: Extra Target Event Info** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Extra-Target-Event-Info)
+> - **New feature: Links In Messages** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Links-In-Messages)
+
+
 **1190** - (29.05.2020)  
 > - **New Party System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Party)
 > - `[Preview]` **New feature: Alternative Input** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Alternative-Input)

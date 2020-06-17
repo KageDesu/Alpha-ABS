@@ -1,0 +1,11 @@
+[
+    {
+        "id": "example",
+        "portrait": {
+            "faceName": "People1",
+            "faceIndex": 6
+        },
+        "iconIndex": 191,
+        "message": "\\}\\}This dude have some \\C[2]Quest\\C[0]\nTalk with him"
+    }
+]
