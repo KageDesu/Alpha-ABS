@@ -196,7 +196,22 @@
         "helpIconPosition": [16, 148],
         "helpUseItemText": "Use Item",
         "helpEquipItemText": "Equip",
-        "helpUnEquipItemText": "UnEquip"
+        "helpUnEquipItemText": "UnEquip",
+        "weighIconPosition": [248, 27],
+        "itemWeightText": {
+            "textBoxWidth": 40,
+            "textBoxHeight": 20,
+            "visible": true,
+            "marginX": 205,
+            "marginY": 28,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Tahoma",
+            "textColor": "#D59731",
+            "fontSize": 16,
+            "fontItalic": false
+        }
     },
     "partySelectorHpGauge": {
         "position": [
@@ -247,5 +262,51 @@
         "weapons": true,
         "armors": true,
         "keyItems": true
+    },
+    "screenOutSafeMargin": 10,
+    "itemSliderSettings": {
+        "sliderCellMarginX": -50,
+        "sliderCellMarginY": 44,
+        "sliderOkButtonMarginX": 0,
+        "sliderOkButtonMarginY": 66,
+        "sliderMarginX": 10,
+        "sliderMarginY": -8,
+        "sliderDX": 12,
+        "zoneDY": 10
+    },
+    "cellItemSliderCountText": {
+        "textBoxWidth": 36,
+        "textBoxHeight": 36,
+        "visible": true,
+        "marginX": -8,
+        "marginY": 7,
+        "position": "right",
+        "outlineColor": null,
+        "outlineWidth": 3,
+        "fontFace": "Consolas",
+        "textColor": "#FFFFFF",
+        "textColor2": "#FF0000",
+        "fontSize": 24,
+        "fontItalic": false
+    },
+    "extraFooter": "inventoryExtraFooter",
+    "extraFooterPosition": [0, 315],
+    "weightIcon": "inventoryWeightIcon2",
+    "weightIconPosition": [24, 322],
+    "weightText": {
+        "backgroundFill": null,
+        "textBoxWidth": 100,
+        "textBoxHeight": 22,
+        "visible": true,
+        "marginX": 54,
+        "marginY": 322,
+        "position": "left",
+        "outlineColor": null,
+        "outlineWidth": 2,
+        "fontFace": "Consolas",
+        "textColor": "#D59731",
+        "textColor2": "#FF0000",
+        "fontSize": 16,
+        "fontItalic": false
     }
 }

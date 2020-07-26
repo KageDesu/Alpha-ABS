@@ -12,7 +12,8 @@
         "Shield": "v",
         "SummonMenu": "c",
         "Inventory": "i",
-        "TakeAll": "t"
+        "TakeAll": "t",
+        "SkillWindow": "o"
     },
     "weaponCircle": {
         "TopSlot": "w",

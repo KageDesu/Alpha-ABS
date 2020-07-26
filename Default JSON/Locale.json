@@ -67,7 +67,8 @@
             "STRING_SKILL_INFO_RECOVER":  "Recover ",
             "STRING_SKILL_INFO_DRAIN":  "Drain ",
             "STRING_SKILL_INFO_MELEE":  "Melee ",
-            "STRING_SKILL_INFO_REPEATS":  "Multi Hits: "
+            "STRING_SKILL_INFO_REPEATS":  "Multi Hits: ",
+            "STRING_SKILL_INFO_ONTARGETALLY": "Ally target or User"
         }
     }
 ]

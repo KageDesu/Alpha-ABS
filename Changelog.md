@@ -1,5 +1,24 @@
 ## Builds:  
 
+**1198** - (25.07.2020)  
+> - **New feature: Map Skills Window** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Map-Skills-Window)  
+> - **Map Inventory** updated to version 1.3.1
+>> -   Added restriction for dragging windows by mouse to out of screen
+>> - Now you can divide count when moving items between storages (RPO)
+>> - New: Added items weights system (PRO)
+>> - New: You can change party max weight with equipped items, add to Note `<weightStore:X>`  
+> - New plugin parameter `Global Skill Cooldown Time` - *global cooldown value for all skills after any skills is been used*  
+> - New plugin parameter `Keep Summon Unit When Transfer` - *automatically summon unit when player transfer between ABS maps (if not out of summon state time)*  
+> - Added `SumRndmDde Character Creator EX` plugin support
+> - Added `YEP_GridFreeDoodads` plugin support
+> - fixed issues with **Support Ally Ability** for enemies [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Support-Ally-Ability)
+> - Now items (skills) with `scope` - `1 Ally` applies on `The User` if current target is Enemy  
+> - fixed bug with using items from inventory *(you select player in selector, but item applies on targeted ally)*  
+> - **Party System** improvement: allies can now apply healing skills to themselves  
+> - some small changes, improvement and bug fixes
+
+
+
 **1194** - (16.06.2020)  
 > - **Party System** improvements and fixes:
 >> - party members is solid now  
