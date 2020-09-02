@@ -207,9 +207,24 @@
             "position": "right",
             "outlineColor": null,
             "outlineWidth": 2,
+            "fontFace": "Consolas",
+            "textColor": "#DDDDDD",
+            "fontSize": 15,
+            "fontItalic": false
+        },
+        "qualityIconPosition": [248, 150],
+        "itemQualityText": {
+            "textBoxWidth": 80,
+            "textBoxHeight": 20,
+            "visible": true,
+            "marginX": 185,
+            "marginY": 148,
+            "position": "right",
+            "outlineColor": null,
+            "outlineWidth": 2,
             "fontFace": "Tahoma",
             "textColor": "#D59731",
-            "fontSize": 16,
+            "fontSize": 14,
             "fontItalic": false
         }
     },
@@ -268,11 +283,11 @@
         "sliderCellMarginX": -50,
         "sliderCellMarginY": 44,
         "sliderOkButtonMarginX": 0,
-        "sliderOkButtonMarginY": 66,
-        "sliderMarginX": 10,
-        "sliderMarginY": -8,
-        "sliderDX": 12,
-        "zoneDY": 10
+        "sliderOkButtonMarginY": 70,
+        "sliderMarginX" : 10,
+        "sliderMarginY" : -8,
+        "sliderDX" : 12,
+        "zoneDY" : 10
     },
     "cellItemSliderCountText": {
         "textBoxWidth": 36,
@@ -308,5 +323,25 @@
         "textColor2": "#FF0000",
         "fontSize": 16,
         "fontItalic": false
+    },
+    "ScreenButtonSettings": {
+        "position": [
+            "Graphics.width - 90",
+            "Graphics.height - 80"
+        ],
+        "labelText": ["Inventory", 20, 0],
+        "mainImg": "Button_Inventory_00",
+        "hoverImg": "Button_Inventory_01",
+        "pressedImg": "Button_Inventory_02",
+        "disabledImg": "Button_Inventory_03"
+    },
+    "QualitySystem": {
+        "qualityIcon": null,
+        "Levels": [
+            ["[Basic]", "#DDDDDD"],
+            ["[Good]", "#18A35A"],
+            ["[Rare]", "#1737A4"],
+            ["[Epic]", "#D59731"]
+        ]
     }
 }

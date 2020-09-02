@@ -1,5 +1,27 @@
 ## Builds:  
 
+**1200** - (02.09.2020)   
+
+> - **New feature: In-Game Enemies Editor** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemies-Editor)  
+> - **Map Inventory** updated to version 1.4.1
+>> - New: Items Quality System [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Map-Inventory#items-quality-system)
+>> - Improvements to Item Weight System (PRO)
+>>>   - Notify when inventory is overweight
+>>>   - Auto State when inventory is overweight (optional)
+>>>   - Slowdown movement speed when inventory is overweight (optional)  
+![](https://github.com/KageDesu/TestRepo/blob/master/1200/MpI14Params.png)
+>>>   - You can create consumable items that's rise inventory max weight permanently (`uAPI.modifyInventoryMaxWeight(VALUE)`)
+>> - fixed bug: you can't open Map Inventory by <kbd>I</kbd> key, when User Chest is openend (NON ABS map)
+>> - fixed bug: party total weight not refreshed when you transfered from ABS to NON ABS map  
+>> - equipment items is duplicated in inventory (when you have not party members)  
+>> - New: you can create `Stored visual chests` for store certain items types [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Visual-Chests-System#how-create-chest-only-for-certain-items-types)
+> - fixed bug: Enemies can't properly use `<ABS:1><radius:X>` skills (AOE damage is missing)  
+> - added new plugin parameter `Party Member Death CE`
+> - small changes in plugin parameters list (more convenient selection of variables and common events)  
+> - improved `<impulse:X>` skills (no more stuck in walls and out of map)
+> - small changes, improvement and bug fixes
+
+
 **1198** - (25.07.2020)  
 > - **New feature: Map Skills Window** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Map-Skills-Window)  
 > - **Map Inventory** updated to version 1.3.1
