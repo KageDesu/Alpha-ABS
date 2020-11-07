@@ -1,5 +1,29 @@
 ## Builds:  
 
+**1210** - (31.10.2020)
+> - _(preview*)_ **New feature: Map Status Window** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Map-Status-Window)
+> - **Map Inventory** updated to version 1.5  
+>> - New: Equipment's state tables
+>> - New: Random items drop system for visual chests  
+
+> - Added plugin parameter `Game Pause`  _(experimental*)_  
+allows you pausing game when player open any map window (inventory, skills, status)  
+> - Added plugin parameter `Performance Skill Panel` - for those who have FPS drops problems and for mobiles  
+
+> - Added plugin parameter `Use diagonal movement?` _(experimental*)_  
+8-way diagonal movement for player
+> - Standard ABS skill panel will be optimized _(thanks SMO_Valadorn)_
+> - Standard MV pathfinding will be improved  
+(now you can turn off ABS advanced pathfinding and safe some game performance) (see `Use advanced pathfinding?`)
+> - New ABS parameter for `<ABS:2>` skills, `<teleport:1>` - teleports player on selected spot on map  
+> - small  changes, improvement and bug fixes
+
+
+```diff
+* preview - not all functions and features are implemented yet, there are limitations
+* experimental - it works, but it hasn't been fully tested in various aspects, so there may be bugs and glitches during game  
+```
+
 **1200** - (02.09.2020)   
 
 > - **New feature: In-Game Enemies Editor** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Enemies-Editor)  

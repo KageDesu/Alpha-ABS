@@ -1,0 +1,200 @@
+{
+    "position": [
+        "(Graphics.width / 2) - 225",
+        "(Graphics.height / 2) - 150"
+    ],
+    "visible": true,
+    "isCloseButtonVisible": true,
+    "closeButtonMarginX": 418,
+    "closeButtonMarginY": 2,
+    "closeButtonImg": "inventoryCloseBtn_00",
+    "closeButtonHoverImg": "inventoryCloseBtn_01",
+    "actorSelector": {
+        "position": [6, 8],
+        "nameBox": {
+            "textBoxWidth": 163,
+            "textBoxHeight": 22,
+            "visible": true,
+            "marginX": 15,
+            "marginY": -2,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#b6a270",
+            "fontSize": 20,
+            "fontItalic": false
+        }
+    },
+    "description": {
+        "position": [4, 246],
+        "profileBox": {
+            "x": 0,
+            "y": -12,
+            "width": 440,
+            "height": 80,
+            "fontFace": "Consolas",
+            "fontSize": 13
+        }
+    },
+    "actorInfo": {
+        "face": {
+            "position": [44, 44]
+        },
+        "gauges": {
+            "HPGaugeScale": 0.82,
+            "MPGaugeScale": 0.86,
+            "HPGaugePosition": [30, 146],
+            "MPGaugePosition": [30, 164]
+        },
+        "hp_mp": {
+            "position": [22, 144],
+            "hpTextBox": {
+                "symbol": "HP: ",
+                "textBoxWidth": 140,
+                "textBoxHeight": 22,
+                "visible": true,
+                "marginX": 0,
+                "marginY": 0,
+                "position": "center",
+                "outlineColor": null,
+                "outlineWidth": 2,
+                "fontFace": "KhmerUI",
+                "textColor": "#FF5B5B",
+                "fontSize": 14,
+                "fontItalic": false
+            },
+            "mpTextBox": {
+                "symbol": "MP: ",
+                "textBoxWidth": 140,
+                "textBoxHeight": 22,
+                "visible": true,
+                "marginX": 0,
+                "marginY": 20,
+                "position": "center",
+                "outlineColor": null,
+                "outlineWidth": 2,
+                "fontFace": "KhmerUI",
+                "textColor": "#187AE7",
+                "fontSize": 14,
+                "fontItalic": false
+            }
+        },
+        "statesIconSize": 24,
+        "statesPositions": [
+            [145, 42], [170, 42],
+
+            [145, 67], [170, 67],
+
+            [145, 92], [170, 92],
+
+            [145, 117], [170, 117]
+        ],
+        "classTextBox": {
+            "textBoxWidth": 120,
+            "textBoxHeight": 28,
+            "visible": true,
+            "marginX": 18,
+            "marginY": 186,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Acme",
+            "textColor": "#d5ae54",
+            "fontSize": 16,
+            "fontItalic": false
+        },
+        "levelTitlePosition": [90, 188],
+        "nextLevelTitlePosition": [90, 214],
+        "currentLevelPosition": [138, 188],
+        "nextLevelExpPosition": [20, 214],
+        "levelsLabelsTextBox": {
+            "textBoxWidth": 80,
+            "textBoxHeight": 24,
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#9a7d63",
+            "fontSize": 15,
+            "fontItalic": false
+        },
+        "levelTextBox": {
+            "textBoxWidth": 60,
+            "textBoxHeight": 24,
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#86786c",
+            "fontSize": 16,
+            "fontItalic": false
+        },
+        "levelExpTextBox": {
+            "textBoxWidth": 70,
+            "textBoxHeight": 24,
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUIb",
+            "textColor": "#86786c",
+            "fontSize": 14,
+            "fontItalic": false
+        },
+        "nicknameTextBox": {
+            "textBoxWidth": 200,
+            "textBoxHeight": 24,
+            "visible": true,
+            "marginX": 220,
+            "marginY": 4,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Tahoma",
+            "textColor": "#8c744f",
+            "fontSize": 15,
+            "fontItalic": false
+        }
+    },
+    "actorStats": {
+        "position": [218, 38]
+    },
+    "equipments": {
+        "position": [203, 118],
+        "settings": {
+            "equipIconSize": 20,
+            "equipEmptyIconIndex": 16,
+            "equipEmptyText": "",
+            "equipNameTextBox": {
+                "textBoxWidth": 84,
+                "textBoxHeight": 22,
+                "visible": true,
+                "marginX": 22,
+                "marginY": -1,
+                "position": "left",
+                "outlineColor": null,
+                "outlineWidth": 2,
+                "fontFace": "KhmerUI",
+                "textColor": "#e9e3da",
+                "fontSize": 13,
+                "fontItalic": false
+            }
+        },
+        "equipPositions": [
+            [14, 12],
+            [14, 34],
+            [14, 56],
+            [14, 78],
+            [14, 100]
+        ]
+    }
+}

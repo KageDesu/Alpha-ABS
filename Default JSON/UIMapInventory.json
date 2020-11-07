@@ -173,9 +173,9 @@
         },
         "descriptionWindow": {
             "x": 0,
-            "y": 34,
-            "width": 360,
-            "height": 260,
+            "y": 40,
+            "width": 280,
+            "height": 112,
             "fontFace": "Consolas",
             "fontSize": 13
         },
@@ -283,7 +283,7 @@
         "sliderCellMarginX": -50,
         "sliderCellMarginY": 44,
         "sliderOkButtonMarginX": 0,
-        "sliderOkButtonMarginY": 70,
+        "sliderOkButtonMarginY": 66,
         "sliderMarginX" : 10,
         "sliderMarginY" : -8,
         "sliderDX" : 12,
@@ -343,5 +343,68 @@
             ["[Rare]", "#1737A4"],
             ["[Epic]", "#D59731"]
         ]
+    },
+    "EquipmentStats": {
+        "position": [10, 60],
+        "statsBackImage": "inventory_equipStatsBack",
+        "stats": {
+            "atk": {
+                "visible": true,
+                "position": [52, 5]
+            },
+            "def": {
+                "visible": true,
+                "position": [52, 32]
+            },
+            "agi": {
+                "visible": true,
+                "position": [52, 55]
+            },
+            "mat": {
+                "visible": true,
+                "position": [170, 5]
+            },
+            "mdf": {
+                "visible": true,
+                "position": [170, 32]
+            },
+            "luk": {
+                "visible": true,
+                "position": [170, 55]
+            }
+        },
+        "statHightColor": "#18A35A",
+        "statLowerColor": "#D70000",
+        "statTextColor": "#DDDDDD",
+        "statText": {
+            "textBoxWidth": 46,
+            "textBoxHeight": 20,
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Tahoma",
+            "textColor": "#DDDDDD",
+            "fontSize": 15,
+            "fontItalic": false
+        },
+        "helpIconPosition": [150, 148],
+        "helpIconText": "States",
+        "statsHelpText": {
+            "textBoxWidth": 120,
+            "textBoxHeight": 20,
+            "visible": true,
+            "marginX": 168,
+            "marginY": 148,
+            "position": "left",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "Tahoma",
+            "textColor": "#67625b",
+            "fontSize": 13,
+            "fontItalic": false
+        }
     }
 }

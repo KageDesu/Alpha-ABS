@@ -63,5 +63,18 @@
         "useMask": true,
         "flipFace": true,
         "faceSize": 56
+    },
+    {
+        "position": [
+            0,
+            0
+        ],
+        "visible": true,
+        "backgroundImg": null,
+        "foregroundImg": null,
+        "maskImg": null,
+        "useMask": false,
+        "flipFace": false,
+        "faceSize": 100
     }
 ]

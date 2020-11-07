@@ -13,7 +13,8 @@
         "SummonMenu": "c",
         "Inventory": "i",
         "TakeAll": "t",
-        "SkillWindow": "o"
+        "SkillWindow": "o",
+        "StatusWindow": "p"
     },
     "weaponCircle": {
         "TopSlot": "w",

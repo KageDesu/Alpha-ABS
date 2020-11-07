@@ -1,7 +1,7 @@
 {
     "position": [
-        "Graphics.width - 490",
-        "(Graphics.height / 2) - 160"
+        "120",
+        "(Graphics.height / 2) - 100"
     ],
     "visible": true,
     "openWindowSE": null,
