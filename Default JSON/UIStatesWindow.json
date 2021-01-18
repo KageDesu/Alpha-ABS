@@ -5,7 +5,7 @@
     ],
     "visible": true,
     "isCloseButtonVisible": true,
-    "closeButtonMarginX": 418,
+    "closeButtonMarginX": 620,
     "closeButtonMarginY": 2,
     "closeButtonImg": "inventoryCloseBtn_00",
     "closeButtonHoverImg": "inventoryCloseBtn_01",
@@ -24,6 +24,10 @@
             "textColor": "#b6a270",
             "fontSize": 20,
             "fontItalic": false
+        },
+        "selectArrows": {
+            "right": [180, 0],
+            "left": [0, 0]
         }
     },
     "description": {
@@ -196,5 +200,28 @@
             [14, 78],
             [14, 100]
         ]
+    },
+    "equipmentsInventory": {
+        "position": [440, 0],
+        "categoryButtonsMargin": [80, 4],
+        "invCellStartPosition": [8, 60],
+        "itemNameTextBoxMargins": [8, 34],
+        "pageArrowsMargin": [-16, -20],
+        "optimizeButtonPosition": [22, 236],
+        "clearButtonPosition": [118, 236],
+        "buttonTextSettings": {
+            "textBoxWidth": 68,
+            "textBoxHeight": 20,
+            "visible": true,
+            "marginX": 0,
+            "marginY": 0,
+            "position": "center",
+            "outlineColor": null,
+            "outlineWidth": 2,
+            "fontFace": "KhmerUI",
+            "textColor": "#786d61",
+            "fontSize": 14,
+            "fontItalic": false
+        }
     }
 }

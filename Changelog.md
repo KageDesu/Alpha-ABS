@@ -1,4 +1,23 @@
+## Terms:
+
+```diff
+* preview - not all functions and features are implemented yet, there are limitations
+* experimental - it works, but it hasn't been fully tested in various aspects, so there may be bugs and glitches during game  
+```
+
+
 ## Builds:  
+
+**1230** - (16.12.2020)
+> - _(preview*)_ **New feature: AnimaX ABS Animation System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System)
+> - **Map Status Window** updated and out of _preview_, added: Actor change, Equipment's changing
+> - **Map Inventory** updated to version 1.7  
+> - Fixed bug: Gold not appears in Visual Loot (enemies looting)  
+> - Added `YEP_PartySystem` plugin support
+> - Better plugin parameters presentation (more readable)
+> - Changes in `Defense Stance (Shield Block)` feature [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Defense-Stance-(Shield-Block))
+>> - Now player can't moving during shield raised up
+> - massive core code changes, performance improvements and small bug fixes
 
 **1210** - (31.10.2020)
 > - _(preview*)_ **New feature: Map Status Window** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/Map-Status-Window)
@@ -17,12 +36,6 @@ allows you pausing game when player open any map window (inventory, skills, stat
 (now you can turn off ABS advanced pathfinding and safe some game performance) (see `Use advanced pathfinding?`)
 > - New ABS parameter for `<ABS:2>` skills, `<teleport:1>` - teleports player on selected spot on map  
 > - small  changes, improvement and bug fixes
-
-
-```diff
-* preview - not all functions and features are implemented yet, there are limitations
-* experimental - it works, but it hasn't been fully tested in various aspects, so there may be bugs and glitches during game  
-```
 
 **1200** - (02.09.2020)   
 
