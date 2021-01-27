@@ -8,6 +8,22 @@
 
 ## Builds:  
 
+**1232** - (27.01.2021)  
+> - **New feature: Map Scrolling** [See plugin parameter]  
+> - **AnimaX ABS Animation System** updated and of _preview_  
+>> - added support diagonal animations  
+>> -  added option to add X, Y offset to animation  
+
+> - Fixed bug: Game crush when change party members  
+> - Fixed bug: **Absorb barriers** not taking damage  
+> - Fixed bug: Using `<impulse>` ABS parameter, the enemy could be thrown back at the player position and stuck  
+> - Added `YEP_MoveRouteCore` plugin support
+> - Added `SAN_MapGenerator` plugin support
+> - New: ABS parameter for skill `<noBattle:1>` - make skill only usable outside combat/battle  
+> - New: ABS parameter for skill `<ifState:X>` - skill only usable if State with Id X on caster  
+> - small  changes, improvement and bug fixes  
+
+
 **1230** - (16.12.2020)
 > - _(preview*)_ **New feature: AnimaX ABS Animation System** [See Wiki](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System)
 > - **Map Status Window** updated and out of _preview_, added: Actor change, Equipment's changing
