@@ -8,6 +8,29 @@
 
 ## Builds:  
 
+**1236** - (10.04.2021)  
+
+> - **Map Scrolling** updated, added extra plugin parameters:  
+>> - Reset when moving?  
+>> - Reset on battle?   
+> - **AnimaX** updated to standalone version, [see this guide](https://kdworkshop.net/animax-plugin-guide/)  
+>> - added support of extra layers (visual equipments)  
+>> - added animations for events support (comment XA:)  
+>> - added animation control plugin commands  
+> - New: ABS parameter for `<ABS:1>` `<noTarget:1>` skills `<freeDirection:1>` - projectile will follow cursor position  
+> - New: Added diagonal movement support for Enemies (events) and Party followers  
+> - Fixed bug: [**Fog on Map**](https://github.com/KageDesu/Alpha-ABS/wiki/Fog-of-War-on-Map) feature not works in diagonal movement mode    
+> - Fixed bug: Follower nameplate wrong position  
+> - Fixed bug: game crush if have some plugin that skip title scene  
+> - Fixed bug: weapon animation not visible if character facing upwards  
+> - Fixed critical bug: dead enemies (without `revive`) works wrong (when you leave and return to map)  
+> - Fixed bug: enemies with `teamId:0` (allies) pursuit player infinitly  
+> - Added `MOG_Footsteps` plugin support  
+> - Added `SRD_BitmapUpgrade` plugin support  
+> - Added `SRD_TileMapBackground` plugin support  
+> - small  changes, improvement and bug fixes    
+
+
 **1232** - (27.01.2021)  
 > - **New feature: Map Scrolling** [See plugin parameter]  
 > - **AnimaX ABS Animation System** updated and of _preview_  
