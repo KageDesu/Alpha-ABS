@@ -13,7 +13,7 @@
 > - **Map Scrolling** updated, added extra plugin parameters:  
 >> - Reset when moving?  
 >> - Reset on battle?   
-> - **AnimaX** updated to standalone version, [see this guide](https://kdworkshop.net/animax-plugin-guide/)  
+> - **AnimaX** updated to standalone version, [see updated guide](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System)  
 >> - added support of extra layers (visual equipments)  
 >> - added animations for events support (comment XA:)  
 >> - added animation control plugin commands  
