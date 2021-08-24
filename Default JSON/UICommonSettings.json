@@ -2,6 +2,8 @@
     "PartyUIGroup": {
         "Position": [20, 108],
         "PortraitHeight": 66,
-        "PositionModWhenSummon": [0, 60]
+        "PositionModWhenSummon": [0, 60],
+        "SwitchLeaderKeyBackIcon": 16,
+        "SwitchLeaderKeysMargins": [180, 24]
     }
 }

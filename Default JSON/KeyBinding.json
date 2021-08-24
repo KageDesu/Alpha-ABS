@@ -53,6 +53,11 @@
         "switchSkills": "LB",
         "dashing": "LTrigger",
         "switchCommand": "RB"
+    },
+    "ActorsSwap": {
+        "actor1": "g",
+        "actor2": "h",
+        "actor3": "j"
     }
 }
     
