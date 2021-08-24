@@ -8,6 +8,15 @@
 
 ## Builds:  
 
+**1240** - (24.08.2021)  
+
+> - **New feature: Party Leader Swap** [see updated guide](https://github.com/KageDesu/Alpha-ABS/wiki/Party#7-change-party-leader)
+> - Added extended hit boxes support for tall enemies characters [see updated guide](https://github.com/KageDesu/Alpha-ABS/wiki/ABS-Parameters-for-enemies#abs-map-event)
+> - Enemies `<viewRadius>` not limited by screen edges anymore
+> - Added new ABS parameters for `<ABS:1>` skill for edit image offsets by directions [see updated guide](https://github.com/KageDesu/Alpha-ABS/wiki/ABS-Parameters-for-Skills)
+> - Improved **AnimaX** frames load (attempt to fix flickering)  
+> - small changes, improvement and bug fixes 
+
 **1236** - (10.04.2021)  
 
 > - **Map Scrolling** updated, added extra plugin parameters:  
