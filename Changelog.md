@@ -8,7 +8,7 @@
 
 ## Builds:  
 
-**1242** - (28.10.2021)  
+**1242** - (30.10.2021)  
 
 > - [AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System) **updated to version 1.1.** _Now supports offset for equipments layers and Dashing animations_
 > - Added new Plugin Parameter: `One playable character?` - if TRUE, hides other party members on map, see [Party Leader Swap](https://github.com/KageDesu/Alpha-ABS/wiki/Party#7-change-party-leader)
@@ -17,12 +17,14 @@
 > - Added new Plugin Parameter: `Allow Spawn On Events?` - if TRUE you can spawn monster above other events \ monsters
 > - Improved [Spawning system](https://github.com/KageDesu/Alpha-ABS/wiki/Enemy-Spawning), better performance when spawning many monsters on regions
 > - Added new [Script Call](https://github.com/KageDesu/Alpha-ABS/wiki/Script--Calls-API) command: `uAPI.findNearestEnemy`
-> - Fixed critical bug: infinity In-Battle status for player when using lot of `<ABS:1>` skills 
+> - `Fixed critical bug:` infinity In-Battle status for player when using lot of `<ABS:1>` skills 
+> - `Fixed critical bug:` FPS drop when lot of enemies surrounds player
 > - Fixed bug: spawned monsters not applied ABS parameters from Event comments
 > - Fixed bug: attack stops when you pressing mouse button after AnimaX action played
 > - Fixed bug: skill panel not appear on UI after `uAPI.showSkills` if not any skill in panel
 > - Fixed bug: `<freeDirection:1>` weapons and range to target check
 > - Fixed bug: Allied [Defense Towers](https://github.com/KageDesu/Alpha-ABS/wiki/Defense-Towers) attacks player summon monster
+> - Fixed bug: `Scroll Map...` event command not works properly  
 > - many small changes, overall improvements and bug fixes 
 
 **1240** - (24.08.2021)  
