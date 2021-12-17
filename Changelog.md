@@ -8,6 +8,16 @@
 
 ## Builds:  
 
+**1245** - (18.11.2021)
+> - Added Dashing animation ([AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System)) support for party members
+> - Added extended hit boxes for Actors (player) (same as for [enemies](https://github.com/KageDesu/Alpha-ABS/wiki/ABS-Parameters-for-enemies#abs-map-event), use Note `<extendHitBoxes:U, R, D, L>`)
+> - [AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System) updated to version 1.2 (added alternative PreLoad, fixed flickering issues)  
+> - New plugin parameters:
+>> `Is hold for repeat attack?` - behaviour for mouse button click for attacking  
+>> `Sound for Gold Notify` - now you can change sound effect when gold pickup notify appears  
+> - Added support of standalone [Map Inventory](https://kdworkshop.net/plugins/map-inventory/) plugin. (The embedded Map Inventory system is 1.7 and will no longer receive updates)  
+> - some small changes, fixes and improvements
+
 **1242** - (30.10.2021)  
 
 > - [AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System) **updated to version 1.1.** _Now supports offset for equipments layers and Dashing animations_
