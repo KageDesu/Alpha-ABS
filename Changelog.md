@@ -8,7 +8,7 @@
 
 ## Builds:  
 
-**1245** - (18.11.2021)
+**1245** - (17.11.2021)
 > - Added Dashing animation ([AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System)) support for party members
 > - Added extended hit boxes for Actors (player) (same as for [enemies](https://github.com/KageDesu/Alpha-ABS/wiki/ABS-Parameters-for-enemies#abs-map-event), use Note `<extendHitBoxes:U, R, D, L>`)
 > - [AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System) updated to version 1.2 (added alternative PreLoad, fixed flickering issues)  
