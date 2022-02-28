@@ -8,6 +8,14 @@
 
 ## Builds:  
 
+**1248** - (28.02.2022)
+> - Improved `Dead` state animation of [AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System). Idle death animation not looping anymore.
+> - Added new ABS parameter for enemies `<noAutoLoot:Z>`. You can disable autolooting for certain enemies event if `Auto loot` plugin parameters in ON  
+> - Added new Plugin Parameter `Auto Drop Loot`. If you have Extended Loot plugin, enemies can drop out items automatically on death.  
+> - Fixed bug when you needs holds mouse click for performs Attack action
+> - Added new ABS parameter for enemies `<weaponMotionId:X>`. Allows you set weapons motions graphics for Enemies.
+> - Some small fixes and tunes.  
+
 **1245** - (17.11.2021)
 > - Added Dashing animation ([AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System)) support for party members
 > - Added extended hit boxes for Actors (player) (same as for [enemies](https://github.com/KageDesu/Alpha-ABS/wiki/ABS-Parameters-for-enemies#abs-map-event), use Note `<extendHitBoxes:U, R, D, L>`)
