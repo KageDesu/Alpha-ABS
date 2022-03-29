@@ -11,7 +11,8 @@
 **1250** - (29.03.2022)  
 > - To plugin paramter `Mini HP bar` added new option `only for damaged`  
 > - Improved compatibility with [Extended Loot plugin](https://kdworkshop.net/plugins/extended-loot/)  
-> - Fixed bug: `Dead` state animation of [AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System) repeat playing after open\close menu  > - Fixed bug: `Dead` state animation ignore character direction  
+> - Fixed bug: `Dead` state animation repeats playing after open\close menu  
+>- Fixed bug: `Dead` state animation ignore character direction  
 > - Fixed bug: UI element `ActorInBattleIcon` (in battle state icon) still visible if parameter `visible` is `false`  
 > - Fixed bug: `<ABS:1>` projectile skills can avoid target in close range if `vSpeed` parameter is too small (too slow)    
 
