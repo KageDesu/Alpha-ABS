@@ -15,6 +15,7 @@
 >- Fixed bug: `Dead` state animation ignore character direction  
 > - Fixed bug: UI element `ActorInBattleIcon` (in battle state icon) still visible if parameter `visible` is `false`  
 > - Fixed bug: `<ABS:1>` projectile skills can avoid target in close range if `vSpeed` parameter is too small (too slow)    
+> - Added russian language \ Добавлен русский язык  
 
 **1248** - (28.02.2022)
 > - Improved `Dead` state animation of [AnimaX system](https://github.com/KageDesu/Alpha-ABS/wiki/AnimaX---ABS-Animation-System). Idle death animation not looping anymore.
